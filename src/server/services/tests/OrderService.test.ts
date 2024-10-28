@@ -1,157 +1,136 @@
-import OrderService from "../OrderService";
 import Product from "../../models/ProductModel";
 import Customer from "../../models/CustomerModel";
+import OrderService from "../../services/OrderService";
 
 describe("OrderService", () => {
   let orderService: OrderService;
   let customer: Customer;
-  let products: Product[];
+  let product1: Product;
+  let product2: Product;
 
   beforeEach(() => {
     orderService = new OrderService();
-
-    // Set up customer and products for testing
-    customer = new Customer("Test Customer", "email@test.com", "123456789", "Test Address");
-    products = [
-      new Product("Product 1", "Category 1", 100, 1, "Description 1", "/image1.png"),
-      new Product("Product 2", "Category 2", 200, 2, "Description 2", "/image2.png"),
-    ];
+    customer = new Customer("John Doe", "john.doe@example.com", "123-456-7890", "123 Main St");
+    product1 = new Product("Product 1", "Category 1", 5, 100, "loremisum", "path");
+    product2 = new Product("Product 2", "Category 2", 3, 100, "loremisum", "path");
   });
 
   test("should create a new order", () => {
-    const newOrder = orderService.createOrder(
-      products,
+    const order = orderService.createOrder(
+      [product1, product2],
       customer,
-      "Delivery Address",
+      "123 Main St",
       "Credit Card",
       "Express"
     );
-
-    expect(newOrder).toBeDefined();
-    expect(orderService.getAllOrders()).toContain(newOrder);
-    expect(newOrder.customer).toBe(customer);
-    expect(newOrder.products).toBe(products);
+    expect(orderService.listAll().length).toBe(1);
+    expect(order).toHaveProperty("id");
   });
 
-  test("should retrieve an order by ID", () => {
-    const newOrder = orderService.createOrder(
-      products,
-      customer,
-      "Delivery Address",
-      "Credit Card",
-      "Express"
-    );
-
-    const fetchedOrder = orderService.getOrderById(newOrder.id);
-    expect(fetchedOrder).toEqual(newOrder);
+  test("should retrieve all orders", () => {
+    orderService.createOrder([product1], customer, "123 Main St", "Credit Card", "Express");
+    orderService.createOrder([product2], customer, "456 Park Ave", "PayPal", "Standard");
+    expect(orderService.listAll().length).toBe(2);
   });
 
-  test("should update products in an order", () => {
-    const newOrder = orderService.createOrder(
-      products,
+  test("should find an order by ID", () => {
+    const order = orderService.createOrder(
+      [product1, product2],
       customer,
-      "Delivery Address",
+      "123 Main St",
       "Credit Card",
       "Express"
     );
-
-    const updatedProducts = [
-      new Product("Product 3", "Category 3", 300, 1, "Description 3", "/image3.png"),
-    ];
-    const updatedOrder = orderService.updateOrderProducts(newOrder.id, updatedProducts);
-
-    expect(updatedOrder?.products).toEqual(updatedProducts);
+    const foundOrder = orderService.getById(order.id);
+    expect(foundOrder).toBe(order);
   });
 
-  test("should update the status of an order", () => {
-    const newOrder = orderService.createOrder(
-      products,
-      customer,
-      "Delivery Address",
-      "Credit Card",
-      "Express"
-    );
-
-    const updatedOrder = orderService.updateOrderStatus(newOrder.id, "Shipped");
-    expect(updatedOrder?.status).toBe("Shipped");
+  test("should return undefined for a non-existent order ID", () => {
+    const foundOrder = orderService.getById("nonexistent-id");
+    expect(foundOrder).toBeUndefined();
   });
 
   test("should apply a discount to an order", () => {
-    const newOrder = orderService.createOrder(
-      products,
+    const order = orderService.createOrder(
+      [product1],
       customer,
-      "Delivery Address",
+      "123 Main St",
       "Credit Card",
       "Express"
     );
-
-    const discount = 50;
-    const updatedOrder = orderService.applyDiscount(newOrder.id, discount);
-    expect(updatedOrder?.discount).toBe(discount);
+    orderService.applyDiscount(order.id, 10);
+    const updatedOrder = orderService.getById(order.id);
+    expect(updatedOrder!.discount).toBe(10);
   });
 
   test("should set the delivery date of an order", () => {
-    const newOrder = orderService.createOrder(
-      products,
+    const order = orderService.createOrder(
+      [product1],
       customer,
-      "Delivery Address",
+      "123 Main St",
       "Credit Card",
       "Express"
     );
-
     const deliveryDate = new Date();
-    const updatedOrder = orderService.setDeliveryDate(newOrder.id, deliveryDate);
-    expect(updatedOrder?.deliveryDate).toEqual(deliveryDate);
+    orderService.setDeliveryDate(order.id, deliveryDate);
+    const updatedOrder = orderService.getById(order.id);
+    expect(updatedOrder!.deliveryDate).toBe(deliveryDate);
+  });
+
+  test("should update the products in an order", () => {
+    const order = orderService.createOrder(
+      [product1],
+      customer,
+      "123 Main St",
+      "Credit Card",
+      "Express"
+    );
+    orderService.updateProducts(order.id, [product2]);
+    const updatedOrder = orderService.getById(order.id);
+    expect(updatedOrder!.products).toEqual([product2]);
+  });
+
+  test("should update the status of an order", () => {
+    const order = orderService.createOrder(
+      [product1],
+      customer,
+      "123 Main St",
+      "Credit Card",
+      "Express"
+    );
+    orderService.updateStatus(order.id, "Shipped");
+    const updatedOrder = orderService.getById(order.id);
+    expect(updatedOrder!.status).toBe("Shipped");
   });
 
   test("should update the shipping cost of an order", () => {
-    const newOrder = orderService.createOrder(
-      products,
+    const order = orderService.createOrder(
+      [product1],
       customer,
-      "Delivery Address",
+      "123 Main St",
       "Credit Card",
       "Express"
     );
-
-    const shippingCost = 20;
-    const updatedOrder = orderService.updateShippingCost(newOrder.id, shippingCost);
-    expect(updatedOrder?.shippingCost).toBe(shippingCost);
+    orderService.updateShippingCost(order.id, 15);
+    const updatedOrder = orderService.getById(order.id);
+    expect(updatedOrder!.shippingCost).toBe(15);
   });
 
-  test("should delete an order", () => {
-    const newOrder = orderService.createOrder(
-      products,
+  test("should delete an order by ID", () => {
+    const order = orderService.createOrder(
+      [product1],
       customer,
-      "Delivery Address",
+      "123 Main St",
       "Credit Card",
       "Express"
     );
-
-    const isDeleted = orderService.deleteOrder(newOrder.id);
-    expect(isDeleted).toBe(true);
-    expect(orderService.getAllOrders()).not.toContain(newOrder);
+    const deleteResult = orderService.delete(order.id);
+    expect(deleteResult).toBe(true);
+    expect(orderService.listAll().length).toBe(0);
   });
 
-  test("should return all orders", () => {
-    const order1 = orderService.createOrder(
-      products,
-      customer,
-      "Delivery Address",
-      "Credit Card",
-      "Express"
-    );
-
-    const order2 = orderService.createOrder(
-      products,
-      customer,
-      "Delivery Address 2",
-      "Bank Slip",
-      "Standard"
-    );
-
-    const orders = orderService.getAllOrders();
-    expect(orders).toContain(order1);
-    expect(orders).toContain(order2);
-    expect(orders.length).toBe(2);
+  test("should return false when trying to delete a non-existent order", () => {
+    const deleteResult = orderService.delete("nonexistent-id");
+    expect(deleteResult).toBe(false);
   });
 });

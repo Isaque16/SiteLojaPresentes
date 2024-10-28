@@ -5,6 +5,8 @@ import Customer from "../models/CustomerModel";
 export default class OrderService {
   private orders: Order[] = [];
 
+  // Creat methods
+  
   // Cria um novo pedido e o adiciona à lista de pedidos
   createOrder(
     products: Product[],
@@ -24,53 +26,61 @@ export default class OrderService {
     return newOrder;
   }
 
+  // Read methods
+
+  // Retorna todos os pedidos para visualização geral
+  listAll(): Order[] {
+    return this.orders;
+  }
+
   // Retorna um pedido pelo ID
-  getOrderById(id: string): Order | undefined {
+  getById(id: string): Order | undefined {
     return this.orders.find((order) => order.id === id);
   }
 
-  // Atualiza os produtos de um pedido e recalcula o valor total
-  updateOrderProducts(orderId: string, products: Product[]): Order | undefined {
-    const order = this.getOrderById(orderId);
-    if (order) order.products = products;
-    return order;
-  }
-
-  // Define o status de um pedido
-  updateOrderStatus(orderId: string, status: string): Order | undefined {
-    const order = this.getOrderById(orderId);
-    if (order) order.status = status;
-    return order;
-  }
+  // Insert methods
 
   // Adiciona um desconto a um pedido
   applyDiscount(orderId: string, discount: number): Order | undefined {
-    const order = this.getOrderById(orderId);
+    const order = this.getById(orderId);
     if (order) order.discount = discount;
     return order;
   }
 
   // Define a data de entrega do pedido
   setDeliveryDate(orderId: string, deliveryDate: Date): Order | undefined {
-    const order = this.getOrderById(orderId);
+    const order = this.getById(orderId);
     if (order) order.deliveryDate = deliveryDate;
+    return order;
+  }
+
+  // Update methods
+  
+  // Atualiza os produtos de um pedido e recalcula o valor total
+  updateProducts(orderId: string, products: Product[]): Order | undefined {
+    const order = this.getById(orderId);
+    if (order) order.products = products;
+    return order;
+  }
+
+  // Define o status de um pedido
+  updateStatus(orderId: string, status: string): Order | undefined {
+    const order = this.getById(orderId);
+    if (order) order.status = status;
     return order;
   }
 
   // Define o custo de envio e recalcula o valor total do pedido
   updateShippingCost(orderId: string, shippingCost: number): Order | undefined {
-    const order = this.getOrderById(orderId);
+    const order = this.getById(orderId);
     if (order) order.shippingCost = shippingCost;
     return order;
   }
 
-  // Retorna todos os pedidos para visualização geral
-  getAllOrders(): Order[] {
-    return this.orders;
-  }
+  // Delete methods
 
   // Remove um pedido pelo ID
-  deleteOrder(orderId: string): boolean {
+  delete(orderId: string): boolean {
     const orderIndex = this.orders.findIndex((order) => order.id === orderId);
     if (orderIndex !== -1) {
       this.orders.splice(orderIndex, 1);

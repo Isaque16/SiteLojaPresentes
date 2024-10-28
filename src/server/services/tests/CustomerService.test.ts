@@ -20,31 +20,31 @@ describe("CustomerService", () => {
       "098-765-4321",
       "456 Elm St",
     );
-    customerService.addCustomer(customer1);
-    customerService.addCustomer(customer2);
+    customerService.add(customer1);
+    customerService.add(customer2);
   });
 
   test("should list all customers", () => {
-    expect(customerService.listCustomers()).toEqual([customer1, customer2]);
+    expect(customerService.listAll()).toEqual([customer1, customer2]);
   });
 
   test("should find customers by name", () => {
-    expect(customerService.findCustomersByName("Alice")).toEqual([customer1]);
+    expect(customerService.findByName("Alice")).toEqual([customer1]);
   });
 
   test("should find a customer by ID", () => {
-    expect(customerService.findCustomerById(customer1.id)).toBe(customer1);
+    expect(customerService.findById(customer1.id)).toBe(customer1);
   });
 
   test("should return undefined if customer ID not found", () => {
-    expect(customerService.findCustomerById("nonexistent-id")).toBeUndefined();
+    expect(customerService.findById("nonexistent-id")).toBeUndefined();
   });
 
   test("should check if a customer is already registered by email", () => {
-    expect(customerService.checkCustomerByEmail("alice@example.com")).toBe(
+    expect(customerService.checkByEmail("alice@example.com")).toBe(
       true,
     );
-    expect(customerService.checkCustomerByEmail("unknown@example.com")).toBe(
+    expect(customerService.checkByEmail("unknown@example.com")).toBe(
       false,
     );
   });
@@ -56,34 +56,34 @@ describe("CustomerService", () => {
       "111-222-3333",
       "789 Maple St",
     );
-    customerService.addCustomer(newCustomer);
-    expect(customerService.listCustomers()).toContain(newCustomer);
+    customerService.add(newCustomer);
+    expect(customerService.listAll()).toContain(newCustomer);
   });
 
   test("should update an existing customer by ID", () => {
-    customerService.updateCustomer(customer1.id, {
+    customerService.update(customer1.id, {
       name: "Alice Updated",
       phone: "123-000-0000",
     });
-    const updatedCustomer = customerService.findCustomerById(customer1.id);
+    const updatedCustomer = customerService.findById(customer1.id);
     expect(updatedCustomer?.name).toBe("Alice Updated");
     expect(updatedCustomer?.phone).toBe("123-000-0000");
   });
 
   test("should throw an error when trying to update a non-existent customer", () => {
     expect(() =>
-      customerService.updateCustomer("nonexistent-id", { name: "New Name" }),
+      customerService.update("nonexistent-id", { name: "New Name" }),
     ).toThrow("Customer not found.");
   });
 
   test("should remove a customer by ID", () => {
-    customerService.removeCustomer(customer1.id);
-    expect(customerService.listCustomers()).not.toContain(customer1);
+    customerService.remove(customer1.id);
+    expect(customerService.listAll()).not.toContain(customer1);
   });
 
   test("should not throw an error when removing a non-existent customer", () => {
     expect(() =>
-      customerService.removeCustomer("nonexistent-id"),
+      customerService.remove("nonexistent-id"),
     ).not.toThrow();
   });
 });

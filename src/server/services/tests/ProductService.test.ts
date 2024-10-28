@@ -24,12 +24,12 @@ describe("ProductService", () => {
       "Description B",
       "path/to/imageB",
     );
-    productService.addProduct(product1);
-    productService.addProduct(product2);
+    productService.add(product1);
+    productService.add(product2);
   });
 
   test("should list all products", () => {
-    const products = productService.listProducts();
+    const products = productService.listAll();
     expect(products).toHaveLength(2);
     expect(products).toContain(product1);
     expect(products).toContain(product2);
@@ -37,19 +37,19 @@ describe("ProductService", () => {
 
   test("should find products by category", () => {
     const categoryProducts =
-      productService.findProductsByCategory("Category 1");
+      productService.findByCategory("Category 1");
     expect(categoryProducts).toHaveLength(1);
     expect(categoryProducts[0].name).toBe("Product A");
   });
 
   test("should find product by ID", () => {
-    const foundProduct = productService.findProductById(product1.id);
+    const foundProduct = productService.findById(product1.id);
     expect(foundProduct).toBeDefined();
     expect(foundProduct?.name).toBe("Product A");
   });
 
   test("should return undefined if product is not found by ID", () => {
-    const nonExistentProduct = productService.findProductById("nonexistent-id");
+    const nonExistentProduct = productService.findById("nonexistent-id");
     expect(nonExistentProduct).toBeUndefined();
   });
 
@@ -69,27 +69,27 @@ describe("ProductService", () => {
       "Description C",
       "path/to/imageC",
     );
-    productService.addProduct(newProduct);
-    const products = productService.listProducts();
+    productService.add(newProduct);
+    const products = productService.listAll();
     expect(products).toContain(newProduct);
   });
 
   test("should update an existing product", () => {
-    productService.updateProduct(product1.id, { price: 120, quantity: 15 });
-    const updatedProduct = productService.findProductById(product1.id);
+    productService.update(product1.id, { price: 120, quantity: 15 });
+    const updatedProduct = productService.findById(product1.id);
     expect(updatedProduct?.price).toBe(120);
     expect(updatedProduct?.quantity).toBe(15);
   });
 
   test("should throw an error if updating a non-existent product", () => {
     expect(() =>
-      productService.updateProduct("nonexistent-id", { price: 150 }),
+      productService.update("nonexistent-id", { price: 150 }),
     ).toThrow("Product not found.");
   });
 
   test("should remove a product by ID", () => {
-    productService.removeProduct(product1.id);
-    const products = productService.listProducts();
+    productService.remove(product1.id);
+    const products = productService.listAll();
     expect(products).not.toContain(product1);
     expect(products).toHaveLength(1);
   });
