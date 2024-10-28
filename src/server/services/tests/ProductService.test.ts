@@ -24,8 +24,8 @@ describe("ProductService", () => {
       "Description B",
       "path/to/imageB",
     );
-    productService.add(product1);
-    productService.add(product2);
+    productService.save(product1);
+    productService.save(product2);
   });
 
   test("should list all products", () => {
@@ -60,7 +60,7 @@ describe("ProductService", () => {
     expect(isProduct2InStock).toBe(false);
   });
 
-  test("should add a product to the catalog", () => {
+  test("should save a product to the catalog", () => {
     const newProduct = new Product(
       "Product C",
       "Category 3",
@@ -69,22 +69,16 @@ describe("ProductService", () => {
       "Description C",
       "path/to/imageC",
     );
-    productService.add(newProduct);
+    productService.save(newProduct);
     const products = productService.listAll();
     expect(products).toContain(newProduct);
   });
 
   test("should update an existing product", () => {
-    productService.update(product1.id, { price: 120, quantity: 15 });
+    productService.save({ price: 120, quantity: 15 }, product1.id);
     const updatedProduct = productService.findById(product1.id);
     expect(updatedProduct?.price).toBe(120);
     expect(updatedProduct?.quantity).toBe(15);
-  });
-
-  test("should throw an error if updating a non-existent product", () => {
-    expect(() =>
-      productService.update("nonexistent-id", { price: 150 }),
-    ).toThrow("Product not found.");
   });
 
   test("should remove a product by ID", () => {

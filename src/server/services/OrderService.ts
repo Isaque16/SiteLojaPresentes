@@ -34,7 +34,7 @@ export default class OrderService {
   }
 
   // Retorna um pedido pelo ID
-  getById(id: string): Order | undefined {
+  findById(id: string): Order | undefined {
     return this.orders.find((order) => order.id === id);
   }
 
@@ -42,14 +42,14 @@ export default class OrderService {
 
   // Adiciona um desconto a um pedido
   applyDiscount(orderId: string, discount: number): Order | undefined {
-    const order = this.getById(orderId);
+    const order = this.findById(orderId);
     if (order) order.discount = discount;
     return order;
   }
 
   // Define a data de entrega do pedido
   setDeliveryDate(orderId: string, deliveryDate: Date): Order | undefined {
-    const order = this.getById(orderId);
+    const order = this.findById(orderId);
     if (order) order.deliveryDate = deliveryDate;
     return order;
   }
@@ -58,21 +58,21 @@ export default class OrderService {
   
   // Atualiza os produtos de um pedido e recalcula o valor total
   updateProducts(orderId: string, products: Product[]): Order | undefined {
-    const order = this.getById(orderId);
+    const order = this.findById(orderId);
     if (order) order.products = products;
     return order;
   }
 
   // Define o status de um pedido
   updateStatus(orderId: string, status: string): Order | undefined {
-    const order = this.getById(orderId);
+    const order = this.findById(orderId);
     if (order) order.status = status;
     return order;
   }
 
   // Define o custo de envio e recalcula o valor total do pedido
   updateShippingCost(orderId: string, shippingCost: number): Order | undefined {
-    const order = this.getById(orderId);
+    const order = this.findById(orderId);
     if (order) order.shippingCost = shippingCost;
     return order;
   }

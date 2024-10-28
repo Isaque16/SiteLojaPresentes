@@ -41,12 +41,12 @@ describe("OrderService", () => {
       "Credit Card",
       "Express"
     );
-    const foundOrder = orderService.getById(order.id);
+    const foundOrder = orderService.findById(order.id);
     expect(foundOrder).toBe(order);
   });
 
   test("should return undefined for a non-existent order ID", () => {
-    const foundOrder = orderService.getById("nonexistent-id");
+    const foundOrder = orderService.findById("nonexistent-id");
     expect(foundOrder).toBeUndefined();
   });
 
@@ -59,7 +59,7 @@ describe("OrderService", () => {
       "Express"
     );
     orderService.applyDiscount(order.id, 10);
-    const updatedOrder = orderService.getById(order.id);
+    const updatedOrder = orderService.findById(order.id);
     expect(updatedOrder!.discount).toBe(10);
   });
 
@@ -73,7 +73,7 @@ describe("OrderService", () => {
     );
     const deliveryDate = new Date();
     orderService.setDeliveryDate(order.id, deliveryDate);
-    const updatedOrder = orderService.getById(order.id);
+    const updatedOrder = orderService.findById(order.id);
     expect(updatedOrder!.deliveryDate).toBe(deliveryDate);
   });
 
@@ -86,7 +86,7 @@ describe("OrderService", () => {
       "Express"
     );
     orderService.updateProducts(order.id, [product2]);
-    const updatedOrder = orderService.getById(order.id);
+    const updatedOrder = orderService.findById(order.id);
     expect(updatedOrder!.products).toEqual([product2]);
   });
 
@@ -99,7 +99,7 @@ describe("OrderService", () => {
       "Express"
     );
     orderService.updateStatus(order.id, "Shipped");
-    const updatedOrder = orderService.getById(order.id);
+    const updatedOrder = orderService.findById(order.id);
     expect(updatedOrder!.status).toBe("Shipped");
   });
 
@@ -112,7 +112,7 @@ describe("OrderService", () => {
       "Express"
     );
     orderService.updateShippingCost(order.id, 15);
-    const updatedOrder = orderService.getById(order.id);
+    const updatedOrder = orderService.findById(order.id);
     expect(updatedOrder!.shippingCost).toBe(15);
   });
 

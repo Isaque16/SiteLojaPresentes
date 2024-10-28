@@ -26,21 +26,14 @@ export default class ProductService {
     return product ? product.quantity > 0 : false;
   }
 
-   // Adds a product to the catalog
-   add(product: Product): void {
-    this.products.push(product);
-  }
-
-  // Update methods
-
-  // Updates an existing product by ID
-  update(id: string, updatedProduct: Partial<Product>): void {
-    const product = this.products.find((prod) => prod.id === id);
-    if (product) {
-      Object.assign(product, updatedProduct);
+  // Updates an existing product by ID or creates a new one
+  save(product: Partial<Product>, id?: string ): void {
+    const findProduct = this.products.find((prod) => prod.id === id);
+    if (findProduct) {
+      Object.assign(findProduct, product);
       return;
     }
-    throw new Error("Product not found.");
+    this.products.push(product as Product);
   }
 
   // Delete methods

@@ -20,8 +20,8 @@ describe("CustomerService", () => {
       "098-765-4321",
       "456 Elm St",
     );
-    customerService.add(customer1);
-    customerService.add(customer2);
+    customerService.save(customer1);
+    customerService.save(customer2);
   });
 
   test("should list all customers", () => {
@@ -49,31 +49,25 @@ describe("CustomerService", () => {
     );
   });
 
-  test("should add a new customer", () => {
+  test("should save a new customer", () => {
     const newCustomer = new Customer(
       "Charlie",
       "charlie@example.com",
       "111-222-3333",
       "789 Maple St",
     );
-    customerService.add(newCustomer);
+    customerService.save(newCustomer);
     expect(customerService.listAll()).toContain(newCustomer);
   });
 
   test("should update an existing customer by ID", () => {
-    customerService.update(customer1.id, {
+    customerService.save({
       name: "Alice Updated",
       phone: "123-000-0000",
-    });
+    }, customer1.id);
     const updatedCustomer = customerService.findById(customer1.id);
     expect(updatedCustomer?.name).toBe("Alice Updated");
     expect(updatedCustomer?.phone).toBe("123-000-0000");
-  });
-
-  test("should throw an error when trying to update a non-existent customer", () => {
-    expect(() =>
-      customerService.update("nonexistent-id", { name: "New Name" }),
-    ).toThrow("Customer not found.");
   });
 
   test("should remove a customer by ID", () => {

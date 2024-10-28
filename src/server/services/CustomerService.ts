@@ -25,23 +25,14 @@ export default class CustomerService {
     return this.customers.some((customer) => customer.email === email);
   }
 
-  // Insert methods
-
-  // Adds a new customer
-  add(customer: Customer): void {
-    this.customers.push(customer);
-  }
-
-  // Update methods
-
-  // Updates the information of an existing customer by ID
-  update(id: string, updatedData: Partial<Customer>): void {
-    const customer = this.customers.find((c) => c.id === id);
-    if (customer) {
-      Object.assign(customer, updatedData);
+  // Updates an existing product by ID or creates a new one
+  save(customer: Partial<Customer>, id?: string ): void {
+    const findCustomer = this.customers.find((prod) => prod.id === id);
+    if (findCustomer) {
+      Object.assign(findCustomer, customer);
       return;
     }
-    throw new Error("Customer not found.");
+    this.customers.push(customer as Customer);
   }
 
   // Delete methods
