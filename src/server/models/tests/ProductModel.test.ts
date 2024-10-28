@@ -1,6 +1,6 @@
 import Product from "../ProductModel";
 
-describe('Product Model', () => {
+describe("Product Model", () => {
   let product: Product;
 
   beforeEach(() => {
@@ -10,11 +10,11 @@ describe('Product Model', () => {
       100.0,
       5,
       "A sample product for testing purposes",
-      "path/to/image.jpg"
+      "path/to/image.jpg",
     );
   });
 
-  test('should initialize product with correct properties', () => {
+  test("should initialize product with correct properties", () => {
     expect(product.id).toBeDefined();
     expect(product.name).toBe("Test Product");
     expect(product.category).toBe("Electronics");
@@ -24,7 +24,7 @@ describe('Product Model', () => {
     expect(product.imagePath).toBe("path/to/image.jpg");
   });
 
-  test('should trim name, category, and description when set', () => {
+  test("should trim name, category, and description when set", () => {
     product.name = "  New Name  ";
     expect(product.name).toBe("New Name");
 
@@ -35,7 +35,7 @@ describe('Product Model', () => {
     expect(product.description).toBe("New Description");
   });
 
-  test('should throw an error if price is set to zero or negative', () => {
+  test("should throw an error if price is set to zero or negative", () => {
     expect(() => {
       product.price = 0;
     }).toThrow("The product price must be greater than zero.");
@@ -45,17 +45,17 @@ describe('Product Model', () => {
     }).toThrow("The product price must be greater than zero.");
   });
 
-  test('should set quantity to 0 if a negative value is provided', () => {
+  test("should set quantity to 0 if a negative value is provided", () => {
     product.quantity = -5;
     expect(product.quantity).toBe(0);
   });
 
-  test('should allow setting a valid price', () => {
+  test("should allow setting a valid price", () => {
     product.price = 150;
     expect(product.price).toBe(150);
   });
 
-  test('should update imagePath correctly', () => {
+  test("should update imagePath correctly", () => {
     const newPath = "path/to/new_image.jpg";
     product.imagePath = newPath;
     expect(product.imagePath).toBe(newPath);

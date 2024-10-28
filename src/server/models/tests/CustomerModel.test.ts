@@ -1,7 +1,7 @@
-import Customer from '../CustomerModel';
-import Basket from '../BasketModel';
+import Customer from "../CustomerModel";
+import Basket from "../OrderModel";
 
-describe('Customer Model', () => {
+describe("Customer Model", () => {
   let customer: Customer;
 
   beforeEach(() => {
@@ -9,11 +9,11 @@ describe('Customer Model', () => {
       "John Doe",
       "john.doe@example.com",
       "+123456789",
-      "123 Street, City, Country"
+      "123 Street, City, Country",
     );
   });
 
-  test('should initialize Customer with correct properties', () => {
+  test("should initialize Customer with correct properties", () => {
     expect(customer.id).toBeDefined();
     expect(customer.name).toBe("John Doe");
     expect(customer.email).toBe("john.doe@example.com");
@@ -23,7 +23,7 @@ describe('Customer Model', () => {
     expect(customer.purchaseHistory).toEqual([]);
   });
 
-  test('should trim spaces in name, email, phone, and address when set', () => {
+  test("should trim spaces in name, email, phone, and address when set", () => {
     customer.name = "   Jane Doe   ";
     expect(customer.name).toBe("Jane Doe");
 
@@ -37,7 +37,7 @@ describe('Customer Model', () => {
     expect(customer.address).toBe("456 Avenue, New City");
   });
 
-  test('should add basket to purchaseHistory and calculate totalSpent correctly', () => {
+  test("should add basket to purchaseHistory and calculate totalSpent correctly", () => {
     const basket1 = new Basket();
     basket1.totalValue = 100;
     customer.purchaseHistory.push(basket1);
@@ -50,12 +50,12 @@ describe('Customer Model', () => {
     expect(customer.totalSpent).toBe(250); // 100 + 150
   });
 
-  test('should initialize with an empty purchaseHistory', () => {
+  test("should initialize with an empty purchaseHistory", () => {
     expect(customer.purchaseHistory).toEqual([]);
     expect(customer.totalSpent).toBe(0);
   });
 
-  test('should allow setting a new currentBasket', () => {
+  test("should allow setting a new currentBasket", () => {
     const newBasket = new Basket();
     customer.currentBasket = newBasket;
     expect(customer.currentBasket).toBe(newBasket);
