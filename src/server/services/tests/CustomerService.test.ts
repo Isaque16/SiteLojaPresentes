@@ -66,8 +66,8 @@ describe("CustomerService", () => {
       phone: "123-000-0000",
     }, customer1.id);
     const updatedCustomer = customerService.findById(customer1.id);
-    expect(updatedCustomer?.name).toBe("Alice Updated");
-    expect(updatedCustomer?.phone).toBe("123-000-0000");
+    expect(updatedCustomer!.name).toBe("Alice Updated");
+    expect(updatedCustomer!.phone).toBe("123-000-0000");
   });
 
   test("should remove a customer by ID", () => {

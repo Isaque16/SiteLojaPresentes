@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import Order from "./OrderModel";
 
+
 export default class Customer {
   private _id: string;
   private _name: string;

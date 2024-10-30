@@ -9,13 +9,38 @@ describe("Order Model", () => {
 
   beforeEach(() => {
     // Configuração dos dados de teste
-    customer = new Customer("Customer Test", "test@example.com", "123456789", "Test Address");
+    customer = new Customer(
+      "Customer Test",
+      "test@example.com",
+      "123456789",
+      "Test Address",
+    );
     products = [
-      new Product("Product 1", "Category 1", 100, 1, "Description 1", "/image1.png"),
-      new Product("Product 2", "Category 2", 200, 2, "Description 2", "/image2.png"),
+      new Product(
+        "Product 1",
+        "Category 1",
+        100,
+        1,
+        "Description 1",
+        "/image1.png",
+      ),
+      new Product(
+        "Product 2",
+        "Category 2",
+        200,
+        2,
+        "Description 2",
+        "/image2.png",
+      ),
     ];
 
-    order = new Order(customer, products, "Delivery Address", "Credit Card", "Express");
+    order = new Order(
+      customer,
+      products,
+      "Delivery Address",
+      "Credit Card",
+      "Express",
+    );
   });
 
   test("should create an order with default values", () => {
@@ -37,7 +62,14 @@ describe("Order Model", () => {
 
   test("should update products and recalculate total value", () => {
     const newProducts = [
-      new Product("Product 3", "Category 3", 150, 1, "Description 3", "/image3.png"),
+      new Product(
+        "Product 3",
+        "Category 3",
+        150,
+        1,
+        "Description 3",
+        "/image3.png",
+      ),
     ];
     order.products = newProducts;
     expect(order.products).toEqual(newProducts);
