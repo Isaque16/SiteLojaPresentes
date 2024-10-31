@@ -36,8 +36,7 @@ describe("ProductService", () => {
   });
 
   test("should find products by category", () => {
-    const categoryProducts =
-      productService.findByCategory("Category 1");
+    const categoryProducts = productService.findByCategory("Category 1");
     expect(categoryProducts).toHaveLength(1);
     expect(categoryProducts[0].name).toBe("Product A");
   });

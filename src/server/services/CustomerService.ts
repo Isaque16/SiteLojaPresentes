@@ -1,44 +1,46 @@
-import Customer from "../models/CustomerModel";
+import connectToDatabase from "../database/connectDB";
+import ICustomer from "../interfaces/ICustomer";
+import Customer from "../models/CustomerModel"; // Modelo do Mongoose
 
 export default class CustomerService {
-  private customers: Customer[] = []; // <- Data base of clients
-
-  // Read methods
-
-  // Lists all customers
-  listAll(): Customer[] {
-    return this.customers;
+  constructor() {
+    connectToDatabase();
   }
 
-  // Finds customers by name
-  findByName(name: string): Customer[] {
-    return this.customers.filter((customer) => customer.name.includes(name));
+  // Lista todos os clientes do banco de dados
+  async listAll(): Promise<ICustomer[]> {
+    return await Customer.find();
   }
 
-  // Finds a specific customer by ID
-  findById(id: string): Customer | undefined {
-    return this.customers.find((customer) => customer.id === id);
+  // Busca clientes pelo nome
+  async findByName(name: string): Promise<ICustomer[]> {
+    return await Customer.find({ name: { $regex: name, $options: "i" } }); // Busca parcial, case-insensitive
   }
 
-  // Checks if a customer is already registered by email
-  checkByEmail(email: string): boolean {
-    return this.customers.some((customer) => customer.email === email);
+  // Busca um cliente específico pelo ID
+  async findById(id: string): Promise<ICustomer | null> {
+    return await Customer.findById(id);
   }
 
-  // Updates an existing product by ID or creates a new one
-  save(customer: Partial<Customer>, id?: string ): void {
-    const findCustomer = this.customers.find((prod) => prod.id === id);
-    if (findCustomer) {
-      Object.assign(findCustomer, customer);
-      return;
-    }
-    this.customers.push(customer as Customer);
+  // Verifica se um cliente já está cadastrado pelo email
+  async checkByEmail(email: string): Promise<boolean> {
+    const customer = await Customer.findOne({ email });
+    return !!customer;
   }
 
-  // Delete methods
+  // Atualiza um cliente existente pelo ID ou cria um novo
+  async save(customerData: ICustomer | Partial<ICustomer>, id?: string) {
+    if (id)
+      return await Customer.findByIdAndUpdate(id, customerData, {
+        new: true,
+        upsert: true,
+      });
+    const newCustomer = new Customer(customerData);
+    return await newCustomer.save();
+  }
 
-  // Removes a customer by ID
-  remove(id: string): void {
-    this.customers = this.customers.filter((customer) => customer.id !== id);
+  // Remove um cliente pelo ID
+  async remove(id: string): Promise<void> {
+    await Customer.findByIdAndDelete(id);
   }
 }

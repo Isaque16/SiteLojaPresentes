@@ -41,12 +41,8 @@ describe("CustomerService", () => {
   });
 
   test("should check if a customer is already registered by email", () => {
-    expect(customerService.checkByEmail("alice@example.com")).toBe(
-      true,
-    );
-    expect(customerService.checkByEmail("unknown@example.com")).toBe(
-      false,
-    );
+    expect(customerService.checkByEmail("alice@example.com")).toBe(true);
+    expect(customerService.checkByEmail("unknown@example.com")).toBe(false);
   });
 
   test("should save a new customer", () => {
@@ -61,10 +57,13 @@ describe("CustomerService", () => {
   });
 
   test("should update an existing customer by ID", () => {
-    customerService.save({
-      name: "Alice Updated",
-      phone: "123-000-0000",
-    }, customer1.id);
+    customerService.save(
+      {
+        name: "Alice Updated",
+        phone: "123-000-0000",
+      },
+      customer1.id,
+    );
     const updatedCustomer = customerService.findById(customer1.id);
     expect(updatedCustomer!.name).toBe("Alice Updated");
     expect(updatedCustomer!.phone).toBe("123-000-0000");
@@ -76,8 +75,6 @@ describe("CustomerService", () => {
   });
 
   test("should not throw an error when removing a non-existent customer", () => {
-    expect(() =>
-      customerService.remove("nonexistent-id"),
-    ).not.toThrow();
+    expect(() => customerService.remove("nonexistent-id")).not.toThrow();
   });
 });

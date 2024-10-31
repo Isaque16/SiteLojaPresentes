@@ -10,9 +10,28 @@ describe("OrderService", () => {
 
   beforeEach(() => {
     orderService = new OrderService();
-    customer = new Customer("John Doe", "john.doe@example.com", "123-456-7890", "123 Main St");
-    product1 = new Product("Product 1", "Category 1", 5, 100, "loremisum", "path");
-    product2 = new Product("Product 2", "Category 2", 3, 100, "loremisum", "path");
+    customer = new Customer(
+      "John Doe",
+      "john.doe@example.com",
+      "123-456-7890",
+      "123 Main St",
+    );
+    product1 = new Product(
+      "Product 1",
+      "Category 1",
+      5,
+      100,
+      "loremisum",
+      "path",
+    );
+    product2 = new Product(
+      "Product 2",
+      "Category 2",
+      3,
+      100,
+      "loremisum",
+      "path",
+    );
   });
 
   test("should create a new order", () => {
@@ -21,15 +40,27 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     expect(orderService.listAll().length).toBe(1);
     expect(order).toHaveProperty("id");
   });
 
   test("should retrieve all orders", () => {
-    orderService.createOrder([product1], customer, "123 Main St", "Credit Card", "Express");
-    orderService.createOrder([product2], customer, "456 Park Ave", "PayPal", "Standard");
+    orderService.createOrder(
+      [product1],
+      customer,
+      "123 Main St",
+      "Credit Card",
+      "Express",
+    );
+    orderService.createOrder(
+      [product2],
+      customer,
+      "456 Park Ave",
+      "PayPal",
+      "Standard",
+    );
     expect(orderService.listAll().length).toBe(2);
   });
 
@@ -39,7 +70,7 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     const foundOrder = orderService.findById(order.id);
     expect(foundOrder).toBe(order);
@@ -56,7 +87,7 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     orderService.applyDiscount(order.id, 10);
     const updatedOrder = orderService.findById(order.id);
@@ -69,7 +100,7 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     const deliveryDate = new Date();
     orderService.setDeliveryDate(order.id, deliveryDate);
@@ -83,7 +114,7 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     orderService.updateProducts(order.id, [product2]);
     const updatedOrder = orderService.findById(order.id);
@@ -96,7 +127,7 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     orderService.updateStatus(order.id, "Shipped");
     const updatedOrder = orderService.findById(order.id);
@@ -109,7 +140,7 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     orderService.updateShippingCost(order.id, 15);
     const updatedOrder = orderService.findById(order.id);
@@ -122,7 +153,7 @@ describe("OrderService", () => {
       customer,
       "123 Main St",
       "Credit Card",
-      "Express"
+      "Express",
     );
     const deleteResult = orderService.delete(order.id);
     expect(deleteResult).toBe(true);
