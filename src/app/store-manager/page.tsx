@@ -5,7 +5,6 @@ import ProductCard from "@/components/ProductCard";
 import IProduct from "@/server/interfaces/IProduct";
 
 export default function StoreManager() {
-  
   const [formData, setFormData] = useState<IProduct>({
     nome: "",
     categoria: "",
@@ -18,16 +17,16 @@ export default function StoreManager() {
 
   const [products, setProducts] = useState<IProduct[]>([]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-  };
+  }
 
   // Função para enviar o formulário
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
       const response = await fetch("/api/produtos", {
@@ -35,10 +34,8 @@ export default function StoreManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
-        console.log(await response.json());
-        console.log(formData);
         setFormData({
           nome: "",
           categoria: "",
@@ -48,35 +45,56 @@ export default function StoreManager() {
           imagem: "",
           nomeImagem: "",
         });
+
         fetchProducts(); // Atualiza a lista de produtos após adicionar
-      } else {
-        console.log("Erro ao criar produto!");
-      }
+      } else throw new Error("Erro ao criar produto!: " + response.status);
     } catch (error) {
-      console.error(error);
+      throw new Error("Erro ao criar produto!: " + error);
     }
-  };
+  }
 
   // Função para buscar os produtos
-  const fetchProducts = async () => {
+  async function fetchProducts(): Promise<void> {
     try {
       const response = await fetch("/api/produtos");
       const data = await response.json();
-      setProducts(data); // Define os produtos no estado
+      setProducts(data);
     } catch (error) {
       console.error(error);
-      setProducts([]); // Define uma lista vazia em caso de erro
+      setProducts([]);
     }
-  };
+  }
 
   // useEffect para buscar os produtos ao carregar o componente
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  function verifyInput(): boolean {
+    const isEmpty = Object.values(formData).some((value) => value === "");
+    return isEmpty;
+  }
+
+  function handleSelection(id: string): void {
+    const selectedCard = products.find((prod) => prod._id === id);
+    if (selectedCard) {
+      setFormData({
+        nome: selectedCard.nome,
+        categoria: selectedCard.categoria,
+        preco: selectedCard.preco,
+        quantidade: selectedCard.quantidade,
+        descricao: selectedCard.descricao,
+        imagem: selectedCard.imagem,
+        nomeImagem: selectedCard.nomeImagem,
+      });
+    }
+  }
+
   return (
     <>
-      <h1 className="text-3xl font-bold text-center p-10">Gerenciador de Estoque</h1>
+      <h1 className="text-3xl font-bold text-center p-10">
+        Gerenciador de Estoque
+      </h1>
       <main className="flex flex-col">
         <div className="flex min-h-screen flex-row items-center justify-around">
           <form onSubmit={handleSubmit}>
@@ -126,7 +144,7 @@ export default function StoreManager() {
                 name="imagem"
                 type="text"
                 placeholder="Caminho da imagem"
-                value={formData.imagem = "https://picsum.photos/400/225"}
+                value={(formData.imagem = "https://picsum.photos/400/225")}
                 onChange={handleChange}
               />
               <InputComponent
@@ -137,21 +155,27 @@ export default function StoreManager() {
                 value={formData.nomeImagem}
                 onChange={handleChange}
               />
-              <button type="submit" className="btn">Registrar</button>
+              <button
+                type="submit"
+                className={`${verifyInput() ? "btn btn-disabled" : "btn"}`}
+              >
+                Registrar
+              </button>
             </div>
           </form>
           <div className="grid grid-col-1 gap-5 w-fit h-fit overflow-y-scroll min-w-96 max-h-screen border-2 border-white rounded-lg p-10">
-            { products.map((product) => (
+            {products.map((product) => (
               <ProductCard
-                key={ product._id }
-                imagePath={ product.imagem }
-                imageAlt={ product.nomeImagem }
-                productTitle={ product.nome }
-                productDescription={ product.descricao }
-                productPrice={ product.preco.toString() }
-                _id={ product._id! }
+                key={product._id}
+                imagePath={product.imagem}
+                imageAlt={product.nomeImagem}
+                productTitle={product.nome}
+                productDescription={product.descricao}
+                productPrice={`R$ ${product.preco.toString()}`}
+                id={product._id!}
+                onClick={() => handleSelection(product._id!)}
               />
-            )) }
+            ))}
           </div>
         </div>
       </main>

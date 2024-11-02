@@ -1,22 +1,27 @@
 // import Image from "next/image";
 
 export default function ProductCard({
-  _id,
+  id,
   imagePath,
   imageAlt,
   productTitle,
   productDescription,
   productPrice,
+  onClick,
 }: {
-  _id: string;
+  id: string;
   imagePath: string;
   imageAlt: string;
   productTitle: string;
   productDescription: string;
   productPrice: string;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
 }) {
   return (
-    <div className="card w-96 overflow-y-scroll bg-base-100 shadow-xl p-2 skeleton">
+    <div 
+      onClick={onClick}
+      className="card w-96 max-h-screen bg-base-100 hover:ring-1 hover:ring-white shadow-xl p-2 cursor-pointer"
+    >
       <figure>
         <img src={imagePath} alt={imageAlt} width={400} height={225} />
       </figure>
@@ -25,7 +30,7 @@ export default function ProductCard({
         <p>{productDescription}</p>
         <p>{productPrice}</p>
       </div>
-      <p className="opacity-30 px-8">ID: {_id}</p>
+      <p className="opacity-30 px-8">ID: {id}</p>
     </div>
   );
 }

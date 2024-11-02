@@ -3,7 +3,6 @@ import IProduct from "../interfaces/IProduct";
 import Product from "../models/ProductModel"; // Modelo do Mongoose
 
 export default class ProductService {
-
   constructor() {
     connectToDatabase();
   }
@@ -30,7 +29,7 @@ export default class ProductService {
   }
 
   // Atualiza um produto existente pelo ID ou cria um novo
-  async save(productData: IProduct | Partial<IProduct>, id?: string) {
+  async save(productData: IProduct, id?: string) {
     if (id)
       return await Product.findByIdAndUpdate(id, productData, {
         new: true,

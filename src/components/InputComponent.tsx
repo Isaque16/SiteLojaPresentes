@@ -13,6 +13,10 @@ export default function InputComponent({
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const verifyInput = (): boolean => {
+    return value.trim() !== "" && value !== "0";
+  };
+
   return (
     <div className="form-control w-full max-w-xs">
       <label className="label">
@@ -24,7 +28,7 @@ export default function InputComponent({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="input input-bordered w-full max-w-xs"
+        className={`input input-bordered w-full max-w-xs ${verifyInput() ? "input-success" : "input-error"}`}
       />
     </div>
   );
