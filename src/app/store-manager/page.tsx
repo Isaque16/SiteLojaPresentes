@@ -25,9 +25,8 @@ export default function StoreManager() {
     }));
   }
 
-  // Função para enviar o formulário
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  // Função para criar novo produto (POST)
+  async function createProduct() {
     try {
       const response = await fetch("/api/produtos", {
         method: "POST",
@@ -35,21 +34,60 @@ export default function StoreManager() {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        setFormData({
-          nome: "",
-          categoria: "",
-          preco: 0,
-          quantidade: 0,
-          descricao: "",
-          imagem: "",
-          nomeImagem: "",
-        });
+      if (response.ok) 
+        console.log("Produto criado com sucesso!");
+      else
+        throw new Error(`Erro ao criar produto: ${response.status}`);
 
-        fetchProducts(); // Atualiza a lista de produtos após adicionar
-      } else throw new Error("Erro ao criar produto!: " + response.status);
     } catch (error) {
-      throw new Error("Erro ao criar produto!: " + error);
+      console.error("Erro ao criar o produto:", error);
+      throw error;
+    }
+  }
+
+  // Função para atualizar produto existente (PUT)
+  async function updateProduct(id: string) {
+    try {
+      const response = await fetch(`/api/produtos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) 
+        console.log("Produto atualizado com sucesso!");
+      else
+        throw new Error(`Erro ao atualizar produto: ${response.status}`);
+
+    } catch (error) {
+      console.error("Erro ao atualizar o produto:", error);
+      throw error;
+    }
+  }
+
+  // Função principal de envio do formulário
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    try {
+      if (formData._id) await updateProduct(formData._id); // Tenta atualizar se um id já estiver no formData
+      else await createProduct(); // Caso contrário, cria um novo produto
+
+      // Limpa o formulário e atualiza a lista de produtos
+      setFormData({
+        nome: "",
+        categoria: "",
+        preco: 0,
+        quantidade: 0,
+        descricao: "",
+        imagem: "",
+        nomeImagem: "",
+      });
+
+      fetchProducts(); // Atualiza a lista de produtos após criar/atualizar
+
+    } catch (error) {
+      console.error("Erro ao enviar o formulário:", error);
+      alert("Erro ao enviar o formulário! Tente novamente.");
     }
   }
 
@@ -76,9 +114,10 @@ export default function StoreManager() {
   }
 
   function handleSelection(id: string): void {
-    const selectedCard = products.find((prod) => prod._id === id);
+    const selectedCard = products.find(prod => prod._id === id);
     if (selectedCard) {
       setFormData({
+        _id: selectedCard._id,
         nome: selectedCard.nome,
         categoria: selectedCard.categoria,
         preco: selectedCard.preco,
