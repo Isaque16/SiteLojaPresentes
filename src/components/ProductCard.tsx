@@ -19,7 +19,7 @@ export default function ProductCard({
 }) {
   return (
     <Link href={`/produtos/${id}`}>
-      <div className="card w-96 max-h-screen bg-base-100 hover:ring-1 hover:ring-white shadow-xl p-2 cursor-pointer">
+      <div className="card w-80 md:w-96 max-h-screen bg-base-100 hover:ring-1 hover:ring-white shadow-xl p-2 cursor-pointer">
         <figure>
           <img src={imagePath} alt={imageAlt} width={400} height={225} />
         </figure>

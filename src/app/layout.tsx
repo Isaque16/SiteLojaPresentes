@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
-        <header className="border-b-2 border-white">
+        <header className="hidden md:block border-b-2 border-white">
           <div className="navbar flex flex-row justify-between bg-base-100">
             <div className="flex-1">
               <Link href={"#"} className="btn btn-ghost text-xl">

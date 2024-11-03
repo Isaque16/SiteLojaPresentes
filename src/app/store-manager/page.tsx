@@ -3,6 +3,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent";
 import ProductCard from "@/components/ProductCard";
 import IProduct from "@/server/interfaces/IProduct";
+import LoadingProducts from "./loading";
 
 export default function StoreManager() {
   const [formData, setFormData] = useState<IProduct>({
@@ -16,6 +17,12 @@ export default function StoreManager() {
   });
 
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
+  const [responseMessage, setResponseMessage] = useState<string>("");
+  useEffect(() => {
+    const timer = setTimeout(() => setResponseMessage(""), 5000);
+    return () => clearTimeout(timer);
+  }, [responseMessage])
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -33,8 +40,9 @@ export default function StoreManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
-      if (response.ok) console.log(response.json());
+      
+      const { message } = await response.json();
+      if (response.ok) setResponseMessage(message);
       else throw new Error(`Erro ao criar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
@@ -51,7 +59,8 @@ export default function StoreManager() {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) console.log(response.json());
+      const { message } = await response.json();
+      if (response.ok) setResponseMessage(message)
       else throw new Error(`Erro ao atualizar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao atualizar o produto:", error);
@@ -87,13 +96,17 @@ export default function StoreManager() {
 
   // Função para buscar os produtos
   async function getProducts(): Promise<void> {
+    setLoadingProducts(true);
     try {
       const response = await fetch("/api/produtos");
       const data = await response.json();
       setProducts(data);
+      setResponseMessage("Produtos carregados com sucesso!")
     } catch (error) {
       console.error(error);
       setProducts([]);
+    } finally {
+      setLoadingProducts(false);
     }
   }
 
@@ -129,7 +142,11 @@ export default function StoreManager() {
         method: "DELETE",
       });
 
-      if (response.ok) getProducts();
+      const { message } = await response.json()
+      if (response.ok)  {
+        getProducts();
+        setResponseMessage(message)
+      }
       else throw new Error(`Erro ao deletar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao deletar o produto:", error);
@@ -137,13 +154,15 @@ export default function StoreManager() {
     }
   }
 
+  if (loadingProducts) 
+    return <LoadingProducts />;
   return (
     <>
       <h1 className="text-3xl font-bold text-center p-10">
         Gerenciador de Estoque
       </h1>
       <main className="flex flex-col">
-        <div className="flex min-h-screen flex-row items-center justify-around">
+        <div className="flex min-h-screen flex-col md:flex-row items-center justify-around">
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col items-start p-5 gap-5">
               <InputComponent
@@ -208,9 +227,10 @@ export default function StoreManager() {
               >
                 Registrar
               </button>
+              <div className="text-info font-bold">{ responseMessage }</div>
             </div>
           </form>
-          <div className="grid grid-col-1 gap-5 w-fit h-fit overflow-y-scroll min-w-96 max-h-screen border-2 border-white rounded-lg p-10">
+          <div className="grid grid-col-1 gap-5 justify-center md:justify-normal md:w-96 w-80 h-fit overflow-y-scroll overflow-x-hidden min-w-80 md:min-w-fit max-h-screen border-2 border-white rounded-lg p-10">
             {products.map((product) => (
               <div
                 key={product._id}

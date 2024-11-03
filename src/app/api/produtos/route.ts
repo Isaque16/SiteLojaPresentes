@@ -6,7 +6,7 @@ const productService = new ProductService();
 
 export async function GET() {
   const products = await productService.listAll();
-  return NextResponse.json(products, { status: 200 });
+  return NextResponse.json(products, { status: 200 }, );
 }
 
 export async function POST(request: Request) {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   try {
     productService.save(productData);
     return NextResponse.json(
-      { message: "Produto criado com sucesso" },
+      { message: "Produto criado com sucesso!" },
       { status: 201 },
     );
   } catch (error) {
