@@ -34,11 +34,8 @@ export default function StoreManager() {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) 
-        console.log("Produto criado com sucesso!");
-      else
-        throw new Error(`Erro ao criar produto: ${response.status}`);
-
+      if (response.ok) console.log(response.json());
+      else throw new Error(`Erro ao criar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
       throw error;
@@ -46,19 +43,16 @@ export default function StoreManager() {
   }
 
   // Função para atualizar produto existente (PUT)
-  async function updateProduct(id: string) {
+  async function updateProduct() {
     try {
-      const response = await fetch(`/api/produtos/${id}`, {
+      const response = await fetch(`/api/produtos/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) 
-        console.log("Produto atualizado com sucesso!");
-      else
-        throw new Error(`Erro ao atualizar produto: ${response.status}`);
-
+      if (response.ok) console.log(response.json());
+      else throw new Error(`Erro ao atualizar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao atualizar o produto:", error);
       throw error;
@@ -69,7 +63,8 @@ export default function StoreManager() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
-      if (formData._id) await updateProduct(formData._id); // Tenta atualizar se um id já estiver no formData
+      if (formData._id)
+        await updateProduct(); // Tenta atualizar se um id já estiver no formData
       else await createProduct(); // Caso contrário, cria um novo produto
 
       // Limpa o formulário e atualiza a lista de produtos
@@ -83,8 +78,7 @@ export default function StoreManager() {
         nomeImagem: "",
       });
 
-      fetchProducts(); // Atualiza a lista de produtos após criar/atualizar
-
+      getProducts(); // Atualiza a lista de produtos após criar/atualizar
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error);
       alert("Erro ao enviar o formulário! Tente novamente.");
@@ -92,7 +86,7 @@ export default function StoreManager() {
   }
 
   // Função para buscar os produtos
-  async function fetchProducts(): Promise<void> {
+  async function getProducts(): Promise<void> {
     try {
       const response = await fetch("/api/produtos");
       const data = await response.json();
@@ -103,9 +97,8 @@ export default function StoreManager() {
     }
   }
 
-  // useEffect para buscar os produtos ao carregar o componente
   useEffect(() => {
-    fetchProducts();
+    getProducts();
   }, []);
 
   function verifyInput(): boolean {
@@ -113,8 +106,8 @@ export default function StoreManager() {
     return isEmpty;
   }
 
-  function handleSelection(id: string): void {
-    const selectedCard = products.find(prod => prod._id === id);
+  function editProduct(id: string): void {
+    const selectedCard = products.find((prod) => prod._id === id);
     if (selectedCard) {
       setFormData({
         _id: selectedCard._id,
@@ -126,6 +119,21 @@ export default function StoreManager() {
         imagem: selectedCard.imagem,
         nomeImagem: selectedCard.nomeImagem,
       });
+    }
+  }
+
+  // Função para deletar um produto (DELETE)
+  async function deleteProduct(id: string) {
+    try {
+      const response = await fetch(`/api/produtos/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) getProducts();
+      else throw new Error(`Erro ao deletar produto: ${response.status}`);
+    } catch (error) {
+      console.error("Erro ao deletar o produto:", error);
+      alert("Erro ao deletar o produto! Tente novamente.");
     }
   }
 
@@ -204,16 +212,34 @@ export default function StoreManager() {
           </form>
           <div className="grid grid-col-1 gap-5 w-fit h-fit overflow-y-scroll min-w-96 max-h-screen border-2 border-white rounded-lg p-10">
             {products.map((product) => (
-              <ProductCard
+              <div
                 key={product._id}
-                imagePath={product.imagem}
-                imageAlt={product.nomeImagem}
-                productTitle={product.nome}
-                productDescription={product.descricao}
-                productPrice={`R$ ${product.preco.toString()}`}
-                id={product._id!}
-                onClick={() => handleSelection(product._id!)}
-              />
+                className="bg-base-300 py-2 rounded-box flex flex-col items-center justify-center gap-2"
+              >
+                <ProductCard
+                  key={product._id}
+                  imagePath={product.imagem}
+                  imageAlt={product.nomeImagem}
+                  productTitle={product.nome}
+                  productDescription={product.descricao}
+                  productPrice={`R$ ${product.preco.toString()}`}
+                  id={product._id!}
+                />
+                <div className="flex flex-row gap-5">
+                  <button
+                    onClick={() => editProduct(product._id!)}
+                    className="btn btn-accent"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => deleteProduct(product._id!)}
+                    className="btn btn-error"
+                  >
+                    Deletar
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>

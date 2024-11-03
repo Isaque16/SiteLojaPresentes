@@ -29,9 +29,9 @@ export default class ProductService {
   }
 
   // Atualiza um produto existente pelo ID ou cria um novo
-  async save(productData: IProduct, id?: string) {
-    if (id)
-      return await Product.findByIdAndUpdate(id, productData, {
+  async save(productData: IProduct) {
+    if (productData._id)
+      return await Product.findByIdAndUpdate(productData._id, productData, {
         new: true,
         upsert: true,
       });
@@ -40,7 +40,7 @@ export default class ProductService {
   }
 
   // Remove um produto pelo ID
-  async remove(id: string): Promise<void> {
-    await Product.findByIdAndDelete(id);
+  async remove(id: string) {
+    return await Product.findByIdAndDelete(id);
   }
 }

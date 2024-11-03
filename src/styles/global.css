@@ -1414,6 +1414,14 @@ html {
   .btn-primary {
     --btn-color: var(--fallback-p);
   }
+
+  .btn-accent {
+    --btn-color: var(--fallback-a);
+  }
+
+  .btn-error {
+    --btn-color: var(--fallback-er);
+  }
 }
 
 @supports (color: color-mix(in oklab, black, black)) {
@@ -1469,6 +1477,26 @@ html {
   .btn-primary {
     --btn-color: var(--p);
   }
+
+  .btn-accent {
+    --btn-color: var(--a);
+  }
+
+  .btn-error {
+    --btn-color: var(--er);
+  }
+}
+
+.btn-accent {
+  --tw-text-opacity: 1;
+  color: var(--fallback-ac,oklch(var(--ac)/var(--tw-text-opacity)));
+  outline-color: var(--fallback-a,oklch(var(--a)/1));
+}
+
+.btn-error {
+  --tw-text-opacity: 1;
+  color: var(--fallback-erc,oklch(var(--erc)/var(--tw-text-opacity)));
+  outline-color: var(--fallback-er,oklch(var(--er)/1));
 }
 
 .btn.glass {
@@ -2273,6 +2301,10 @@ html {
   gap: 1.25rem;
 }
 
+.gap-2 {
+  gap: 0.5rem;
+}
+
 .overflow-y-scroll {
   overflow-y: scroll;
 }
@@ -2312,6 +2344,16 @@ html {
   background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
 }
 
+.bg-base-200 {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
+}
+
+.bg-base-300 {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity)));
+}
+
 .p-10 {
   padding: 2.5rem;
 }
@@ -2324,9 +2366,23 @@ html {
   padding: 1.25rem;
 }
 
+.p-4 {
+  padding: 1rem;
+}
+
 .px-8 {
   padding-left: 2rem;
   padding-right: 2rem;
+}
+
+.py-5 {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .text-center {
