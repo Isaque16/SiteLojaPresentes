@@ -29,11 +29,11 @@ export default class CustomerService {
   }
 
   // Atualiza um cliente existente pelo ID ou cria um novo
-  async save(customerData: ICustomer | Partial<ICustomer>, id?: string) {
-    if (id)
-      return await Customer.findByIdAndUpdate(id, customerData, {
+  async save(customerData: ICustomer | Partial<ICustomer>) {
+    if (customerData._id)
+      return await Customer.findByIdAndUpdate(customerData._id, customerData, {
         new: true,
-        upsert: true,
+        upsert: true
       });
     const newCustomer = new Customer(customerData);
     return await newCustomer.save();

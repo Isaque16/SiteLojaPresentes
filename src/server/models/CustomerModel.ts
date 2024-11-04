@@ -1,29 +1,34 @@
 import mongoose from "mongoose";
 
 const customerSchema = new mongoose.Schema({
-  name: {
+  nome: {
     type: String,
     required: true,
-    trim: true,
+    trim: true
+  },
+  senha: {
+    type: String,
+    required: true
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    trim: true,
+    trim: true
   },
-  phone: {
+  telefone: {
     type: String,
     required: true,
-    trim: true,
+    trim: true
   },
-  adress: {
+  CEP: {
     type: String,
     required: true,
-    trim: true,
-  },
-  purchaseHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+    trim: true
+  }
+  // purchaseHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 });
 
-const Customer = mongoose.model("Customer", customerSchema);
+const Customer =
+  mongoose.models.Cliente || mongoose.model("Cliente", customerSchema);
 export default Customer;

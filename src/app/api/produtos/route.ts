@@ -6,7 +6,7 @@ const productService = new ProductService();
 
 export async function GET() {
   const products = await productService.listAll();
-  return NextResponse.json(products, { status: 200 }, );
+  return NextResponse.json(products, { status: 200 });
 }
 
 export async function POST(request: Request) {
