@@ -12,15 +12,15 @@ export async function GET() {
 export async function POST(request: Request) {
   const productData = await request.json();
   try {
-    productService.save(productData);
+    await productService.save(productData);
     return NextResponse.json(
       { message: "Produto criado com sucesso!" },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     return NextResponse.json(
       { message: `Erro ao criar produto: ${error}` },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -30,6 +30,6 @@ export async function PUT(request: Request) {
   await productService.save(productData);
   return NextResponse.json(
     { message: "Produto atualizado com sucesso!" },
-    { status: 200 },
+    { status: 200 }
   );
 }

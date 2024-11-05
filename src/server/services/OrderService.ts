@@ -1,7 +1,7 @@
 import Order from "../models/OrderModel"; // Modelo Mongoose para o Pedido
-import IProduct from "../interfaces/IProduct";
-import ICustomer from "../interfaces/ICustomer";
-import IOrder from "../interfaces/IOrder";
+import IProduct from "../../interfaces/IProduct";
+import ICustomer from "../../interfaces/ICustomer";
+import IOrder from "../../interfaces/IOrder";
 import connectToDatabase from "../database/connectDB";
 
 export default class OrderService {
@@ -15,14 +15,14 @@ export default class OrderService {
     customer: ICustomer,
     deliveryAddress: string,
     paymentMethod: string,
-    shippingMethod: string,
+    shippingMethod: string
   ) {
     const newOrder = new Order({
       customer,
       products,
       deliveryAddress,
       paymentMethod,
-      shippingMethod,
+      shippingMethod
     });
     return await newOrder.save();
   }
@@ -40,7 +40,7 @@ export default class OrderService {
   // Adiciona um desconto a um pedido
   async applyDiscount(
     orderId: string,
-    discount: number,
+    discount: number
   ): Promise<IOrder | null> {
     return await Order.findByIdAndUpdate(orderId, { discount }, { new: true });
   }
@@ -48,12 +48,12 @@ export default class OrderService {
   // Define a data de entrega do pedido
   async setDeliveryDate(
     orderId: string,
-    deliveryDate: Date,
+    deliveryDate: Date
   ): Promise<IOrder | null> {
     return await Order.findByIdAndUpdate(
       orderId,
       { deliveryDate },
-      { new: true },
+      { new: true }
     );
   }
 

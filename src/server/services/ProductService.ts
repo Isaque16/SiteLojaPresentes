@@ -1,5 +1,5 @@
 import connectToDatabase from "../database/connectDB";
-import IProduct from "../interfaces/IProduct";
+import IProduct from "../../interfaces/IProduct";
 import Product from "../models/ProductModel"; // Modelo do Mongoose
 
 export default class ProductService {
@@ -33,7 +33,7 @@ export default class ProductService {
     if (productData._id)
       return await Product.findByIdAndUpdate(productData._id, productData, {
         new: true,
-        upsert: true,
+        upsert: true
       });
     const newProduct = new Product(productData);
     return await newProduct.save();

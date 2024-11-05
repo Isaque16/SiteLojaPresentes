@@ -1,12 +1,12 @@
 "use client";
 import InputComponent from "@/components/InputComponent";
-import ICustomer from "@/server/interfaces/ICustomer";
+import ICustomer from "@/interfaces/ICustomer";
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useState } from "react";
 
 export default function Login() {
   const router = useRouter();
-  
+
   const [formData, setFormData] = useState<Pick<ICustomer, "nome" | "senha">>({
     nome: "",
     senha: ""
@@ -59,7 +59,11 @@ export default function Login() {
           />
           <button
             type="submit"
-            className={`${Object.values(formData).some((value) => value === "") ? "btn btn-disabled" : "btn"}`}
+            className={`${
+              Object.values(formData).some((value) => value === "")
+                ? "btn btn-disabled"
+                : "btn"
+            }`}
           >
             Registrar
           </button>

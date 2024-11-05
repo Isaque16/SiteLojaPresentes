@@ -11,7 +11,7 @@ export default function InputComponent({
   type: string;
   placeholder: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: React.FocusEvent<HTMLInputElement>) => void;
 }) {
   return (
     <div className="form-control w-full max-w-xs">
@@ -24,7 +24,11 @@ export default function InputComponent({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`input input-bordered w-full max-w-xs ${value.trim() !== "" && value !== "0.00" && value !== "0" ? "input-success" : "input-error"}`}
+        className={`input input-bordered w-full max-w-xs ${
+          value.trim() !== "" && value !== "0.00" && value !== "0"
+            ? "input-success"
+            : "input-error"
+        }`}
       />
     </div>
   );

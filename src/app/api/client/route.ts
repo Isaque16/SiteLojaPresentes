@@ -1,5 +1,5 @@
 "use server";
-import ICustomer from "@/server/interfaces/ICustomer";
+import ICustomer from "@/interfaces/ICustomer";
 import CustomerService from "@/server/services/CustomerService";
 import { NextResponse } from "next/server";
 

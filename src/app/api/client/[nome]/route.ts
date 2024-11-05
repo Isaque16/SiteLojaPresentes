@@ -8,19 +8,17 @@ export async function GET(
   request: Request,
   { params }: { params: { nome: string } }
 ) {
-  const customer = customerService.findByName(params.nome);
-  if (!customer)
-    return NextResponse.json(
-      { message: "Usuário não encontrado!" },
-      { status: 404 }
-    );
-  return NextResponse.json(customer, { status: 200 });
+  const nome = decodeURIComponent(params.nome);
+  const customer = await customerService.findByName(nome);
+  console.log(customer);
+  if (customer.length === 0) return NextResponse.json({ status: 404 });
+  return NextResponse.json({ status: 200 });
 }
 
 export async function DELETE(
   request: Request,
   { params }: { params: { nome: string } }
 ) {
-  customerService.remove(params.nome);
-  return NextResponse.json({ message: "Customer removed successfully" });
+  await customerService.remove(params.nome);
+  return NextResponse.json({ message: "Usuário removido com sucesso" });
 }

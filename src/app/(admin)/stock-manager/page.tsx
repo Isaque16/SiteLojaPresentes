@@ -2,7 +2,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import InputComponent from "../../../components/InputComponent";
 import ProductCard from "@/components/ProductCard";
-import IProduct from "@/server/interfaces/IProduct";
+import IProduct from "@/interfaces/IProduct";
 import LoadingProducts from "./loading";
 
 export default function StoreManager() {
@@ -212,7 +212,11 @@ export default function StoreManager() {
               />
               <button
                 type="submit"
-                className={`${Object.values(formData).some((value) => value === "") ? "btn btn-disabled" : "btn"}`}
+                className={`${
+                  Object.values(formData).some((value) => value === "")
+                    ? "btn btn-disabled"
+                    : "btn"
+                }`}
               >
                 Registrar
               </button>

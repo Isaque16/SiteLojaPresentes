@@ -1,5 +1,5 @@
 import connectToDatabase from "../database/connectDB";
-import ICustomer from "../interfaces/ICustomer";
+import ICustomer from "../../interfaces/ICustomer";
 import Customer from "../models/CustomerModel"; // Modelo do Mongoose
 
 export default class CustomerService {

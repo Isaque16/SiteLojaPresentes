@@ -1,6 +1,6 @@
 "use client";
 import ProductCard from "@/components/ProductCard";
-import IProduct from "@/server/interfaces/IProduct";
+import IProduct from "@/interfaces/IProduct";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
