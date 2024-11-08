@@ -13,8 +13,8 @@ export default class CustomerService {
   }
 
   // Busca clientes pelo nome
-  async findByName(name: string): Promise<ICustomer[]> {
-    return await Customer.find({ name: { $regex: name, $options: "i" } }); // Busca parcial, case-insensitive
+  async findByName(name: string): Promise<ICustomer | null> {
+    return await Customer.findOne({ name: { $regex: name, $options: "i" } }); // Busca parcial, case-insensitive
   }
 
   // Busca um cliente específico pelo ID
@@ -29,7 +29,7 @@ export default class CustomerService {
   }
 
   // Atualiza um cliente existente pelo ID ou cria um novo
-  async save(customerData: ICustomer | Partial<ICustomer>) {
+  async save(customerData: ICustomer) {
     if (customerData._id)
       return await Customer.findByIdAndUpdate(customerData._id, customerData, {
         new: true,

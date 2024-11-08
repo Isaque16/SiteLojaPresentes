@@ -13,7 +13,7 @@ export default class ProductService {
   }
 
   // Filtra produtos por categoria
-  async findByCategory(category: string): Promise<IProduct[]> {
+  async listByCategory(category: string): Promise<IProduct[]> {
     return await Product.find({ categoria: category });
   }
 
