@@ -1,36 +1,33 @@
 "use client";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import InputComponent from "../../../components/InputComponent";
 import ProductCard from "@/components/ProductCard";
 import IProduct from "@/interfaces/IProduct";
 import LoadingProducts from "./loading";
+import handleInput from "@/utils/handleInput";
 
 export default function StoreManager() {
   const [formData, setFormData] = useState<IProduct>({
-    _id: "",
     nome: "",
     categoria: "",
-    preco: 0.0,
-    quantidade: 0.0,
+    preco: 0,
+    quantidade: 0,
     descricao: "",
     imagem: "",
     nomeImagem: ""
   });
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
-  const [responseMessage, setResponseMessage] = useState<string>("");
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [responseMessage, setResponseMessage] = useState("");
   useEffect(() => {
     const timer = setTimeout(() => setResponseMessage(""), 5000);
     return () => clearTimeout(timer);
   }, [responseMessage]);
 
-  function handleInput(e: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  }
+  const isFormValid = useMemo(
+    () => Object.values(formData).every((value) => value !== ""),
+    [formData]
+  );
 
   // Função principal de envio do formulário
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -42,11 +39,10 @@ export default function StoreManager() {
 
       // Limpa o formulário e atualiza a lista de produtos
       setFormData({
-        _id: "",
         nome: "",
         categoria: "",
-        preco: 0.0,
-        quantidade: 0.0,
+        preco: 0,
+        quantidade: 0,
         descricao: "",
         imagem: "",
         nomeImagem: ""
@@ -69,7 +65,7 @@ export default function StoreManager() {
 
       const { message } = await response.json();
       if (response.ok) setResponseMessage(message);
-      else throw new Error(`Erro ao criar produto: ${response.status}`);
+      else throw new Error(`Erro ao criar produto: ${status}`);
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
       throw error;
@@ -162,17 +158,14 @@ export default function StoreManager() {
                       : "text"
                   }
                   placeholder={`Digite ${field} do produto`}
-                  value={formData[field as keyof IProduct]}
-                  onChange={handleInput}
+                  value={formData[field as keyof IProduct]!}
+                  onChange={(e) => handleInput(e, setFormData)}
                 />
               ))}
               <button
                 type="submit"
-                className={`${
-                  Object.values(formData).some((value) => value === "")
-                    ? "btn btn-disabled"
-                    : "btn"
-                }`}
+                className={`text-xl btn ${!isFormValid && "btn-disabled"}`}
+                disabled={!isFormValid}
               >
                 Registrar
               </button>
@@ -180,7 +173,10 @@ export default function StoreManager() {
             </div>
           </form>
 
-          <div className="grid grid-col-1 gap-5 justify-center md:justify-normal md:w-96 w-80 h-fit overflow-y-scroll overflow-x-hidden min-w-80 md:min-w-fit max-h-screen border-2 border-white rounded-lg p-10">
+          <div
+            id="products_container"
+            className="grid grid-col-1 gap-5 justify-center md:justify-normal md:w-96 w-80 h-fit overflow-y-scroll overflow-x-hidden min-w-80 md:min-w-fit max-h-screen border-2 border-white rounded-lg p-10"
+          >
             {loadingProducts ? (
               <LoadingProducts />
             ) : (

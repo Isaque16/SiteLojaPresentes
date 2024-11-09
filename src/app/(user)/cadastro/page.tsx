@@ -102,9 +102,7 @@ export default function Cadastro() {
 
           <button
             type="submit"
-            className={`text-xl btn ${
-              !isFormValid && "btn-disabled cursor-not-allowed"
-            }`}
+            className={`text-xl btn ${!isFormValid && "btn-disabled"}`}
             disabled={!isFormValid}
           >
             {loadingUsers ? <LoadingSvg /> : "Registrar"}

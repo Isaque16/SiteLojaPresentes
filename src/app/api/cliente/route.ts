@@ -19,5 +19,5 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   const customerData: ICustomer = await req.json();
   await service.save(customerData);
-  return NextResponse.json({ message: "Customer updated successfully" });
+  return NextResponse.json({ message: "Cliente atualizado com sucesso!" });
 }

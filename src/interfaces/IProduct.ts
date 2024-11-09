@@ -1,5 +1,5 @@
 export default interface IProduct {
-  _id: string;
+  readonly _id?: string;
   nome: string;
   categoria: string;
   preco: number;

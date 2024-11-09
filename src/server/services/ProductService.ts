@@ -30,13 +30,12 @@ export default class ProductService {
 
   // Atualiza um produto existente pelo ID ou cria um novo
   async save(productData: IProduct) {
-    if (productData._id)
+    if (productData._id) {
       return await Product.findByIdAndUpdate(productData._id, productData, {
-        new: true,
-        upsert: true
+        new: true
       });
-    const newProduct = new Product(productData);
-    return await newProduct.save();
+    }
+    return await Product.create(productData);
   }
 
   // Remove um produto pelo ID
