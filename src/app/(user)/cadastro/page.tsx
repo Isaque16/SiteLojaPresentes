@@ -7,6 +7,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 
 export default function Cadastro() {
   const router = useRouter();
+
   const [formData, setFormData] = useState<
     Pick<ICustomer, "nome" | "senha" | "email" | "telefone" | "CEP">
   >({
@@ -17,7 +18,7 @@ export default function Cadastro() {
     CEP: ""
   });
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
-  const [responseMessage, setResponseMessage] = useState<string[]>([]);
+  const [responseMessage, setResponseMessage] = useState<string[]>([""]);
 
   function handleInput(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -30,12 +31,12 @@ export default function Cadastro() {
   async function someUserNames(): Promise<boolean> {
     const nome = encodeURIComponent(formData.nome);
     try {
-      const response = await fetch(`/api/client/${nome}`);
-      const { status } = await response.json();
-      return status == 200;
+      const response = await fetch(`/api/cliente/${nome}`);
+      const responseData = await response.json();
+      return responseData !== null;
     } catch (error) {
       console.error("Erro ao buscar usuário:", error);
-      return false;
+      return true;
     }
   }
 
@@ -45,24 +46,23 @@ export default function Cadastro() {
     setLoadingUsers(true);
     try {
       if (await someUserNames()) {
-        setResponseMessage(() => {
-          const newArray = [...responseMessage];
-          newArray[0] = "Este nome já está em uso";
-          return newArray;
-        });
+        setResponseMessage((prev) => [
+          "Este nome já está em uso",
+          ...prev.slice(1)
+        ]);
         setFormData({
           ...formData,
           nome: ""
         });
         return;
       }
-      const response = await fetch("/api/client", {
+      const response = await fetch("/api/cliente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
 
-      if (response.ok) router.replace("/");
+      if (response.status) router.replace("/");
       else throw new Error(`Erro ao criar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
@@ -88,7 +88,7 @@ export default function Cadastro() {
               placeholder="Digite seu nome"
               onChange={handleInput}
             />
-            <p className="text-error">{responseMessage}</p>
+            <p className="text-error">{responseMessage[0]}</p>
             <InputComponent
               label="Senha"
               name="senha"
@@ -97,7 +97,7 @@ export default function Cadastro() {
               placeholder="Crie uma senha"
               onChange={handleInput}
             />
-            <p className="text-error">{responseMessage}</p>
+            <p className="text-error">{responseMessage[1]}</p>
             <InputComponent
               label="E-mail"
               name="email"
@@ -106,7 +106,7 @@ export default function Cadastro() {
               placeholder="Seu email"
               onChange={handleInput}
             />
-            <p className="text-error">{responseMessage}</p>
+            <p className="text-error">{responseMessage[2]}</p>
             <InputComponent
               label="Telefone"
               name="telefone"
@@ -115,7 +115,7 @@ export default function Cadastro() {
               placeholder="Seu telefone"
               onChange={handleInput}
             />
-            <p className="text-error">{responseMessage}</p>
+            <p className="text-error">{responseMessage[3]}</p>
             <InputComponent
               label="CEP"
               name="CEP"
@@ -124,7 +124,7 @@ export default function Cadastro() {
               placeholder="Seu CEP"
               onChange={handleInput}
             />
-            <p className="text-error">{responseMessage}</p>
+            <p className="text-error">{responseMessage[4]}</p>
             <button
               type="submit"
               className={`text-xl ${

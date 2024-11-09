@@ -18,7 +18,7 @@ describe("CustomerService", () => {
   };
 
   beforeEach(() => {
-    service = new CustomerService();
+    service = new CustomerService() as jest.Mocked<CustomerService>;
   });
 
   it("Should list all customers", async () => {
@@ -36,10 +36,10 @@ describe("CustomerService", () => {
   it("Should find a customer by name", async () => {
     (Customer.findOne as jest.Mock).mockResolvedValue(mockCustomer);
 
-    const result = await service.findByName("Cliente Teste");
+    const result = await service.findByName("cliente teste");
     expect(result).toEqual(mockCustomer);
     expect(Customer.findOne).toHaveBeenCalledWith({
-      name: { $regex: "Cliente Teste", $options: "i" }
+      nome: { $regex: "cliente teste", $options: "i" }
     });
   });
 

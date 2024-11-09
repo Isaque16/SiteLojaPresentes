@@ -2,23 +2,21 @@
 import { NextResponse } from "next/server";
 import CustomerService from "@/server/services/CustomerService";
 
-const customerService = new CustomerService();
+const service = new CustomerService();
 
 export async function GET(
-  request: Request,
+  req: Request,
   { params }: { params: { nome: string } }
 ) {
   const nome = decodeURIComponent(params.nome);
-  const customer = await customerService.findByName(nome);
-  console.log(customer);
-  if (customer.length === 0) return NextResponse.json({ status: 404 });
-  return NextResponse.json({ status: 200 });
+  const customer = await service.findByName(nome);
+  return NextResponse.json(customer, { status: 200 });
 }
 
 export async function DELETE(
-  request: Request,
+  req: Request,
   { params }: { params: { nome: string } }
 ) {
-  await customerService.remove(params.nome);
+  await service.remove(params.nome);
   return NextResponse.json({ message: "Usuário removido com sucesso" });
 }

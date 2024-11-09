@@ -13,8 +13,8 @@ export default class CustomerService {
   }
 
   // Busca clientes pelo nome
-  async findByName(name: string): Promise<ICustomer | null> {
-    return await Customer.findOne({ name: { $regex: name, $options: "i" } }); // Busca parcial, case-insensitive
+  async findByName(nome: string): Promise<ICustomer | null> {
+    return await Customer.findOne({ nome: { $regex: nome, $options: "i" } }); // Busca parcial, case-insensitive
   }
 
   // Busca um cliente específico pelo ID

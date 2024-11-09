@@ -4,7 +4,8 @@ const customerSchema = new mongoose.Schema({
   nome: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    unique: true
   },
   senha: {
     type: String,
@@ -13,7 +14,6 @@ const customerSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     trim: true
   },
   telefone: {

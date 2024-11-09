@@ -1,18 +1,19 @@
 "use server";
-import ProductService from "@/server/services/ProductService";
 import { NextResponse } from "next/server";
+import ProductService from "../../../server/services/ProductService";
+import IProduct from "@/interfaces/IProduct";
 
-const productService = new ProductService();
+const service = new ProductService();
 
 export async function GET() {
-  const products = await productService.listAll();
+  const products: IProduct[] = await service.listAll();
   return NextResponse.json(products, { status: 200 });
 }
 
-export async function POST(request: Request) {
-  const productData = await request.json();
+export async function POST(req: Request) {
+  const productData: IProduct = await req.json();
   try {
-    await productService.save(productData);
+    await service.save(productData);
     return NextResponse.json(
       { message: "Produto criado com sucesso!" },
       { status: 201 }
@@ -25,9 +26,9 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
-  const productData = await request.json();
-  await productService.save(productData);
+export async function PUT(req: Request) {
+  const productData = await req.json();
+  await service.save(productData);
   return NextResponse.json(
     { message: "Produto atualizado com sucesso!" },
     { status: 200 }
