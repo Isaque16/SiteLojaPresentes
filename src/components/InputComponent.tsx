@@ -10,7 +10,7 @@ export default function InputComponent({
   name: string;
   type: string;
   placeholder: string;
-  value: string;
+  value: string | number;
   onChange: (e: React.FocusEvent<HTMLInputElement>) => void;
 }) {
   return (
@@ -24,11 +24,7 @@ export default function InputComponent({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`input input-bordered w-full max-w-xs ${
-          value.trim() !== "" && value !== "0.00" && value !== "0"
-            ? "input-success"
-            : "input-error"
-        }`}
+        className={"input input-bordered w-full max-w-xs"}
       />
     </div>
   );

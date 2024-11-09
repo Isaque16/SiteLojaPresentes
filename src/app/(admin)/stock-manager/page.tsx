@@ -114,18 +114,7 @@ export default function StoreManager() {
 
   function editProduct(id: string): void {
     const selectedCard = products.find((prod) => prod._id === id);
-    if (selectedCard) {
-      setFormData({
-        _id: selectedCard._id,
-        nome: selectedCard.nome,
-        categoria: selectedCard.categoria,
-        preco: selectedCard.preco,
-        quantidade: selectedCard.quantidade,
-        descricao: selectedCard.descricao,
-        imagem: selectedCard.imagem,
-        nomeImagem: selectedCard.nomeImagem
-      });
-    }
+    if (selectedCard) setFormData(selectedCard);
   }
 
   // Função para deletar um produto (DELETE)
@@ -154,62 +143,29 @@ export default function StoreManager() {
         <div className="flex min-h-screen flex-col md:flex-row items-center justify-around">
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col items-start p-5 gap-5">
-              <InputComponent
-                label="Nome"
-                name="nome"
-                type="text"
-                placeholder="Nome do produto"
-                value={formData.nome}
-                onChange={handleInput}
-              />
-              <InputComponent
-                label="Categoria"
-                name="categoria"
-                type="text"
-                placeholder="Categoria do produto"
-                value={formData.categoria}
-                onChange={handleInput}
-              />
-              <InputComponent
-                label="Preço"
-                name="preco"
-                type="number"
-                placeholder="Preço do produto"
-                value={formData.preco.toString()}
-                onChange={handleInput}
-              />
-              <InputComponent
-                label="Quantidade"
-                name="quantidade"
-                type="number"
-                placeholder="Quantidade do produto"
-                value={formData.quantidade.toString()}
-                onChange={handleInput}
-              />
-              <InputComponent
-                label="Descrição"
-                name="descricao"
-                type="text"
-                placeholder="Descrição do produto"
-                value={formData.descricao}
-                onChange={handleInput}
-              />
-              <InputComponent
-                label="Imagem"
-                name="imagem"
-                type="text"
-                placeholder="Caminho da imagem"
-                value={(formData.imagem = "https://picsum.photos/400/225")}
-                onChange={handleInput}
-              />
-              <InputComponent
-                label="Nome da imagem"
-                name="nomeImagem"
-                type="text"
-                placeholder="Nome do produto"
-                value={formData.nomeImagem}
-                onChange={handleInput}
-              />
+              {[
+                "nome",
+                "categoria",
+                "preco",
+                "quantidade",
+                "descricao",
+                "imagem",
+                "nomeImagem"
+              ].map((field) => (
+                <InputComponent
+                  key={field}
+                  label={field.charAt(0).toUpperCase() + field.slice(1)}
+                  name={field}
+                  type={
+                    field === "preco" || field === "quantidade"
+                      ? "number"
+                      : "text"
+                  }
+                  placeholder={`Digite ${field} do produto`}
+                  value={formData[field as keyof IProduct]}
+                  onChange={handleInput}
+                />
+              ))}
               <button
                 type="submit"
                 className={`${
@@ -223,6 +179,7 @@ export default function StoreManager() {
               <div className="text-info font-bold">{responseMessage}</div>
             </div>
           </form>
+
           <div className="grid grid-col-1 gap-5 justify-center md:justify-normal md:w-96 w-80 h-fit overflow-y-scroll overflow-x-hidden min-w-80 md:min-w-fit max-h-screen border-2 border-white rounded-lg p-10">
             {loadingProducts ? (
               <LoadingProducts />
@@ -233,7 +190,6 @@ export default function StoreManager() {
                   className="bg-base-300 py-2 rounded-box flex flex-col items-center justify-center gap-2"
                 >
                   <ProductCard
-                    key={product._id}
                     imagePath={product.imagem}
                     imageAlt={product.nomeImagem}
                     productTitle={product.nome}

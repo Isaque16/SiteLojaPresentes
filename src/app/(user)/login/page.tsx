@@ -2,8 +2,10 @@
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
 import LoadingSvg from "@/svg_components/Loading";
+import handleInput from "@/utils/handleInput";
+import someUserNames from "@/utils/someUserName";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 
 export default function Cadastro() {
   const router = useRouter();
@@ -15,37 +17,15 @@ export default function Cadastro() {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [responseMessage, setResponseMessage] = useState("");
 
-  function handleInput(e: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  }
-
-  async function someUserNames(): Promise<boolean> {
-    const nome = encodeURIComponent(formData.nome);
-    try {
-      const response = await fetch(`/api/cliente/${nome}`);
-      const responseData = await response.json();
-      return responseData !== null;
-    } catch (error) {
-      console.error("Erro ao buscar usuário:", error);
-      return true;
-    }
-  }
-
   // Função para criar novo usuário (POST)
   async function loginUser(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoadingUsers(true);
+    const userExists = await someUserNames(formData.nome);
     try {
-      if (!(await someUserNames())) {
+      if (!userExists) {
         setResponseMessage("Nome ou senha incorreto");
-        setFormData({
-          nome: "",
-          senha: ""
-        });
+        setFormData({ nome: "", senha: "" });
         return;
       }
 
@@ -62,7 +42,7 @@ export default function Cadastro() {
     <>
       <main>
         <div className="text-3xl font-bold text-center p-10">
-          <h1>Login</h1>
+          <h1>Bem vindo(a) de volta!</h1>
         </div>
         <div className="flex min-h-screen flex-col items-center">
           <p className="text-error">{responseMessage}</p>
@@ -73,7 +53,7 @@ export default function Cadastro() {
               type="text"
               value={formData.nome}
               placeholder="Digite seu nome"
-              onChange={handleInput}
+              onChange={(e) => handleInput(e, setFormData)}
             />
             <InputComponent
               label="Senha"
@@ -81,17 +61,16 @@ export default function Cadastro() {
               type="password"
               value={formData.senha}
               placeholder="Crie uma senha"
-              onChange={handleInput}
+              onChange={(e) => handleInput(e, setFormData)}
             />
             <button
               type="submit"
-              className={`text-xl ${
-                Object.values(formData).some((value) => value === "")
-                  ? "btn btn-disabled"
-                  : "btn"
+              className={`text-xl btn ${
+                Object.values(formData).some((value) => value === "") &&
+                "btn btn-disabled"
               }`}
             >
-              {loadingUsers ? <LoadingSvg /> : "Login"}
+              {loadingUsers ? <LoadingSvg /> : "Entrar"}
             </button>
           </form>
         </div>
