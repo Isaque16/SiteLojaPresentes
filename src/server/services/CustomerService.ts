@@ -22,12 +22,6 @@ export default class CustomerService {
     return await Customer.findById(id);
   }
 
-  // Verifica se um cliente já está cadastrado pelo email
-  async checkByEmail(email: string): Promise<boolean> {
-    const customer = await Customer.findOne({ email });
-    return !!customer;
-  }
-
   // Atualiza um cliente existente pelo ID ou cria um novo
   async save(customerData: ICustomer) {
     if (customerData._id)
@@ -42,5 +36,11 @@ export default class CustomerService {
   // Remove um cliente pelo ID
   async remove(id: string): Promise<void> {
     await Customer.findByIdAndDelete(id);
+  }
+
+  // Verifica se um cliente já está cadastrado pelo email
+  async checkByEmail(email: string): Promise<boolean> {
+    const customer = await Customer.findOne({ email });
+    return !!customer;
   }
 }

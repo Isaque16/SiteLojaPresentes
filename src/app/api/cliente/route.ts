@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 const service = new CustomerService();
 
 export async function GET() {
-  const customers: ICustomer[] = await service.listAll();
+  const customers = await service.listAll();
   return NextResponse.json(customers, { status: 200 });
 }
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const customerData = await req.json();
+  const customerData: ICustomer = await req.json();
   await service.save(customerData);
   return NextResponse.json({ message: "Customer updated successfully" });
 }

@@ -1,5 +1,6 @@
 "use server";
 import ProductService from "@/server/services/ProductService";
+import { NextResponse } from "next/server";
 
 const service = new ProductService();
 
@@ -9,11 +10,11 @@ export async function GET(
 ) {
   const product = await service.findById(params.id);
   if (!product)
-    return Response.json(
+    return NextResponse.json(
       { message: "Produto não encontrado!" },
       { status: 404 }
     );
-  return Response.json(product, { status: 200 });
+  return NextResponse.json(product, { status: 200 });
 }
 
 export async function DELETE(
@@ -21,7 +22,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   await service.remove(params.id);
-  return Response.json(
+  return NextResponse.json(
     { message: "Produto removido com sucesso!" },
     { status: 200 }
   );

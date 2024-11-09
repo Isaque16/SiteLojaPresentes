@@ -6,7 +6,7 @@ import IProduct from "@/interfaces/IProduct";
 const service = new ProductService();
 
 export async function GET() {
-  const products: IProduct[] = await service.listAll();
+  const products = await service.listAll();
   return NextResponse.json(products, { status: 200 });
 }
 
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const productData = await req.json();
+  const productData: IProduct = await req.json();
   await service.save(productData);
   return NextResponse.json(
     { message: "Produto atualizado com sucesso!" },
