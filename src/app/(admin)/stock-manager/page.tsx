@@ -190,7 +190,7 @@ export default function StoreManager() {
                     imageAlt={product.nomeImagem}
                     productTitle={product.nome}
                     productDescription={product.descricao}
-                    productPrice={`R$ ${product.preco.toString()}`}
+                    productPrice={product.preco.toString()}
                     id={product._id!}
                   />
                   <div className="flex flex-row gap-5">

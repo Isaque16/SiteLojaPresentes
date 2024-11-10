@@ -1,45 +1,61 @@
-import connectToDatabase from "../database/connectDB";
 import IProduct from "../../interfaces/IProduct";
 import Product from "../models/ProductModel"; // Modelo do Mongoose
 
 export default class ProductService {
-  constructor() {
-    connectToDatabase();
-  }
-
-  // Lista todos os produtos do banco de dados
-  async listAll(): Promise<IProduct[]> {
-    return await Product.find();
-  }
-
-  // Filtra produtos por categoria
-  async listByCategory(category: string): Promise<IProduct[]> {
-    return await Product.find({ categoria: category });
-  }
-
-  // Encontra um produto por ID
-  async findById(id: string): Promise<IProduct | null> {
-    return await Product.findById(id);
-  }
-
-  // Verifica se um produto está em estoque
-  async checkStock(id: string): Promise<boolean> {
-    const product = await this.findById(id);
-    return product ? product.quantidade > 0 : false;
-  }
-
-  // Atualiza um produto existente pelo ID ou cria um novo
-  async save(productData: IProduct) {
-    if (productData._id) {
-      return await Product.findByIdAndUpdate(productData._id, productData, {
-        new: true
-      });
+  async getAllProducts(): Promise<IProduct[]> {
+    try {
+      return await Product.find();
+    } catch (error) {
+      throw new Error(`Erro ao listar os produtos: ${error}`);
     }
-    return await Product.create(productData);
   }
 
-  // Remove um produto pelo ID
-  async remove(id: string) {
-    return await Product.findByIdAndDelete(id);
+  async filterProductsByCategory(category: string): Promise<IProduct[]> {
+    try {
+      return await Product.find({ categoria: category });
+    } catch (error) {
+      throw new Error(`Erro ao filtrar produtos pela categoria: ${error}`);
+    }
+  }
+
+  async findProductById(id: string): Promise<IProduct | null> {
+    try {
+      return await Product.findById(id);
+    } catch (error) {
+      throw new Error(`Erro ao encontrar o produto: ${error}`);
+    }
+  }
+
+  async checkStock(id: string): Promise<boolean> {
+    try {
+      const product = await this.findProductById(id);
+      return product ? product.quantidade > 0 : false;
+    } catch (error) {
+      throw new Error(`Erro ao verificar o estoque do produto: ${error}`);
+    }
+  }
+
+  async saveProduct(productData: IProduct): Promise<IProduct | null> {
+    try {
+      if (productData._id) {
+        return await Product.findByIdAndUpdate(productData._id, productData, {
+          new: true
+        });
+      }
+      return await Product.create(productData);
+    } catch (error) {
+      throw new Error(`Erro ao salvar o produto: ${error}`);
+    }
+  }
+
+  async removeProductById(id: string): Promise<boolean> {
+    try {
+      const product = await this.findProductById(id);
+      if (!product) return false;
+      await Product.findByIdAndDelete(id);
+      return true;
+    } catch (error) {
+      throw new Error(`Erro ao remover o produto: ${error}`);
+    }
   }
 }

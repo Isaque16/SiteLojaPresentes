@@ -1,18 +1,19 @@
 import ICustomer from "./ICustomer";
 import IProduct from "./IProduct";
 
+type StatusType = "pendente" | "preparando" | "a caminho" | "entregue";
+
 export default interface IOrder {
-  id: string;
-  customer: ICustomer;
-  products: IProduct[];
-  totalValue: number;
-  status: string; // Valor padrão inicial
-  orderDate: Date;
-  deliveryDate?: Date;
-  deliveryAddress: string;
-  paymentMethod: string;
-  shippingCost: number;
-  discount: number;
-  shippingMethod: string;
-  notes?: string;
+  id?: string;
+  cliente: ICustomer;
+  produtos: IProduct[];
+  valorTotal: number;
+  status: StatusType;
+  enderecoEntrega: string;
+  formaPagamento: string;
+  custoEntrega: number;
+  disconto?: number;
+  formaEntrega: string;
+  dataPedido: Date;
+  dataEntrega?: Date;
 }

@@ -1,15 +1,27 @@
-import Order from "../models/OrderModel"; // Modelo Mongoose para o Pedido
+import Order from "../models/OrderModel";
 import IProduct from "../../interfaces/IProduct";
 import ICustomer from "../../interfaces/ICustomer";
 import IOrder from "../../interfaces/IOrder";
-import connectToDatabase from "../database/connectDB";
 
 export default class OrderService {
-  constructor() {
-    connectToDatabase();
+  async getAllOrders(): Promise<IOrder[]> {
+    try {
+      return await Order.find();
+    } catch (error) {
+      console.error("Erro ao listar pedidos:", error);
+      throw error;
+    }
   }
 
-  // Cria um novo pedido e o salva no banco de dados
+  async findOrderById(id: string): Promise<IOrder | null> {
+    try {
+      return await Order.findById(id);
+    } catch (error) {
+      console.error("Erro ao buscar pedido:", error);
+      throw error;
+    }
+  }
+
   async createOrder(
     products: IProduct[],
     customer: ICustomer,
@@ -17,64 +29,82 @@ export default class OrderService {
     paymentMethod: string,
     shippingMethod: string
   ) {
-    const newOrder = new Order({
-      customer,
-      products,
-      deliveryAddress,
-      paymentMethod,
-      shippingMethod
-    });
-    return await newOrder.save();
+    try {
+      return await Order.create({
+        customer,
+        products,
+        deliveryAddress,
+        paymentMethod,
+        shippingMethod
+      });
+    } catch (error) {
+      console.error("Erro ao criar pedido:", error);
+      throw error;
+    }
   }
 
-  // Lista todos os pedidos
-  async listAll(): Promise<IOrder[]> {
-    return await Order.find();
-  }
-
-  // Busca um pedido pelo ID
-  async findById(id: string): Promise<IOrder | null> {
-    return await Order.findById(id);
-  }
-
-  // Adiciona um desconto a um pedido
   async applyDiscount(
     orderId: string,
     discount: number
   ): Promise<IOrder | null> {
-    return await Order.findByIdAndUpdate(orderId, { discount }, { new: true });
+    try {
+      return await Order.findByIdAndUpdate(
+        orderId,
+        { discount },
+        { new: true }
+      );
+    } catch (error) {
+      console.error("Erro ao aplicar desconto:", error);
+      throw error;
+    }
   }
 
-  // Define a data de entrega do pedido
   async setDeliveryDate(
     orderId: string,
     deliveryDate: Date
   ): Promise<IOrder | null> {
-    return await Order.findByIdAndUpdate(
-      orderId,
-      { deliveryDate },
-      { new: true }
-    );
-  }
-
-  // Atualiza o status de um pedido
-  async updateStatus(orderId: string, status: string): Promise<IOrder | null> {
-    return await Order.findByIdAndUpdate(orderId, { status }, { new: true });
-  }
-
-  // Define o custo de envio e recalcula o valor total
-  async updateShippingCost(orderId: string, shippingCost: number) {
-    const updatedOrder = await Order.findById(orderId);
-    if (updatedOrder) {
-      updatedOrder.custoEnvio = shippingCost;
-      return await updatedOrder.save();
+    try {
+      return await Order.findByIdAndUpdate(
+        orderId,
+        { deliveryDate },
+        { new: true }
+      );
+    } catch (error) {
+      console.error("Erro ao definir data de entrega:", error);
+      throw error;
     }
-    return null;
   }
 
-  // Remove um pedido pelo ID
-  async delete(orderId: string): Promise<boolean> {
-    const result = await Order.findByIdAndDelete(orderId);
-    return result !== null;
+  async updateStatus(orderId: string, status: string): Promise<IOrder | null> {
+    try {
+      return await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+    } catch (error) {
+      console.error("Erro ao atualizar status do pedido:", error);
+      throw error;
+    }
+  }
+
+  async updateShippingCost(orderId: string, shippingCost: number) {
+    try {
+      const order = await Order.findById(orderId);
+      if (order) {
+        order.custoEnvio = shippingCost;
+        return await order.save();
+      }
+      return null;
+    } catch (error) {
+      console.error("Erro ao atualizar custo de envio:", error);
+      throw error;
+    }
+  }
+
+  async removeOrder(orderId: string): Promise<boolean> {
+    try {
+      const result = await Order.findByIdAndDelete(orderId);
+      return result !== null;
+    } catch (error) {
+      console.error("Erro ao deletar pedido:", error);
+      throw error;
+    }
   }
 }

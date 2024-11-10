@@ -38,7 +38,7 @@ export default function Catalogo() {
             imageAlt={product.nome}
             productTitle={product.nome}
             productDescription={product.descricao}
-            productPrice={`${product.preco}`}
+            productPrice={product.preco.toString()}
             id={product._id!}
           />
         ))}
