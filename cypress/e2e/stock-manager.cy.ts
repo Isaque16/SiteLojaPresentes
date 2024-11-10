@@ -26,11 +26,17 @@ describe("Stock Manager", () => {
 
   it("should update a product", () => {
     cy.get("button").contains("Editar").last().click();
-    cy.get("input[name='descricao']").clear().type("Test Description Updated");
+    cy.get("input[name='descricao']")
+      .clear()
+      .type(
+        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis quo dolor incidunt vel inventore nostrum officia mollitia perspiciatis in excepturi optio, consectetur tenetur aliquam commodi a error adipisci delectus molestias."
+      );
     cy.get("button[type='submit']").click();
 
     // Verifica se a descrição foi atualizada
-    cy.contains("Test Description Updated").should("exist");
+    cy.contains(
+      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis quo dolor incidunt vel inventore nostrum officia mollitia perspiciatis in excepturi optio, consectetur tenetur aliquam commodi a error adipisci delectus molestias."
+    ).should("exist");
     cy.get("div.text-info").should(
       "contain.text",
       "Produto atualizado com sucesso!"
