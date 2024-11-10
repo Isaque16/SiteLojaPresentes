@@ -17,7 +17,10 @@ describe("Stock Manager", () => {
     cy.get("input[name='nomeImagem']").type("Test Image");
     cy.get("button[type='submit']").click();
 
-    cy.get("div.text-info").contains("Produto criado com sucesso!");
+    cy.get("div.text-info").should(
+      "contain.text",
+      "Produto criado com sucesso!"
+    );
     cy.contains("Test Product").should("exist"); // Verifica se o produto foi adicionado à lista
   });
 
@@ -28,11 +31,17 @@ describe("Stock Manager", () => {
 
     // Verifica se a descrição foi atualizada
     cy.contains("Test Description Updated").should("exist");
-    cy.get("div.text-info").contains("Produto atualizado com sucesso!");
+    cy.get("div.text-info").should(
+      "contain.text",
+      "Produto atualizado com sucesso!"
+    );
   });
 
   it("should delete a product", () => {
     cy.get("button").contains("Deletar").last().click();
-    cy.get("div.text-info").contains("Produto removido com sucesso!");
+    cy.get("div.text-info").should(
+      "contain.text",
+      "Produto removido com sucesso!"
+    );
   });
 });
