@@ -13,7 +13,7 @@ describe("Stock Manager", () => {
     cy.get("input[name='preco']").clear().type("10");
     cy.get("input[name='quantidade']").clear().type("10");
     cy.get("input[name='descricao']").type("Test Description");
-    cy.get("input[name='imagem']").type("test.jpg");
+    cy.get("input[name='imagem']").type("https://picsum.photos/400/225");
     cy.get("input[name='nomeImagem']").type("Test Image");
     cy.get("button[type='submit']").click();
 
@@ -21,18 +21,18 @@ describe("Stock Manager", () => {
     cy.contains("Test Product").should("exist"); // Verifica se o produto foi adicionado à lista
   });
 
-  // it("should update a product", () => {
-  //   cy.get("button").contains("Editar").click();
-  //   cy.get("input[name='descricao']").clear().type("Test Description Updated");
-  //   cy.get("button[type='submit']").click();
+  it("should update a product", () => {
+    cy.get("button").contains("Editar").last().click();
+    cy.get("input[name='descricao']").clear().type("Test Description Updated");
+    cy.get("button[type='submit']").click();
 
-  //   // Verifica se a descrição foi atualizada
-  //   cy.contains("Test Description Updated").should("exist");
-  //   cy.get("div.text-info").contains("Produto atualizado com sucesso!");
-  // });
+    // Verifica se a descrição foi atualizada
+    cy.contains("Test Description Updated").should("exist");
+    cy.get("div.text-info").contains("Produto atualizado com sucesso!");
+  });
 
-  // it("should delete a product", () => {
-  //   cy.get("button").contains("Deletar").click();
-  //   cy.get("div.text-info").contains("Produto removido com sucesso!");
-  // });
+  it("should delete a product", () => {
+    cy.get("button").contains("Deletar").last().click();
+    cy.get("div.text-info").contains("Produto removido com sucesso!");
+  });
 });
