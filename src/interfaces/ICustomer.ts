@@ -1,7 +1,7 @@
 // import IOrder from "./IOrder";
 
 export default interface ICustomer {
-  _id: string;
+  _id?: string;
   nome: string;
   senha: string;
   email: string;

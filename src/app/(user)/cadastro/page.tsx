@@ -10,9 +10,7 @@ import { FormEvent, useState, useMemo } from "react";
 export default function Cadastro() {
   const router = useRouter();
 
-  const [formData, setFormData] = useState<
-    Pick<ICustomer, "nome" | "senha" | "email" | "telefone" | "CEP">
-  >({
+  const [formData, setFormData] = useState<ICustomer>({
     nome: "",
     senha: "",
     email: "",
@@ -21,9 +19,7 @@ export default function Cadastro() {
   });
 
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
-  const [responseMessage, setResponseMessage] = useState<{
-    [key: string]: string;
-  }>({
+  const [responseMessage, setResponseMessage] = useState<ICustomer>({
     nome: "",
     senha: "",
     email: "",
@@ -92,7 +88,7 @@ export default function Cadastro() {
                 label={field.charAt(0).toUpperCase() + field.slice(1)}
                 name={field}
                 type={field === "senha" ? "password" : "text"}
-                value={formData[field]}
+                value={formData[field]!}
                 placeholder={`Digite seu ${field}`}
                 onChange={(e) => handleInput(e, setFormData)}
               />
