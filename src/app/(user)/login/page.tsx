@@ -1,7 +1,7 @@
 "use client";
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
-import LoadingSvg from "@/svg_components/Loading";
+import LoadingSvg from "@/svg_components/LoadingSvg";
 import handleInput from "@/utils/handleInput";
 import someUserNames from "@/utils/someUserName";
 import { useRouter } from "next/navigation";

@@ -67,7 +67,7 @@ export default function Produto() {
           </div>
           <div className="flex flex-col gap-5 p-4">
             <Link
-              href={"#"}
+              href={"/cesta/"}
               className="bg-base-100 text-xl text-white btn btn-primary rounded-btn"
             >
               Adicionar à cesta

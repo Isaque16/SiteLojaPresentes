@@ -26,7 +26,9 @@ export default function ProductCard({
         <div className="card-body">
           <h2 className="card-title">{productTitle}</h2>
           <p>{productDescription}</p>
-          <p>{productPrice}</p>
+          <p className="text-sm font-bold">
+            R$<span className="text-2xl">{productPrice}</span>
+          </p>
         </div>
         <p className="opacity-30 px-8">ID: {id}</p>
       </div>

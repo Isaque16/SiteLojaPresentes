@@ -2,9 +2,7 @@ export default function LoadingCatalog() {
   return (
     <div className="flex flex-col items-center justify-center">
       {/* Título do catálogo */}
-      <h1 className="text-4xl font-bold mb-4 p-10 skeleton w-48 h-10 rounded">
-        CATÁLOGO
-      </h1>
+      <h1 className="text-4xl font-bold mb-4 p-10">CATÁLOGO</h1>
 
       {/* Layout de grid para os cartões */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
