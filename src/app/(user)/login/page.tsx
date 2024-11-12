@@ -5,7 +5,7 @@ import LoadingSvg from "@/svg_components/LoadingSvg";
 import someUserNames from "@/utils/someUserName";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,16 +23,17 @@ export default function Cadastro() {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid }
+    formState: { errors, isValid, isSubmitting }
   } = useForm<LoginType>({
     resolver: zodResolver(formDataSchema),
     mode: "onChange"
   });
   const [isLoginUser, setIsLoginUser] = useState<boolean>(false);
+  useEffect(() => {
+    setIsLoginUser(isSubmitting);
+  }, [isSubmitting]);
 
   async function loginUser(data: LoginType) {
-    setIsLoginUser(true);
-
     const userExists = await someUserNames(data.nomeUsuario);
     try {
       if (!userExists) {
@@ -45,8 +46,6 @@ export default function Cadastro() {
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
       errors.root!.message = "Erro ao logar usuário, tente novamente.";
-    } finally {
-      setIsLoginUser(false);
     }
   }
 
@@ -56,7 +55,7 @@ export default function Cadastro() {
         <h1>Login</h1>
       </div>
       <div className="flex min-h-screen flex-col items-center">
-        <p className="text-error">{errors.root?.message}</p>
+        <p className="text-error">{errors.root!.message}</p>
         <form
           className="flex flex-col gap-5"
           onSubmit={handleSubmit(loginUser)}

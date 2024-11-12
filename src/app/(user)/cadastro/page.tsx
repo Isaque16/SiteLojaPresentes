@@ -5,7 +5,7 @@ import LoadingSvg from "@/svg_components/LoadingSvg";
 import someUserNames from "@/utils/someUserName";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,8 +17,7 @@ const formDataSchema = z.object({
     .min(3, "O nome de usuário precisa ter pelo menos 3 caracteres"),
   senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres"),
   email: z.string().email("Email inválido"),
-  telefone: z.string().min(11, "O telefone deve ter pelo menos 11 dígitos"),
-  CEP: z.string().min(8, "O CEP deve ter pelo menos 8 dígitos").optional()
+  telefone: z.string().min(11, "O telefone deve ter pelo menos 11 dígitos")
 });
 
 export default function Cadastro() {
@@ -26,37 +25,38 @@ export default function Cadastro() {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid }
+    setError,
+    formState: { errors, isValid, isSubmitting }
   } = useForm<ICustomer>({
     resolver: zodResolver(formDataSchema),
     mode: "onChange"
   });
   const [isCreatingUser, setIsCreatingUser] = useState<boolean>(false);
+  useEffect(() => {
+    setIsCreatingUser(isSubmitting);
+  }, [isSubmitting]);
 
   async function createUser(data: ICustomer) {
-    setIsCreatingUser(true);
-
     const userExists = await someUserNames(data.nomeUsuario);
     try {
       if (userExists) {
-        errors.nomeUsuario!.message = "Este nome já está em uso";
+        setError("nomeUsuario", { message: "Este nome já está em uso" });
         reset({ nomeUsuario: "" });
         return;
       }
 
-      const response = await fetch("/api/cliente", {
+      await fetch("/api/cliente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
-      if (response.ok) redirect("/");
-      else throw new Error(`Erro ao criar produto: ${response.status}`);
+      redirect("/");
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
-      errors.nomeUsuario!.message = "Erro ao criar o usuário, tente novamente.";
-    } finally {
-      setIsCreatingUser(false);
+      setError("nomeUsuario", {
+        message: "Erro ao criar o usuário, tente novamente."
+      });
     }
   }
 

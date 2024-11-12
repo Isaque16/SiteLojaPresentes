@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import InputComponent from "../../../components/InputComponent";
+import InputComponent from "@/components/InputComponent";
 import ProductCard from "@/components/ProductCard";
 import IProduct from "@/interfaces/IProduct";
 import LoadingProducts from "./loading";
@@ -14,14 +14,21 @@ const schema = z.object({
   categoria: z
     .string()
     .min(3, "A categoria precisa ter pelo menos 3 caracteres"),
-  preco: z.number().min(1, "O preço deve ser maior que 0"),
-  quantidade: z.number().min(1, "Deve haver ao menos 1 produto"),
+  preco: z
+    .string()
+    .transform((val) => Number(val))
+    .or(z.number().min(1, "O preço deve ser maior que 0")),
+  quantidade: z
+    .string()
+    .transform((val) => Number(val))
+    .or(z.number().min(1, "Deve haver ao menos 1 produto")),
+
   descricao: z.string(),
   imagem: z.string().url("URL da imagem inválida"),
   nomeImagem: z.string()
 });
 
-export default function StoreManager() {
+export default function StockManager() {
   const {
     register,
     handleSubmit,

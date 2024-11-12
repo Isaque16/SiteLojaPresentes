@@ -1,19 +1,24 @@
 import ICustomer from "./ICustomer";
 import IProduct from "./IProduct";
 
-type StatusType = "pendente" | "preparando" | "a caminho" | "entregue";
+enum EStatus {
+  "Pendente",
+  "Preparando",
+  "A caminho",
+  "Entregue"
+}
 
 export default interface IOrder {
-  id?: string;
+  readonly id?: string;
   cliente: ICustomer;
   produtos: IProduct[];
   valorTotal: number;
-  status: StatusType;
-  enderecoEntrega: string;
+  status: EStatus;
+  enderecoEntrega?: Pick<ICustomer, "CEP">;
   formaPagamento: string;
-  custoEntrega: number;
+  custoEntrega?: number;
   disconto?: number;
-  formaEntrega: string;
+  formaEntrega?: string;
   dataPedido: Date;
   dataEntrega?: Date;
 }

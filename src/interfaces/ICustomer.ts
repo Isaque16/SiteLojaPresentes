@@ -1,12 +1,12 @@
-// import IOrder from "./IOrder";
+import IOrder from "./IOrder";
 
 export default interface ICustomer {
-  _id?: string;
+  readonly _id?: string;
   nomeCompleto: string;
   nomeUsuario: string;
   senha: string;
   email: string;
   telefone: string;
   CEP?: string;
-  // historicoDeCompras: IOrder[];
+  historicoDeCompras?: IOrder[];
 }
