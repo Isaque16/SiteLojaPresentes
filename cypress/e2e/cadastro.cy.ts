@@ -1,33 +1,48 @@
-describe("Cadastro", () => {
+describe("Página de Cadastro", () => {
   beforeEach(() => {
-    cy.visit("/cadastro");
+    cy.visit("/cadastro"); // Substitua pela rota correta se necessário
   });
 
-  it("should display the form", () => {
-    cy.get("form").should("be.visible");
+  it("Deve exibir mensagem de erro para campos obrigatórios com entrada inválida", () => {
+    cy.get('input[name="nomeCompleto"]').type("No");
+    cy.contains("O nome precisa ter pelo menos 3 caracteres").should("exist");
+
+    cy.get('input[name="nomeUsuario"]').type("No");
+    cy.contains("O nome de usuário precisa ter pelo menos 3 caracteres").should(
+      "exist"
+    );
+
+    cy.get('input[name="senha"]').type("No");
+    cy.contains("A senha precisa ter pelo menos 6 caracteres").should("exist");
+
+    cy.get('input[name="email"]').type("emailinválido");
+    cy.contains("Email inválido").should("exist");
+
+    cy.get('input[name="telefone"]').type("123456789");
+    cy.contains("O telefone deve ter pelo menos 11 dígitos").should("exist");
   });
 
-  it("should display an error message when the name is duplicated", () => {
-    cy.get("input[name='nome']").type("Isaque");
-    cy.get("input[name='senha']").type("test123");
-    cy.get("input[name='email']").type("test@example.com");
-    cy.get("input[name='telefone']").type("123456789");
-    cy.get("input[name='CEP']").type("12345678");
+  it("Deve preencher e enviar o formulário com dados válidos", () => {
+    cy.get('input[name="nomeCompleto"]').type("Nome Teste");
+    cy.get('input[name="nomeUsuario"]').type("usuarioTeste");
+    cy.get('input[name="senha"]').type("senhaSegura");
+    cy.get('input[name="email"]').type("teste@exemplo.com");
+    cy.get('input[name="telefone"]').type("12345678901");
 
-    cy.get("button[type='submit']").click();
-
-    cy.get("p.text-error").should("contain", "Este nome já está em uso");
-  });
-
-  it("should regist a new user", () => {
-    cy.get("input[name='nome']").type("user test");
-    cy.get("input[name='senha']").type("test123");
-    cy.get("input[name='email']").type("test@example.com");
-    cy.get("input[name='telefone']").type("123456789");
-    cy.get("input[name='CEP']").type("12345678");
-
-    cy.get("button[type='submit']").click();
+    cy.get('button[type="submit"]').click();
 
     cy.url().should("not.include", "/cadastro");
+  });
+
+  it("Deve exibir erro quando nome de usuário já está em uso", () => {
+    cy.get('input[name="nomeCompleto"]').type("Nome Teste");
+    cy.get('input[name="nomeUsuario"]').type("usuarioJaExistente"); // Nome que gera o erro
+    cy.get('input[name="senha"]').type("senhaSegura");
+    cy.get('input[name="email"]').type("teste@exemplo.com");
+    cy.get('input[name="telefone"]').type("12345678901");
+
+    cy.get('button[type="submit"]').click();
+
+    cy.contains("Este nome já está em uso").should("exist");
   });
 });
