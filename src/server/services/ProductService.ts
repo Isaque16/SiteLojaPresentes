@@ -4,7 +4,8 @@ import Product from "../models/ProductModel"; // Modelo do Mongoose
 export default class ProductService {
   async getAllProducts(): Promise<IProduct[]> {
     try {
-      return await Product.find();
+      const products = await Product.find();
+      return products;
     } catch (error) {
       throw new Error(`Erro ao listar os produtos: ${error}`);
     }
@@ -12,7 +13,8 @@ export default class ProductService {
 
   async filterProductsByCategory(category: string): Promise<IProduct[]> {
     try {
-      return await Product.find({ categoria: category });
+      const filteredProducts = await Product.find({ categoria: category });
+      return filteredProducts;
     } catch (error) {
       throw new Error(`Erro ao filtrar produtos pela categoria: ${error}`);
     }
@@ -20,7 +22,8 @@ export default class ProductService {
 
   async findProductById(id: string): Promise<IProduct | null> {
     try {
-      return await Product.findById(id);
+      const foundProduct = await Product.findById(id);
+      return foundProduct;
     } catch (error) {
       throw new Error(`Erro ao encontrar o produto: ${error}`);
     }
@@ -28,8 +31,8 @@ export default class ProductService {
 
   async checkStock(id: string): Promise<boolean> {
     try {
-      const product = await this.findProductById(id);
-      return product ? product.quantidade > 0 : false;
+      const foundProduct = await this.findProductById(id);
+      return foundProduct ? foundProduct.quantidade > 0 : false;
     } catch (error) {
       throw new Error(`Erro ao verificar o estoque do produto: ${error}`);
     }

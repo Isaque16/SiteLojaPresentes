@@ -4,7 +4,8 @@ import Customer from "../models/CustomerModel"; // Modelo do Mongoose
 export default class CustomerService {
   async getAllCustomers(): Promise<ICustomer[]> {
     try {
-      return await Customer.find();
+      const customers = await Customer.find();
+      return customers;
     } catch (error) {
       throw new Error(`Erro ao listar os clientes: ${error}`);
     }
@@ -12,7 +13,10 @@ export default class CustomerService {
 
   async findCustomerByName(nome: string): Promise<ICustomer | null> {
     try {
-      return await Customer.findOne({ nome: { $regex: nome, $options: "i" } });
+      const foundCustomer = await Customer.findOne({
+        nome: { $regex: nome, $options: "i" }
+      });
+      return foundCustomer;
     } catch (error) {
       throw new Error(`Erro ao encontrar cliente pelo nome: ${error}`);
     }
@@ -20,7 +24,8 @@ export default class CustomerService {
 
   async findCustomerById(id: string): Promise<ICustomer | null> {
     try {
-      return await Customer.findById(id);
+      const foundCustomer = await Customer.findById(id);
+      return foundCustomer;
     } catch (error) {
       throw new Error(`Erro ao encontrar cliente pelo ID: ${error}`);
     }
