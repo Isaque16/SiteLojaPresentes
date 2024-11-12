@@ -23,7 +23,6 @@ const customerSchema = new mongoose.Schema({
   },
   CEP: {
     type: String,
-    required: true,
     trim: true
   }
   // purchaseHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],

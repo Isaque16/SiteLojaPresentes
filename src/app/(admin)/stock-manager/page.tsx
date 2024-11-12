@@ -1,20 +1,36 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import InputComponent from "../../../components/InputComponent";
 import ProductCard from "@/components/ProductCard";
 import IProduct from "@/interfaces/IProduct";
 import LoadingProducts from "./loading";
-import handleInput from "@/utils/handleInput";
+import { z } from "zod";
+
+const schema = z.object({
+  _id: z.string().optional().readonly(),
+  nome: z.string().min(3, "O nome precisa ter pelo menos 3 caracteres"),
+  categoria: z
+    .string()
+    .min(3, "A categoria precisa ter pelo menos 3 caracteres"),
+  preco: z.number().min(1, "O preço deve ser maior que 0"),
+  quantidade: z.number().min(1, "Deve haver ao menos 1 produto"),
+  descricao: z.string(),
+  imagem: z.string().url("URL da imagem inválida"),
+  nomeImagem: z.string()
+});
 
 export default function StoreManager() {
-  const [formData, setFormData] = useState<IProduct>({
-    nome: "",
-    categoria: "",
-    preco: 0,
-    quantidade: 0,
-    descricao: "",
-    imagem: "",
-    nomeImagem: ""
+  const {
+    register,
+    handleSubmit,
+    reset,
+    trigger,
+    formState: { errors, isValid }
+  } = useForm<IProduct>({
+    resolver: zodResolver(schema),
+    mode: "onChange"
   });
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -24,48 +40,32 @@ export default function StoreManager() {
     return () => clearTimeout(timer);
   }, [responseMessage]);
 
-  const isFormValid = useMemo(
-    () => Object.values(formData).every((value) => value !== ""),
-    [formData]
-  );
-
   // Função principal de envio do formulário
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function onSubmit(data: IProduct) {
     try {
-      if (formData._id)
-        await updateProduct(); // Tenta atualizar se um id já estiver no formData
-      else await createProduct(); // Caso contrário, cria um novo produto
+      if (data._id)
+        await updateProduct(data); // Atualiza se o ID estiver no formData
+      else await createProduct(data); // Cria um novo produto
 
       // Limpa o formulário e atualiza a lista de produtos
-      setFormData({
-        nome: "",
-        categoria: "",
-        preco: 0,
-        quantidade: 0,
-        descricao: "",
-        imagem: "",
-        nomeImagem: ""
-      });
-
-      getProducts(); // Atualiza a lista de produtos após criar/atualizar
+      reset();
+      getProducts(); // Atualiza a lista de produtos
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error);
     }
   }
 
   // Função para criar novo produto (POST)
-  async function createProduct() {
+  async function createProduct(data: IProduct) {
     try {
       const response = await fetch("/api/produtos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(data)
       });
-
       const { message } = await response.json();
       if (response.ok) setResponseMessage(message);
-      else throw new Error(`Erro ao criar produto: ${status}`);
+      else throw new Error(`Erro ao criar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
       throw error;
@@ -73,14 +73,13 @@ export default function StoreManager() {
   }
 
   // Função para atualizar produto existente (PUT)
-  async function updateProduct() {
+  async function updateProduct(data: IProduct) {
     try {
       const response = await fetch(`/api/produtos/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(data)
       });
-
       const { message } = await response.json();
       if (response.ok) setResponseMessage(message);
       else throw new Error(`Erro ao atualizar produto: ${response.status}`);
@@ -104,22 +103,22 @@ export default function StoreManager() {
       setLoadingProducts(false);
     }
   }
+
   useEffect(() => {
     getProducts();
   }, []);
 
-  function editProduct(id: string): void {
+  function editProduct(id: string) {
     const selectedCard = products.find((prod) => prod._id === id);
-    if (selectedCard) setFormData(selectedCard);
+    reset(selectedCard);
+    trigger();
   }
 
-  // Função para deletar um produto (DELETE)
   async function deleteProduct(id: string) {
     try {
       const response = await fetch(`/api/produtos/${id}`, {
         method: "DELETE"
       });
-
       const { message } = await response.json();
       if (response.ok) {
         getProducts();
@@ -137,7 +136,7 @@ export default function StoreManager() {
       </h1>
       <main className="flex flex-col">
         <div className="flex min-h-screen flex-col md:flex-row items-center justify-around">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col items-start p-5 gap-5">
               {[
                 "nome",
@@ -148,24 +147,29 @@ export default function StoreManager() {
                 "imagem",
                 "nomeImagem"
               ].map((field) => (
-                <InputComponent
-                  key={field}
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
-                  name={field}
-                  type={
-                    field === "preco" || field === "quantidade"
-                      ? "number"
-                      : "text"
-                  }
-                  placeholder={`Digite ${field} do produto`}
-                  value={formData[field as keyof IProduct]!}
-                  onChange={(e) => handleInput(e, setFormData)}
-                />
+                <div key={field}>
+                  <InputComponent
+                    label={field.charAt(0).toUpperCase() + field.slice(1)}
+                    name={field}
+                    type={
+                      field === "preco" || field === "quantidade"
+                        ? "number"
+                        : "text"
+                    }
+                    placeholder={`Digite ${field} do produto`}
+                    register={register}
+                  />
+                  {errors[field as keyof IProduct] && (
+                    <p className="text-error py-2">
+                      {errors[field as keyof IProduct]?.message}
+                    </p>
+                  )}
+                </div>
               ))}
               <button
                 type="submit"
-                className={`text-xl btn ${!isFormValid && "btn-disabled"}`}
-                disabled={!isFormValid}
+                className={`text-xl btn ${!isValid && "btn-disabled"}`}
+                disabled={!isValid}
               >
                 Registrar
               </button>

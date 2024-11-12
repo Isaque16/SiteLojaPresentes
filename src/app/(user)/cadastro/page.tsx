@@ -2,68 +2,61 @@
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
 import LoadingSvg from "@/svg_components/LoadingSvg";
-import handleInput from "@/utils/handleInput";
 import someUserNames from "@/utils/someUserName";
-import { useRouter } from "next/navigation";
-import { FormEvent, useState, useMemo } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { redirect } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const formDataSchema = z.object({
+  _id: z.string().optional(),
+  nomeCompleto: z.string().min(3, "O nome precisa ter pelo menos 3 caracteres"),
+  nomeUsuario: z
+    .string()
+    .min(3, "O nome de usuário precisa ter pelo menos 3 caracteres"),
+  senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres"),
+  email: z.string().email("Email inválido"),
+  telefone: z.string().min(11, "O telefone deve ter pelo menos 11 dígitos"),
+  CEP: z.string().min(8, "O CEP deve ter pelo menos 8 dígitos").optional()
+});
 
 export default function Cadastro() {
-  const router = useRouter();
-
-  const [formData, setFormData] = useState<ICustomer>({
-    nome: "",
-    senha: "",
-    email: "",
-    telefone: "",
-    CEP: ""
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid }
+  } = useForm<ICustomer>({
+    resolver: zodResolver(formDataSchema),
+    mode: "onChange"
   });
+  const [isCreatingUser, setIsCreatingUser] = useState<boolean>(false);
 
-  const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
-  const [responseMessage, setResponseMessage] = useState<ICustomer>({
-    nome: "",
-    senha: "",
-    email: "",
-    telefone: "",
-    CEP: ""
-  });
+  async function createUser(data: ICustomer) {
+    setIsCreatingUser(true);
 
-  const isFormValid = useMemo(
-    () => Object.values(formData).every((value) => value !== ""),
-    [formData]
-  );
-
-  // Função para criar novo usuário (POST)
-  async function createUser(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoadingUsers(true);
-
-    const userExists = await someUserNames(formData.nome);
+    const userExists = await someUserNames(data.nomeUsuario);
     try {
       if (userExists) {
-        setResponseMessage((prev) => ({
-          ...prev,
-          nome: "Este nome já está em uso"
-        }));
-        setFormData((prev) => ({ ...prev, nome: "" }));
+        errors.nomeUsuario!.message = "Este nome já está em uso";
+        reset({ nomeUsuario: "" });
         return;
       }
 
       const response = await fetch("/api/cliente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(data)
       });
 
-      if (response.ok) router.replace("/");
+      if (response.ok) redirect("/");
       else throw new Error(`Erro ao criar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
-      setResponseMessage((prev) => ({
-        ...prev,
-        nome: "Erro ao criar o usuário, tente novamente."
-      }));
+      errors.nomeUsuario!.message = "Erro ao criar o usuário, tente novamente.";
     } finally {
-      setLoadingUsers(false);
+      setIsCreatingUser(false);
     }
   }
 
@@ -73,35 +66,35 @@ export default function Cadastro() {
         <h1>Cadastre-se</h1>
       </div>
       <div className="flex min-h-screen flex-col items-center">
-        <form className="flex flex-col gap-5" onSubmit={createUser}>
-          {(
-            [
-              "nome",
-              "senha",
-              "email",
-              "telefone",
-              "CEP"
-            ] as (keyof typeof formData)[]
-          ).map((field, index) => (
-            <div key={index}>
-              <InputComponent
-                label={field.charAt(0).toUpperCase() + field.slice(1)}
-                name={field}
-                type={field === "senha" ? "password" : "text"}
-                value={formData[field]!}
-                placeholder={`Digite seu ${field}`}
-                onChange={(e) => handleInput(e, setFormData)}
-              />
-              <p className="text-error">{responseMessage[field]}</p>
-            </div>
-          ))}
+        <form
+          className="flex flex-col gap-5"
+          onSubmit={handleSubmit(createUser)}
+        >
+          {["nomeCompleto", "nomeUsuario", "senha", "email", "telefone"].map(
+            (field, index) => (
+              <div key={index}>
+                <InputComponent
+                  label={field.charAt(0).toUpperCase() + field.slice(1)}
+                  name={field}
+                  type={field === "senha" ? "password" : "text"}
+                  placeholder={`Digite seu ${field}`}
+                  register={register}
+                />
+                {errors[field as keyof ICustomer] && (
+                  <p className="text-error py-2">
+                    {errors[field as keyof ICustomer]?.message}
+                  </p>
+                )}
+              </div>
+            )
+          )}
 
           <button
             type="submit"
-            className={`text-xl btn ${!isFormValid && "btn-disabled"}`}
-            disabled={!isFormValid}
+            className={`text-xl btn ${!isValid && "btn-disabled"}`}
+            disabled={!isValid}
           >
-            {loadingUsers ? <LoadingSvg /> : "Registrar"}
+            {isCreatingUser ? <LoadingSvg /> : "Registrar"}
           </button>
         </form>
       </div>
