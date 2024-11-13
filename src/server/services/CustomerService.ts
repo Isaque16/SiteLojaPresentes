@@ -5,18 +5,18 @@ export default class CustomerService {
   async getAllCustomers(): Promise<ICustomer[]> {
     try {
       const customers = await Customer.find();
-      return customers;
+      return customers as ICustomer[];
     } catch (error) {
       throw new Error(`Erro ao listar os clientes: ${error}`);
     }
   }
 
-  async findCustomerByName(nome: string): Promise<ICustomer | null> {
+  async findCustomerByUserName(nomeUsuario: string): Promise<ICustomer | null> {
     try {
       const foundCustomer = await Customer.findOne({
-        nome: { $regex: nome, $options: "i" }
+        nomeUsuario: { $regex: nomeUsuario, $options: "i" }
       });
-      return foundCustomer;
+      return foundCustomer as ICustomer | null;
     } catch (error) {
       throw new Error(`Erro ao encontrar cliente pelo nome: ${error}`);
     }
@@ -56,9 +56,9 @@ export default class CustomerService {
     }
   }
 
-  async removeCustomerByName(name: string): Promise<boolean> {
+  async removeCustomerByUserName(name: string): Promise<boolean> {
     try {
-      const customer = await this.findCustomerByName(name);
+      const customer = await this.findCustomerByUserName(name);
       if (!customer) return false;
       await Customer.findOneAndDelete({ nome: name });
       return true;

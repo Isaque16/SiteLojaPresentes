@@ -12,7 +12,7 @@ export async function GET(
 ) {
   try {
     const nome = decodeURIComponent(params.nome);
-    const customer = await service.findCustomerByName(nome);
+    const customer = await service.findCustomerByUserName(nome);
 
     return NextResponse.json(customer, { status: 200 });
   } catch (error) {
@@ -30,7 +30,7 @@ export async function DELETE(
 ) {
   try {
     const nome = decodeURIComponent(params.nome);
-    const customer = await service.findCustomerByName(nome);
+    const customer = await service.findCustomerByUserName(nome);
 
     if (!customer) {
       return NextResponse.json(

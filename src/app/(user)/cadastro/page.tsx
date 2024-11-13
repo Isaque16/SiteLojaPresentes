@@ -2,10 +2,8 @@
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
 import LoadingSvg from "@/svg_components/LoadingSvg";
-import someUserNames from "@/utils/someUserName";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -21,42 +19,40 @@ const formDataSchema = z.object({
 });
 
 export default function Cadastro() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    reset,
     setError,
     formState: { errors, isValid, isSubmitting }
   } = useForm<ICustomer>({
     resolver: zodResolver(formDataSchema),
     mode: "onChange"
   });
-  const [isCreatingUser, setIsCreatingUser] = useState<boolean>(false);
-  useEffect(() => {
-    setIsCreatingUser(isSubmitting);
-  }, [isSubmitting]);
 
   async function createUser(data: ICustomer) {
-    const userExists = await someUserNames(data.nomeUsuario);
     try {
-      if (userExists) {
+      const encodedNomeUsuario = encodeURIComponent(data.nomeUsuario);
+      const userData = await fetch(`/api/cliente/${encodedNomeUsuario}`);
+      const responseData: ICustomer = await userData.json();
+
+      if (responseData?.nomeUsuario === data.nomeUsuario) {
         setError("nomeUsuario", { message: "Este nome já está em uso" });
-        reset({ nomeUsuario: "" });
         return;
       }
 
-      await fetch("/api/cliente", {
+      const response = await fetch("/api/cliente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
-      redirect("/");
-    } catch (error) {
-      console.error("Erro ao criar o produto:", error);
-      setError("nomeUsuario", {
-        message: "Erro ao criar o usuário, tente novamente."
-      });
+      if (!response.ok)
+        throw new Error("Erro ao criar o usuário, tente novamente.");
+      router.replace("/");
+    } catch (error: any) {
+      console.error("Erro ao criar o usuário:", error);
+      setError("root", { message: error.message || "Erro desconhecido." });
     }
   }
 
@@ -66,13 +62,16 @@ export default function Cadastro() {
         <h1>Cadastre-se</h1>
       </div>
       <div className="flex min-h-screen flex-col items-center">
+        {errors.root?.message && (
+          <p className="text-red-500 font-medium mb-4">{errors.root.message}</p>
+        )}
         <form
           className="flex flex-col gap-5"
           onSubmit={handleSubmit(createUser)}
         >
           {["nomeCompleto", "nomeUsuario", "senha", "email", "telefone"].map(
-            (field, index) => (
-              <div key={index}>
+            (field) => (
+              <div key={field}>
                 <InputComponent
                   label={field.charAt(0).toUpperCase() + field.slice(1)}
                   name={field}
@@ -91,10 +90,12 @@ export default function Cadastro() {
 
           <button
             type="submit"
-            className={`text-xl btn ${!isValid && "btn-disabled"}`}
-            disabled={!isValid}
+            className={`text-xl btn ${
+              !isValid || isSubmitting ? "btn-disabled" : ""
+            }`}
+            disabled={!isValid || isSubmitting}
           >
-            {isCreatingUser ? <LoadingSvg /> : "Registrar"}
+            {isSubmitting ? <LoadingSvg /> : "Registrar"}
           </button>
         </form>
       </div>

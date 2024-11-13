@@ -2,10 +2,8 @@
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
 import LoadingSvg from "@/svg_components/LoadingSvg";
-import someUserNames from "@/utils/someUserName";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -19,68 +17,70 @@ const formDataSchema = z.object({
 type LoginType = Pick<ICustomer, "nomeUsuario" | "senha">;
 
 export default function Cadastro() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isValid, isSubmitting }
   } = useForm<LoginType>({
     resolver: zodResolver(formDataSchema),
     mode: "onChange"
   });
-  const [isLoginUser, setIsLoginUser] = useState<boolean>(false);
-  useEffect(() => {
-    setIsLoginUser(isSubmitting);
-  }, [isSubmitting]);
 
-  async function loginUser(data: LoginType) {
-    const userExists = await someUserNames(data.nomeUsuario);
+  async function loginUser({ nomeUsuario, senha }: LoginType) {
     try {
-      if (!userExists) {
-        errors.root!.message = "Usuário não encontrado";
+      const encodedNomeUsuario = encodeURIComponent(nomeUsuario);
+      const userData = await fetch(`/api/cliente/${encodedNomeUsuario}`);
+      const responseData: ICustomer = await userData.json();
+
+      const doesUserExist =
+        responseData?.nomeUsuario === nomeUsuario &&
+        responseData?.senha === senha;
+
+      if (!doesUserExist) {
         reset();
+        setError("root", { message: "Usuário ou senha incorreto" });
         return;
       }
 
-      redirect("/");
+      router.replace("/");
     } catch (error) {
-      console.error("Erro ao criar o produto:", error);
-      errors.root!.message = "Erro ao logar usuário, tente novamente.";
+      console.error("Erro ao logar o usuário:", error);
+      setError("root", { message: "Erro ao logar usuário, tente novamente." });
     }
   }
 
   return (
-    <main>
+    <main className="flex flex-col items-center justify-center min-h-screen">
       <div className="text-3xl font-bold text-center p-10">
         <h1>Login</h1>
       </div>
-      <div className="flex min-h-screen flex-col items-center">
-        <p className="text-error">{errors.root!.message}</p>
-        <form
-          className="flex flex-col gap-5"
-          onSubmit={handleSubmit(loginUser)}
-        >
-          {["nomeUsuario", "senha"].map((field, index) => (
-            <div key={index}>
-              <InputComponent
-                label={field.charAt(0).toUpperCase() + field.slice(1)}
-                name={field}
-                type={field === "senha" ? "password" : "text"}
-                placeholder={`Digite seu ${field}`}
-                register={register}
-              />
-            </div>
-          ))}
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit(loginUser)}>
+        {["nomeUsuario", "senha"].map((field, index) => (
+          <div key={index}>
+            <InputComponent
+              label={field.charAt(0).toUpperCase() + field.slice(1)}
+              name={field}
+              type={field === "senha" ? "password" : "text"}
+              placeholder={`Digite seu ${field}`}
+              register={register}
+            />
+          </div>
+        ))}
+        <p className="text-error text-xl">{errors.root?.message}</p>
 
-          <button
-            type="submit"
-            className={`text-xl btn ${!isValid && "btn-disabled"}`}
-            disabled={!isValid}
-          >
-            {isLoginUser ? <LoadingSvg /> : "Registrar"}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          className={`text-xl btn ${
+            !isValid || isSubmitting ? "btn-disabled" : ""
+          }`}
+          disabled={!isValid || isSubmitting}
+        >
+          {isSubmitting ? <LoadingSvg /> : "Registrar"}
+        </button>
+      </form>
     </main>
   );
 }

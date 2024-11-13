@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 
 const customerSchema = new mongoose.Schema({
-  nome: {
+  nomeCompleto: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  nomeUsuario: {
     type: String,
     required: true,
     trim: true,
