@@ -5,6 +5,7 @@ import Link from "next/link";
 import BasketSvg from "@/svg_components/BasketSvg";
 import SearchSgv from "@/svg_components/SearchSvg";
 import StoreProvider from "@/store/StoreProvider";
+import UserAvatarSvg from "@/svg_components/UserAvatarSvg";
 
 const geistSans = localFont({
   src: "/fonts/GeistVF.woff",
@@ -66,6 +67,7 @@ export default function RootLayout({
                 </li>
               </ul>
               <BasketSvg />
+              <UserAvatarSvg />
             </div>
           </header>
           {children}
