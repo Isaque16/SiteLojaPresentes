@@ -1,7 +1,7 @@
 import ICustomer from "./ICustomer";
 import IProduct from "./IProduct";
 
-enum EStatus {
+export enum EStatus {
   "Pendente",
   "Preparando",
   "A caminho",
