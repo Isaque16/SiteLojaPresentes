@@ -12,6 +12,7 @@ export default interface IOrder {
   readonly id?: string;
   cliente: ICustomer;
   produtos: IProduct[];
+  subTotal: number;
   valorTotal: number;
   status: EStatus;
   enderecoEntrega?: Pick<ICustomer, "CEP">;

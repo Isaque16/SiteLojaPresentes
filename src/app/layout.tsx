@@ -4,6 +4,7 @@ import "../styles/global.css";
 import Link from "next/link";
 import BasketSvg from "@/svg_components/BasketSvg";
 import SearchSgv from "@/svg_components/SearchSvg";
+import StoreProvider from "@/store/StoreProvider";
 
 const geistSans = localFont({
   src: "/fonts/GeistVF.woff",
@@ -27,57 +28,57 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
-      >
-        <header className="hidden md:block border-b-2 border-white">
-          <div className="navbar flex flex-row justify-between bg-base-100">
-            <div className="flex-1">
-              <Link href={"/"} className="btn btn-ghost text-xl">
-                Crer Presentes
-              </Link>
+    <StoreProvider>
+      <html lang="pt-br">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
+        >
+          <header className="hidden md:block border-b-2 border-white">
+            <div className="navbar flex flex-row justify-between bg-base-100">
+              <div className="flex-1">
+                <Link href={"/"} className="btn btn-ghost text-xl">
+                  Crer Presentes
+                </Link>
+              </div>
+              <label htmlFor="search" className="btn btn-ghost btn-circle">
+                <SearchSgv />
+              </label>
+              <div className="form-control">
+                <input
+                  type="text"
+                  name="search"
+                  placeholder="Search..."
+                  className="input input-bordered w-24 md:w-auto"
+                />
+              </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-vertical md:menu-horizontal rounded-box"
+              >
+                <li>
+                  <Link href={"#"}>Item 1</Link>
+                </li>
+                <li>
+                  <Link href={"#"}>Item 2</Link>
+                </li>
+                <li>
+                  <Link href={"#"}>Item 3</Link>
+                </li>
+              </ul>
+              <BasketSvg />
             </div>
-            <label htmlFor="search" className="btn btn-ghost btn-circle">
-              <SearchSgv />
-            </label>
-            <div className="form-control">
-              <input
-                type="text"
-                name="search"
-                placeholder="Search..."
-                className="input input-bordered w-24 md:w-auto"
-              />
-            </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-vertical md:menu-horizontal rounded-box"
-            >
-              <li>
-                <Link href={"#"}>Item 1</Link>
-              </li>
-              <li>
-                <Link href={"#"}>Item 2</Link>
-              </li>
-              <li>
-                <Link href={"#"}>Item 3</Link>
-              </li>
-            </ul>
-            <BasketSvg />
-          </div>
-        </header>
-
-        {children}
-
-        <footer className="footer p-5 bg-base-100 mt-10 border-t-2 border-white">
-          <address>
-            <p>Tel. </p>
-            <p>Email. </p>
-            <p>Endereço. </p>
-            <p>CNPJ. </p>
-          </address>
-        </footer>
-      </body>
-    </html>
+          </header>
+          {children}
+          <footer className="footer p-5 bg-base-100 mt-10 border-t-2 border-white">
+            <address>
+              <p>Tel. </p>
+              <p>Email. </p>
+              <p>Endereço. </p>
+              <p>CNPJ. </p>
+            </address>
+          </footer>
+        </body>
+      </html>
+    </StoreProvider>
   );
 }

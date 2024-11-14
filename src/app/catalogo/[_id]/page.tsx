@@ -1,13 +1,16 @@
 "use client";
 
 import IProduct from "@/interfaces/IProduct";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoadingProduct from "./loading";
+import { useDispatch } from "react-redux";
+import { addToBasket } from "@/store/basketSlice";
 
 export default function Produto() {
   const { _id: productId } = useParams();
+  const dipatch = useDispatch();
+  const router = useRouter();
 
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<IProduct>({} as IProduct);
@@ -30,6 +33,11 @@ export default function Produto() {
     getProduct();
   }, []);
 
+  function sendAddToBasket(): void {
+    dipatch(addToBasket({ product, quantity }));
+    router.replace("/cesta");
+  }
+
   if (loadingProduct) return <LoadingProduct />;
   return (
     <>
@@ -51,7 +59,7 @@ export default function Produto() {
           <div className="bg-slate-300 text-xl rounded-box text-black w-fit h-fit px-3 py-2 flex flex-row gap-2">
             <button
               className="px-2 text-xl"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              onClick={() => setQuantity((q) => Math.max(1, (q -= 1)))}
             >
               -
             </button>
@@ -59,25 +67,22 @@ export default function Produto() {
             <button
               className="px-2 text-xl"
               onClick={() =>
-                setQuantity((q) => Math.min(product.quantidade, q + 1))
+                setQuantity((q) => Math.min(product.quantidade, (q += 1)))
               }
             >
               +
             </button>
           </div>
           <div className="flex flex-col gap-5 p-4">
-            <Link
-              href={"/cesta/"}
+            <button
+              onClick={sendAddToBasket}
               className="bg-base-100 text-xl text-white btn btn-primary rounded-btn"
             >
               Adicionar à cesta
-            </Link>
-            <Link
-              href={"#"}
-              className="bg-base-100 text-xl text-white btn btn-secondary rounded-btn"
-            >
+            </button>
+            <button className="bg-base-100 text-xl text-white btn btn-secondary rounded-btn">
               Comprar
-            </Link>
+            </button>
           </div>
         </div>
       </main>
