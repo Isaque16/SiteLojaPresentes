@@ -1,7 +1,8 @@
 "use client";
+
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
-import LoadingSvg from "@/svg_components/LoadingSvg";
+// import LoadingSvg from "@/svg_components/LoadingSvg";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -49,6 +50,8 @@ export default function Cadastro() {
 
       if (!response.ok)
         throw new Error("Erro ao criar o usuário, tente novamente.");
+
+      localStorage.setItem("nomeUsuario", data.nomeUsuario);
       router.replace("/");
     } catch (error: any) {
       console.error("Erro ao criar o usuário:", error);
@@ -97,7 +100,11 @@ export default function Cadastro() {
             }`}
             disabled={!isValid || isSubmitting}
           >
-            {isSubmitting ? <LoadingSvg /> : "Registrar"}
+            {isSubmitting ? (
+              <div className="loading loading-dots loading-lg"></div>
+            ) : (
+              "Registrar"
+            )}
           </button>
         </form>
       </div>

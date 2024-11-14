@@ -1,7 +1,7 @@
 "use client";
+
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
-import LoadingSvg from "@/svg_components/LoadingSvg";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -14,7 +14,7 @@ const formDataSchema = z.object({
   senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres")
 });
 
-type LoginType = Pick<ICustomer, "nomeUsuario" | "senha">;
+type LoginType = { nomeUsuario: string; senha: string };
 
 export default function Cadastro() {
   const router = useRouter();
@@ -45,6 +45,7 @@ export default function Cadastro() {
         return;
       }
 
+      localStorage.setItem("nomeUsuario", nomeUsuario);
       router.replace("/");
     } catch (error) {
       console.error("Erro ao logar o usuário:", error);
@@ -80,7 +81,11 @@ export default function Cadastro() {
           }`}
           disabled={!isValid || isSubmitting}
         >
-          {isSubmitting ? <LoadingSvg /> : "Registrar"}
+          {isSubmitting ? (
+            <div className="loading loading-dots loading-lg"></div>
+          ) : (
+            "Entrar"
+          )}
         </button>
       </form>
     </main>
