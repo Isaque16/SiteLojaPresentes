@@ -54,8 +54,8 @@ export default function Cadastro() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
-      <div className="text-3xl font-bold text-center p-10">
-        <h1>Login</h1>
+      <div className="p-10">
+        <h1 className="text-3xl font-bold text-center">Login</h1>
       </div>
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(loginUser)}>
         {["nomeUsuario", "senha"].map((field, index) => (
@@ -69,7 +69,9 @@ export default function Cadastro() {
             />
           </div>
         ))}
-        <p className="text-error text-xl">{errors.root?.message}</p>
+        <p className="text-white alert alert-error text-xl empty:hidden">
+          {errors.root?.message}
+        </p>
 
         <button
           type="submit"

@@ -57,13 +57,15 @@ export default function Cadastro() {
   }
 
   return (
-    <main>
-      <div className="text-3xl font-bold text-center p-10">
-        <h1>Cadastre-se</h1>
+    <main className="flex flex-col items-center justify-center min-h-screen">
+      <div className="p-10">
+        <h1 className="text-3xl font-bold text-center">Cadastre-se</h1>
       </div>
-      <div className="flex min-h-screen flex-col items-center">
+      <div className="flex flex-col items-center">
         {errors.root?.message && (
-          <p className="text-red-500 font-medium mb-4">{errors.root.message}</p>
+          <p className="text-white alert alert-error font-medium mb-4">
+            {errors.root.message}
+          </p>
         )}
         <form
           className="flex flex-col gap-5"

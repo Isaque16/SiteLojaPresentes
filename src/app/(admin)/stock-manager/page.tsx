@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +9,7 @@ import IProduct from "@/interfaces/IProduct";
 import LoadingProducts from "./loading";
 import { z } from "zod";
 
-const schema = z.object({
+const formDataSchema = z.object({
   _id: z.string().optional().readonly(),
   nome: z.string().min(3, "O nome precisa ter pelo menos 3 caracteres"),
   categoria: z
@@ -22,7 +23,6 @@ const schema = z.object({
     .string()
     .transform((val) => Number(val))
     .or(z.number().min(1, "Deve haver ao menos 1 produto")),
-
   descricao: z.string(),
   imagem: z.string().url("URL da imagem inválida"),
   nomeImagem: z.string()
@@ -36,11 +36,11 @@ export default function StockManager() {
     trigger,
     formState: { errors, isValid }
   } = useForm<IProduct>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(formDataSchema),
     mode: "onChange"
   });
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [responseMessage, setResponseMessage] = useState("");
   useEffect(() => {
     const timer = setTimeout(() => setResponseMessage(""), 5000);
@@ -50,13 +50,11 @@ export default function StockManager() {
   // Função principal de envio do formulário
   async function onSubmit(data: IProduct) {
     try {
-      if (data._id)
-        await updateProduct(data); // Atualiza se o ID estiver no formData
+      if (data._id) await updateProduct(data); // Atualiza se tiver ID
       else await createProduct(data); // Cria um novo produto
 
-      // Limpa o formulário e atualiza a lista de produtos
-      reset();
-      getProducts(); // Atualiza a lista de produtos
+      reset(); // Limpa o formulário
+      fetchProducts(); // Atualiza a lista de produtos
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error);
     }
@@ -72,7 +70,6 @@ export default function StockManager() {
       });
       const { message } = await response.json();
       if (response.ok) setResponseMessage(message);
-      else throw new Error(`Erro ao criar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao criar o produto:", error);
       throw error;
@@ -89,7 +86,6 @@ export default function StockManager() {
       });
       const { message } = await response.json();
       if (response.ok) setResponseMessage(message);
-      else throw new Error(`Erro ao atualizar produto: ${response.status}`);
     } catch (error) {
       console.error("Erro ao atualizar o produto:", error);
       throw error;
@@ -97,8 +93,8 @@ export default function StockManager() {
   }
 
   // Função para buscar os produtos
-  async function getProducts(): Promise<void> {
-    setLoadingProducts(true);
+  async function fetchProducts(): Promise<void> {
+    setIsLoadingProducts(true);
     try {
       const response = await fetch("/api/produtos");
       const data = await response.json();
@@ -107,12 +103,12 @@ export default function StockManager() {
       console.error(error);
       setProducts([]);
     } finally {
-      setLoadingProducts(false);
+      setIsLoadingProducts(false);
     }
   }
 
   useEffect(() => {
-    getProducts();
+    fetchProducts();
   }, []);
 
   function editProduct(id: string) {
@@ -128,9 +124,9 @@ export default function StockManager() {
       });
       const { message } = await response.json();
       if (response.ok) {
-        getProducts();
+        fetchProducts();
         setResponseMessage(message);
-      } else throw new Error(`Erro ao deletar produto: ${response.status}`);
+      }
     } catch (error) {
       console.error("Erro ao deletar o produto:", error);
     }
@@ -180,7 +176,9 @@ export default function StockManager() {
               >
                 Registrar
               </button>
-              <div className="text-info font-bold">{responseMessage}</div>
+              <p className="text-white alert alert-info font-bold empty:hidden">
+                {responseMessage}
+              </p>
             </div>
           </form>
 
@@ -188,7 +186,7 @@ export default function StockManager() {
             id="products_container"
             className="grid grid-col-1 gap-5 justify-center md:justify-normal md:w-96 w-80 h-fit overflow-y-scroll overflow-x-hidden min-w-80 md:min-w-fit max-h-screen border-2 border-white rounded-lg p-10"
           >
-            {loadingProducts ? (
+            {isLoadingProducts ? (
               <LoadingProducts />
             ) : (
               products.map((product) => (

@@ -54,7 +54,7 @@ export default function Cesta() {
                         dispatch(
                           updateQuantity({
                             index,
-                            quantity: Math.max(1, basket.quantities[index] - 1) // Reduz sem modificar diretamente
+                            quantity: Math.max(1, basket.quantities[index] - 1)
                           })
                         )
                       }
@@ -71,7 +71,7 @@ export default function Cesta() {
                             quantity: Math.min(
                               item.quantidade,
                               basket.quantities[index] + 1
-                            ) // Incrementa sem modificar diretamente
+                            )
                           })
                         )
                       }
