@@ -17,10 +17,13 @@ export default function Cesta() {
     </p>
   ) : (
     <>
-      <main className="flex flex-col items-center justify-center h-screen">
+      <main className="flex flex-col items-center justify-center h-full">
         <div className="flex flex-col items-center justify-center h-full">
-          <div className="text-center pt-52 pb-5 md:pt-0">
-            <h1 className="text-3xl font-bold">Sua Cesta</h1>
+          <div className="flex flex-col items-center text-center my-10">
+            <h1 className="text-3xl font-bold text-center pt-10 pb-2">
+              Sua Cesta
+            </h1>
+            <div className="border-2 border-white w-1/2 mb-5"></div>
           </div>
           <div className="flex flex-col justify-between">
             {basket.items.map((item, index) => (

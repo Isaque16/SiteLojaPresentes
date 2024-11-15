@@ -34,7 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StoreProvider>
-          <header className="bg-base-100 menu menu-horizontal fixed w-full flex flex-row justify-between px-4 items-center shadow-md top-0 z-50">
+          <header className="bg-base-100 menu menu-horizontal sticky w-full flex flex-row justify-between px-4 items-center shadow-md z-50">
             <div className="flex flex-row md:flex-row navbar justify-between bg-base-100">
               <div className="flex flex-row">
                 <div className="flex-1">
@@ -81,7 +81,7 @@ export default function RootLayout({
             <BasketSvg />
             <UserAvatarSvg />
           </div>
-          <footer className="footer p-5 bg-base-100 border-t-2 border-white mt-10">
+          <footer className="footer p-5 bg-base-100 border-t-2 border-white mt-5">
             <address>
               <p>Tel. </p>
               <p>Email. </p>

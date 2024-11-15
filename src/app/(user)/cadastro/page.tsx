@@ -63,7 +63,7 @@ export default function Cadastro() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center h-full md:h-screen pt-32">
+    <main className="flex flex-col items-center justify-center h-full md:h-screen pt-10">
       <div className="grid grid-cols-1 md:grid-cols-2 items-center justify-center shadow-md">
         <div className="flex flex-col items-center justify-center bg-base-200 h-full w-full rounded-tr-box rounded-tl-box md:rounded-tl-box md:rounded-bl-box md:rounded-tr-none">
           <h1 className="text-3xl font-bold text-center pt-10 pb-2">

@@ -41,14 +41,14 @@ export default function Produto() {
   if (loadingProduct) return <LoadingProduct />;
   return (
     <>
-      <main className="flex flex-col md:flex-row justify-around items-center gap-10 h-screen">
-        <div className="bg-base-100 w-1/2 h-96 p-4 rounded-box m-4">
+      <main className="flex flex-col md:flex-row justify-around items-center gap-10 h-full">
+        <figure className="bg-base-100 w-full h-96 p-4 rounded-box m-5 image-full">
           <img
             className="w-full h-full"
             src={product.imagem}
             alt={product.nomeImagem}
           />
-        </div>
+        </figure>
         <div className="flex flex-col gap-4 w-full md:w-1/2 px-10">
           <h1 className="text-4xl font-bold">{product.nome}</h1>
           <p>{product.descricao}</p>
@@ -73,7 +73,7 @@ export default function Produto() {
               +
             </button>
           </div>
-          <div className="flex flex-col gap-5 p-4">
+          <div className="flex flex-col gap-5 p-4 mb-10">
             <button
               onClick={sendAddToBasket}
               className="bg-base-100 text-xl text-white btn btn-primary rounded-btn"
