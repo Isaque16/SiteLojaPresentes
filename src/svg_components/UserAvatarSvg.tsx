@@ -1,7 +1,11 @@
 "use client";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 export default function UserAvatarSvg() {
-  const nomeUsuario = localStorage.getItem("nomeUsuario") || "Convidado";
+  const userData = useSelector((state: RootState) => state.user.nomeUsuario);
+  const nomeUsuario = userData || "Convidado";
+
   return (
     <div className="flex-none">
       <div className="dropdown dropdown-end">

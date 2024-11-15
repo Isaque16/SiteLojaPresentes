@@ -29,11 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <StoreProvider>
-      <html lang="pt-br">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
-        >
+    <html lang="pt-br">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
+      >
+        <StoreProvider>
           <header className="hidden md:block border-b-2 border-white">
             <div className="navbar flex flex-row justify-between bg-base-100">
               <div className="flex-1">
@@ -79,8 +79,8 @@ export default function RootLayout({
               <p>CNPJ. </p>
             </address>
           </footer>
-        </body>
-      </html>
-    </StoreProvider>
+        </StoreProvider>
+      </body>
+    </html>
   );
 }

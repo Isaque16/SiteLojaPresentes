@@ -2,9 +2,11 @@
 
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
+import { setNomeUsuario } from "@/store/slices/userSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { z } from "zod";
 
 const formDataSchema = z.object({
@@ -18,6 +20,7 @@ type LoginType = { nomeUsuario: string; senha: string };
 
 export default function Cadastro() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -45,7 +48,7 @@ export default function Cadastro() {
         return;
       }
 
-      localStorage.setItem("nomeUsuario", nomeUsuario);
+      dispatch(setNomeUsuario({ nomeUsuario }));
       router.replace("/");
     } catch (error) {
       console.error("Erro ao logar o usuário:", error);

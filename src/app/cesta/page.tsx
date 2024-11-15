@@ -1,6 +1,6 @@
 "use client";
 
-import { removeFromBasket, updateQuantity } from "@/store/basketSlice";
+import { removeFromBasket, updateQuantity } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";

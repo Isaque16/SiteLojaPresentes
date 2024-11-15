@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoadingProduct from "./loading";
 import { useDispatch } from "react-redux";
-import { addToBasket } from "@/store/basketSlice";
+import { addToBasket } from "@/store/slices/basketSlice";
 
 export default function Produto() {
   const { _id: productId } = useParams();

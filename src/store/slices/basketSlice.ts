@@ -1,3 +1,4 @@
+"use client";
 import IProduct from "@/interfaces/IProduct";
 import { createSlice } from "@reduxjs/toolkit";
 
