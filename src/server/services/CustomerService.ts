@@ -1,3 +1,4 @@
+"use server";
 import ICustomer from "../../interfaces/ICustomer";
 import Customer from "../models/CustomerModel"; // Modelo do Mongoose
 

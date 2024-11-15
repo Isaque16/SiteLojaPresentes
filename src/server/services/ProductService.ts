@@ -1,3 +1,4 @@
+"use server";
 import IProduct from "../../interfaces/IProduct";
 import Product from "../models/ProductModel"; // Modelo do Mongoose
 

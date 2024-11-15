@@ -1,3 +1,4 @@
+"use server";
 import Order from "../models/OrderModel";
 import IProduct from "../../interfaces/IProduct";
 import ICustomer from "../../interfaces/ICustomer";

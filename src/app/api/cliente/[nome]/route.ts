@@ -1,10 +1,12 @@
 "use server";
 import { NextResponse } from "next/server";
-import CustomerService from "@/server/services/CustomerService";
 import connectToDatabase from "@/server/database/connectDB";
+import {
+  findCustomerByUserName,
+  removeCustomerById
+} from "@/server/services/CustomerService";
 
 connectToDatabase();
-const service = new CustomerService();
 
 export async function GET(
   req: Request,
@@ -12,7 +14,7 @@ export async function GET(
 ) {
   try {
     const nome = decodeURIComponent(params.nome);
-    const customer = await service.findCustomerByUserName(nome);
+    const customer = await findCustomerByUserName(nome);
 
     return NextResponse.json(customer, { status: 200 });
   } catch (error) {
@@ -30,7 +32,7 @@ export async function DELETE(
 ) {
   try {
     const nome = decodeURIComponent(params.nome);
-    const customer = await service.findCustomerByUserName(nome);
+    const customer = await findCustomerByUserName(nome);
 
     if (!customer) {
       return NextResponse.json(
@@ -39,7 +41,7 @@ export async function DELETE(
       );
     }
 
-    await service.removeCustomerById(nome);
+    await removeCustomerById(nome);
     return NextResponse.json(
       { message: "Usuário removido com sucesso" },
       { status: 200 }

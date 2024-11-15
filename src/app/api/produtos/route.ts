@@ -1,15 +1,14 @@
 "use server";
 import { NextResponse } from "next/server";
-import ProductService from "@/server/services/ProductService";
 import IProduct from "@/interfaces/IProduct";
 import connectToDatabase from "@/server/database/connectDB";
+import { getAllProducts, saveProduct } from "@/server/services/ProductService";
 
 connectToDatabase();
-const service = new ProductService();
 
 export async function GET() {
   try {
-    const products = await service.getAllProducts();
+    const products = await getAllProducts();
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -23,7 +22,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const productData: IProduct = await req.json();
-    await service.saveProduct(productData);
+    await saveProduct(productData);
     return NextResponse.json(
       { message: "Produto criado com sucesso!" },
       { status: 201 }
@@ -40,7 +39,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const productData: IProduct = await req.json();
-    await service.saveProduct(productData);
+    await saveProduct(productData);
     return NextResponse.json(
       { message: "Produto atualizado com sucesso!" },
       { status: 200 }

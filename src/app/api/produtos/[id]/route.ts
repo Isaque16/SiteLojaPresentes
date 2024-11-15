@@ -1,17 +1,19 @@
 "use server";
 import connectToDatabase from "@/server/database/connectDB";
-import ProductService from "@/server/services/ProductService";
+import {
+  findProductById,
+  removeProductById
+} from "@/server/services/ProductService";
 import { NextResponse } from "next/server";
 
 connectToDatabase();
-const service = new ProductService();
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await service.findProductById(params.id);
+    const product = await findProductById(params.id);
     if (!product) {
       return NextResponse.json(
         { message: "Produto não encontrado!" },
@@ -33,7 +35,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await service.findProductById(params.id);
+    const product = await findProductById(params.id);
     if (!product) {
       return NextResponse.json(
         { message: "Produto não encontrado!" },
@@ -41,7 +43,7 @@ export async function DELETE(
       );
     }
 
-    await service.removeProductById(params.id);
+    await removeProductById(params.id);
     return NextResponse.json(
       { message: "Produto removido com sucesso!" },
       { status: 200 }
