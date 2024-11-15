@@ -16,14 +16,16 @@ export default function InputComponent({
   register
 }: InputProps) {
   return (
-    <div className="form-control w-full max-w-xs">
+    <div className="w-full max-w-xs">
       <label className="label">
         <span className="label-text text-xl">{label}</span>
       </label>
       <input
         type={type}
         placeholder={placeholder}
-        className={"input input-bordered w-full max-w-xs"}
+        className={
+          "input input-bordered focus-within:ring-white focus-within:ring-2 w-full max-w-xs"
+        }
         {...register(name)}
       />
     </div>

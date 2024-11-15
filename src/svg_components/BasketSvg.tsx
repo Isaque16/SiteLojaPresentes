@@ -9,7 +9,7 @@ export default function BasketSvg() {
 
   return (
     <div className="flex-none">
-      <div className="dropdown dropdown-end">
+      <div className="dropdown dropdown-top md:dropdown-end">
         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
           <div className="indicator">
             <svg
@@ -27,7 +27,7 @@ export default function BasketSvg() {
               />
             </svg>
             <span className="badge badge-sm indicator-item">
-              {items.quantities.length}
+              {items.quantities.reduce((acc, cur) => acc + cur, 0)}
             </span>
           </div>
         </div>
@@ -37,7 +37,7 @@ export default function BasketSvg() {
         >
           <div className="card-body">
             <span className="text-lg font-bold">
-              {items.quantities.length} Items
+              {items.quantities.reduce((acc, cur) => acc + cur, 0)} Items
             </span>
             <span className="text-info">
               Subtotal: R${items.totalValue.toFixed(2)}

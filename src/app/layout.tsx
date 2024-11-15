@@ -31,30 +31,34 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StoreProvider>
-          <header className="hidden md:block border-b-2 border-white">
-            <div className="navbar flex flex-row justify-between bg-base-100">
-              <div className="flex-1">
-                <Link href={"/"} className="btn btn-ghost text-xl">
-                  Crer Presentes
-                </Link>
-              </div>
-              <label htmlFor="search" className="btn btn-ghost btn-circle">
-                <SearchSgv />
-              </label>
-              <div className="form-control">
-                <input
-                  type="text"
-                  name="search"
-                  placeholder="Search..."
-                  className="input input-bordered w-24 md:w-auto"
-                />
+          <header className="bg-base-100 menu menu-horizontal fixed w-full flex flex-row justify-between px-4 items-center shadow-md top-0 z-50">
+            <div className="flex flex-row md:flex-row navbar justify-between bg-base-100">
+              <div className="flex flex-row">
+                <div className="flex-1">
+                  <Link href={"/"} className="btn btn-ghost text-xl">
+                    Crer Presentes
+                  </Link>
+                </div>
+                <div className="flex flex-row justify-start">
+                  <label htmlFor="search" className="btn btn-ghost btn-circle">
+                    <SearchSgv />
+                  </label>
+                  <div className="form-control">
+                    <input
+                      type="text"
+                      name="search"
+                      placeholder="Pesquisa..."
+                      className="input input-bordered w-24 md:w-auto"
+                    />
+                  </div>
+                </div>
               </div>
               <ul
                 tabIndex={0}
-                className="menu menu-vertical md:menu-horizontal rounded-box"
+                className="hidden md:flex menu menu-vertical md:menu-horizontal rounded-box"
               >
                 <li>
                   <Link href={"#"}>Item 1</Link>
@@ -66,12 +70,18 @@ export default function RootLayout({
                   <Link href={"#"}>Item 3</Link>
                 </li>
               </ul>
-              <BasketSvg />
-              <UserAvatarSvg />
+              <div className="hidden md:flex flex-row justify-center items-center gap-5">
+                <BasketSvg />
+                <UserAvatarSvg />
+              </div>
             </div>
           </header>
           {children}
-          <footer className="footer p-5 bg-base-100 mt-10 border-t-2 border-white">
+          <div className="md:hidden bg-base-100 menu menu-horizontal fixed w-full h-16 flex flex-row justify-around px-4 items-center shadow-md bottom-0 rounded-tl-box rounded-tr-box">
+            <BasketSvg />
+            <UserAvatarSvg />
+          </div>
+          <footer className="footer p-5 bg-base-100 border-t-2 border-white mt-10">
             <address>
               <p>Tel. </p>
               <p>Email. </p>

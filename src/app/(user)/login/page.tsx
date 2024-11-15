@@ -57,40 +57,47 @@ export default function Cadastro() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen">
-      <div className="p-10">
-        <h1 className="text-3xl font-bold text-center">Login</h1>
+    <main className="flex flex-col items-center justify-center h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-2 items-center justify-center shadow-md">
+        <div className="flex flex-col items-center justify-center bg-base-200 h-full w-full rounded-tr-box rounded-tl-box md:rounded-tl-box md:rounded-bl-box md:rounded-tr-none">
+          <h1 className="text-3xl font-bold text-center pt-10 pb-2">Login</h1>
+          <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
+        </div>
+        <div className="bg-base-100 p-10 w-full h-full rounded-bl-box rounded-br-box md:rounded-br-box md:rounded-tr-box md:rounded-bl-none">
+          <form
+            className="form-control gap-5"
+            onSubmit={handleSubmit(loginUser)}
+          >
+            {["nomeUsuario", "senha"].map((field, index) => (
+              <div key={index}>
+                <InputComponent
+                  label={field.charAt(0).toUpperCase() + field.slice(1)}
+                  name={field}
+                  type={field === "senha" ? "password" : "text"}
+                  placeholder={`Digite seu ${field}`}
+                  register={register}
+                />
+              </div>
+            ))}
+            <p className="text-white alert alert-error text-xl empty:hidden">
+              {errors.root?.message}
+            </p>
+            <button
+              type="submit"
+              className={`text-xl btn ${
+                !isValid || isSubmitting ? "btn-disabled" : ""
+              }`}
+              disabled={!isValid || isSubmitting}
+            >
+              {isSubmitting ? (
+                <div className="loading loading-dots loading-lg"></div>
+              ) : (
+                "Entrar"
+              )}
+            </button>
+          </form>
+        </div>
       </div>
-      <form className="flex flex-col gap-5" onSubmit={handleSubmit(loginUser)}>
-        {["nomeUsuario", "senha"].map((field, index) => (
-          <div key={index}>
-            <InputComponent
-              label={field.charAt(0).toUpperCase() + field.slice(1)}
-              name={field}
-              type={field === "senha" ? "password" : "text"}
-              placeholder={`Digite seu ${field}`}
-              register={register}
-            />
-          </div>
-        ))}
-        <p className="text-white alert alert-error text-xl empty:hidden">
-          {errors.root?.message}
-        </p>
-
-        <button
-          type="submit"
-          className={`text-xl btn ${
-            !isValid || isSubmitting ? "btn-disabled" : ""
-          }`}
-          disabled={!isValid || isSubmitting}
-        >
-          {isSubmitting ? (
-            <div className="loading loading-dots loading-lg"></div>
-          ) : (
-            "Entrar"
-          )}
-        </button>
-      </form>
     </main>
   );
 }

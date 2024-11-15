@@ -19,12 +19,12 @@ export default function Compra() {
   ) : (
     <main className="card card-body p-5">
       <div>
-        <h1 className="text-center text-3xl font-bold p-5">
+        <h1 className="text-center text-3xl font-bold pt-20">
           Finalização da compra
         </h1>
       </div>
       <div className="card card-body card-bordered shadow-md">
-        <h1 className="text-xl">Endereço de entrega</h1>
+        <h1 className="card-title text-2xl">Endereço de entrega</h1>
         <p className="text-warning">Nenhum endereço cadastrado</p>
         <div className="flex flex-row items-center gap-2">
           <label className="label" htmlFor="sem_entrega">
@@ -48,27 +48,29 @@ export default function Compra() {
         </div>
       </div>
       <div className="card card-body card-bordered shadow-md">
-        <h1 className="text-xl">Forma de pagamento</h1>
+        <h1 className="card-title text-2xl">Forma de pagamento</h1>
         <select
           className="select select-ghost w-fit"
           name="pagamento"
           id="pagamento"
         >
           <option value="pix">Pix</option>
-          <option value="cartao">Cartão de crédito</option>
+          <option value="credito">Cartão de crédito</option>
           <option value="debito">Cartão de débito</option>
           <option value="boleto">Boleto bancário</option>
         </select>
       </div>
       <div className="card card-body card-bordered shadow-md">
-        <h1 className="text-xl">Resumo do pedido</h1>
+        <h1 className="card-title text-2xl">Resumo do pedido</h1>
         {basket.items.map((item, index) => (
           <ProductCardBasket key={item._id} item={item} index={index} />
         ))}
       </div>
       <div>
         <div>
-          <p className="text-xl">{basket.items.length} Itens</p>
+          <p className="text-xl">
+            {basket.quantities.reduce((acc, cur) => acc + cur, 0)} Itens
+          </p>
           <p className="text-xl">
             Frete e manuseio: <span className="text-sm">R$</span>10
           </p>

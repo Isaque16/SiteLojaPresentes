@@ -16,21 +16,25 @@ export default function ProductCardBasket({
   return (
     <div
       key={item._id}
-      className="bg-base-100 text-xl px-10 py-5 flex flex-row justify-between items-center w-full card card-body"
+      className="bg-base-100 text-xl px-10 py-5 gap-10 flex flex-col md:flex-row justify-between items-center w-full card card-body"
     >
-      <div key={item._id} className="flex flex-row items-center gap-5">
+      <div
+        key={item._id}
+        className="flex flex-col md:flex-row items-center gap-5"
+      >
         <figure className="image-full">
           <img src={item.imagem} alt={item.nomeImagem} />
         </figure>
         <div>
           <p className="card-title">Produto: {item.nome}</p>
           <p>Categoria: {item.categoria}</p>
-          <p className="text-sm font-bold">
-            R$<span className="text-xl">{item.preco}</span>
+          <p className="text-xl font-bold">
+            <span className="text-sm">R$</span>
+            {item.preco}
           </p>
         </div>
       </div>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-row md:flex-col gap-5">
         <div className="bg-slate-300 text-xl rounded-box text-black w-fit h-fit px-3 py-2 card-actions">
           <button
             className="px-2 text-xl"
