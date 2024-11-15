@@ -29,8 +29,9 @@ export default function Catalogo() {
   if (loadingProducts) return <LoadingCatalog />;
   return (
     <div className="flex flex-col items-center justify-center">
-      <div>
-        <h1 className="text-4xl font-bold mb-4 p-10">CATÁLOGO</h1>
+      <div className="flex flex-col items-center">
+        <h1 className="text-4xl font-bold text-center pt-10 pb-2">CATÁLOGO</h1>
+        <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {products.map((product) => (
