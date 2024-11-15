@@ -49,7 +49,7 @@ export default function Cadastro() {
       }
 
       dispatch(setNomeUsuario({ nomeUsuario }));
-      router.replace("/");
+      router.replace("/catalogo");
     } catch (error) {
       console.error("Erro ao logar o usuário:", error);
       setError("root", { message: "Erro ao logar usuário, tente novamente." });

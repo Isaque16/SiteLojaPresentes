@@ -2,10 +2,12 @@
 
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
+import { setNomeUsuario } from "@/store/slices/userSlice";
 // import LoadingSvg from "@/svg_components/LoadingSvg";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { z } from "zod";
 
 const formDataSchema = z.object({
@@ -21,6 +23,7 @@ const formDataSchema = z.object({
 
 export default function Cadastro() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -51,11 +54,11 @@ export default function Cadastro() {
       if (!response.ok)
         throw new Error("Erro ao criar o usuário, tente novamente.");
 
-      localStorage.setItem("nomeUsuario", data.nomeUsuario);
+      const { nomeUsuario } = data;
+      dispatch(setNomeUsuario({ nomeUsuario }));
       router.replace("/");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao criar o usuário:", error);
-      setError("root", { message: error.message || "Erro desconhecido." });
     }
   }
 
