@@ -2,7 +2,7 @@
 
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
-import { setNomeUsuario } from "@/store/slices/userSlice";
+import { setUserData } from "@/store/slices/userSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -48,7 +48,7 @@ export default function Cadastro() {
         return;
       }
 
-      dispatch(setNomeUsuario({ nomeUsuario }));
+      dispatch(setUserData(responseData));
       router.replace("/catalogo");
     } catch (error) {
       console.error("Erro ao logar o usuário:", error);

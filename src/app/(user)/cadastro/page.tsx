@@ -2,7 +2,7 @@
 
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
-import { setNomeUsuario } from "@/store/slices/userSlice";
+import { setUserData } from "@/store/slices/userSlice";
 // import LoadingSvg from "@/svg_components/LoadingSvg";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -54,8 +54,7 @@ export default function Cadastro() {
       if (!response.ok)
         throw new Error("Erro ao criar o usuário, tente novamente.");
 
-      const { nomeUsuario } = data;
-      dispatch(setNomeUsuario({ nomeUsuario }));
+      dispatch(setUserData(data));
       router.replace("/");
     } catch (error) {
       console.error("Erro ao criar o usuário:", error);

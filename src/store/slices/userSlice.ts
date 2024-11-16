@@ -1,20 +1,35 @@
 "use client";
+import ICustomer from "@/interfaces/ICustomer";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  nomeUsuario: ""
+const initialState: Omit<ICustomer, "senha"> = {
+  _id: "",
+  nomeCompleto: "",
+  nomeUsuario: "",
+  email: "",
+  telefone: ""
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setNomeUsuario: (state, action) => {
-      const { nomeUsuario }: { nomeUsuario: string } = action.payload;
+    setUserData: (state, { payload }) => {
+      const {
+        _id,
+        nomeCompleto,
+        nomeUsuario,
+        email,
+        telefone
+      }: typeof initialState = payload;
+      state._id = _id;
+      state.nomeCompleto = nomeCompleto;
       state.nomeUsuario = nomeUsuario;
+      state.email = email;
+      state.telefone = telefone;
     }
   }
 });
 
-export const { setNomeUsuario } = userSlice.actions;
 export default userSlice.reducer;
+export const { setUserData } = userSlice.actions;

@@ -1,7 +1,5 @@
 "use server";
 import Order from "../models/OrderModel";
-import IProduct from "../../interfaces/IProduct";
-import ICustomer from "../../interfaces/ICustomer";
 import IOrder, { EStatus } from "../../interfaces/IOrder";
 
 export async function getAllOrders(): Promise<IOrder[]> {
@@ -24,21 +22,9 @@ export async function findOrderById(id: string): Promise<IOrder | null> {
   }
 }
 
-export async function createOrder(
-  products: IProduct[],
-  customer: ICustomer,
-  deliveryAddress: string,
-  paymentMethod: string,
-  shippingMethod: string
-) {
+export async function createOrder(order: IOrder) {
   try {
-    const createdOrder = await Order.create({
-      customer,
-      products,
-      deliveryAddress,
-      paymentMethod,
-      shippingMethod
-    });
+    const createdOrder = await Order.create(order);
     return createdOrder;
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
@@ -48,12 +34,12 @@ export async function createOrder(
 
 export async function applyDiscount(
   orderId: string,
-  discount: number
+  desconto: number
 ): Promise<IOrder | null> {
   try {
     const updatedDiscount: IOrder | null = await Order.findByIdAndUpdate(
       orderId,
-      { discount },
+      { desconto },
       { new: true }
     );
     return updatedDiscount;

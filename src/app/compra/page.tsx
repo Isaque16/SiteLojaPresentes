@@ -1,10 +1,50 @@
 "use client";
 import BasketItem from "@/components/BasketItem";
+import IOrder, { EFormaPagamento, EStatus } from "@/interfaces/IOrder";
+import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Compra() {
+  const router = useRouter();
+  const userData = useSelector((state: RootState) => state.user);
+  const cesta = useSelector((state: RootState) => state.basket);
+  const dispatch = useDispatch();
+
+  const [entrega, setEntrega] = useState<string>("sem_entrega");
+  const [pagamento, setPagamento] = useState<string>("pix");
+
+  async function sendCreatOrder() {
+    const customersOrder: IOrder = {
+      cliente: userData,
+      cesta: cesta.items,
+      subTotal: cesta.totalValue,
+      valorFrete: 10,
+      valorTotal: cesta.totalValue + 10,
+      status: EStatus.PENDENTE,
+      formaPagamento:
+        EFormaPagamento[pagamento as keyof typeof EFormaPagamento],
+      dataPedido: new Date(),
+      metodoEnvio: entrega
+    };
+
+    await fetch("/api/pedido", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customersOrder)
+    });
+
+    // Checkout com Stripe
+  }
+
+  function cancelOrder() {
+    dispatch(clearBasket());
+    router.replace("/catalogo");
+  }
+
   const basket = useSelector((state: RootState) => state.basket);
   return basket.items.length == 0 ? (
     <div className="flex flex-col justify-center items-center h-screen px-5">
@@ -25,7 +65,6 @@ export default function Compra() {
       </div>
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Endereço de entrega</h1>
-        <p className="text-warning">Nenhum endereço cadastrado</p>
         <div className="flex flex-row items-center gap-2">
           <label className="label" htmlFor="sem_entrega">
             Pegar
@@ -35,6 +74,9 @@ export default function Compra() {
             type="radio"
             name="entrega"
             id="sem_entrega"
+            value="sem_entrega"
+            checked={entrega === "sem_entrega"}
+            onChange={(e) => setEntrega(e.target.value)}
           />
           <label className="label" htmlFor="entrega">
             Delivery
@@ -44,17 +86,34 @@ export default function Compra() {
             type="radio"
             name="entrega"
             id="entrega"
+            value="entrega"
+            checked={entrega === "entrega"}
+            onChange={(e) => setEntrega(e.target.value)}
           />
+          {entrega === "entrega" ? (
+            <input
+              type="text"
+              name="endereco"
+              id="endereco"
+              placeholder="Digite seu endereco"
+            />
+          ) : (
+            "endereço"
+          )}
         </div>
       </div>
+
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Forma de pagamento</h1>
         <select
           className="select select-ghost w-fit"
           name="pagamento"
           id="pagamento"
+          value={pagamento}
+          onChange={(e) => setPagamento(e.target.value)}
         >
           <option value="pix">Pix</option>
+          <option value="dinheiro">Dinheiro</option>
           <option value="credito">Cartão de crédito</option>
           <option value="debito">Cartão de débito</option>
           <option value="boleto">Boleto bancário</option>
@@ -80,10 +139,15 @@ export default function Compra() {
           </p>
         </div>
         <div className="flex flex-row gap-5 py-5">
-          <button className="btn btn-success text-white">
+          <button
+            onClick={sendCreatOrder}
+            className="btn btn-success text-white"
+          >
             Confirmar pedido
           </button>
-          <button className="btn btn-error text-white">Cancelar pedido</button>
+          <button onClick={cancelOrder} className="btn btn-error text-white">
+            Cancelar pedido
+          </button>
         </div>
       </div>
     </main>

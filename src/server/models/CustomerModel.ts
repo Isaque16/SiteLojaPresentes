@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 const customerSchema = new mongoose.Schema({
   nomeCompleto: {
     type: String,
-    required: true,
-    trim: true
+    trim: true,
+    required: true
   },
   nomeUsuario: {
     type: String,
-    required: true,
     trim: true,
+    required: true,
     unique: true
   },
   senha: {
@@ -18,13 +18,13 @@ const customerSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-    trim: true
+    trim: true,
+    required: true
   },
   telefone: {
     type: String,
-    required: true,
-    trim: true
+    trim: true,
+    required: true
   },
   CEP: {
     type: String,

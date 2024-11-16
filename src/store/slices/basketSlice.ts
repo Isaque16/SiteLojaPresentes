@@ -18,9 +18,9 @@ const basketSlice = createSlice({
   name: "basket",
   initialState,
   reducers: {
-    addToBasket: (state, action) => {
+    addToBasket: (state, { payload }) => {
       const { product, quantity }: { product: IProduct; quantity: number } =
-        action.payload;
+        payload;
       const existingIndex = state.items.findIndex(
         (item) => item._id === product._id
       );
@@ -31,25 +31,25 @@ const basketSlice = createSlice({
         state.quantities.push(quantity);
       }
 
-      state.totalValue += product.preco * quantity;
+      state.totalValue = state.items.reduce(
+        (total, item, i) => total + item.preco * state.quantities[i],
+        0
+      );
     },
-    updateQuantity: (state, action) => {
-      const { index, quantity }: { index: number; quantity: number } =
-        action.payload;
+    updateQuantity: (state, { payload }) => {
+      const { index, quantity }: { index: number; quantity: number } = payload;
 
       if (index < state.items.length) {
-        // Corrige a verificação de limite
         state.quantities[index] = quantity;
 
-        // Recalcula o valor total com as novas quantidades
         state.totalValue = state.items.reduce(
           (total, item, i) => total + item.preco * state.quantities[i],
           0
         );
       }
     },
-    removeFromBasket: (state, action) => {
-      const productId: string = action.payload; // Corrigido para `string`
+    removeFromBasket: (state, { payload }) => {
+      const productId: string = payload;
       const index = state.items.findIndex((item) => item._id === productId);
 
       if (index >= 0) {
@@ -58,10 +58,15 @@ const basketSlice = createSlice({
         state.items.splice(index, 1);
         state.quantities.splice(index, 1);
       }
+    },
+    clearBasket: (state) => {
+      state.items = [];
+      state.quantities = [];
+      state.totalValue = 0;
     }
   }
 });
 
-export const { addToBasket, updateQuantity, removeFromBasket } =
+export const { addToBasket, updateQuantity, removeFromBasket, clearBasket } =
   basketSlice.actions;
 export default basketSlice.reducer;

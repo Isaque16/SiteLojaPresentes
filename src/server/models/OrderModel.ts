@@ -1,60 +1,68 @@
+import { EFormaPagamento, EStatus } from "@/interfaces/IOrder";
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
   cliente: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Customer",
-    required: true,
+    ref: "Cliente",
+    required: true
   },
-  produtos: [
+  cesta: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
+      ref: "Produto",
+      required: true
+    }
   ],
-  valorTotal: {
+  subTotal: {
+    type: Number,
+    required: true,
+    default: 0.0
+  },
+  valorFrete: {
     type: Number,
     default: 0.0,
+    required: false
+  },
+  valorTotal: {
+    type: Number,
+    required: true,
+    default: 0.0
+  },
+  formaPagamento: {
+    type: String,
+    trim: true,
+    required: true,
+    default: EFormaPagamento.pix
   },
   status: {
     type: String,
     trim: true,
-    default: "Processando...",
-  },
-  dataPedido: {
-    type: Date,
-    default: Date.now,
-  },
-  dataEntrega: { type: Date },
-  enderecoEntrega: {
-    type: String,
     required: true,
-    trim: true,
-  },
-  metodoPagamento: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  custoEnvio: {
-    type: Number,
-    default: 0.0,
+    default: EStatus.PENDENTE
   },
   desconto: {
     type: Number,
     default: 0.0,
+    required: false
   },
   metodoEnvio: {
     type: String,
-    required: true,
     trim: true,
+    required: false
   },
-  observacoes: {
+  enderecoEntrega: {
     type: String,
     trim: true,
+    required: false
   },
+  dataEntrega: { type: Date, required: false },
+  dataPedido: {
+    type: Date,
+    required: true,
+    default: Date.now
+  }
 });
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.models.Pedido || mongoose.model("Pedido", orderSchema);
 export default Order;
