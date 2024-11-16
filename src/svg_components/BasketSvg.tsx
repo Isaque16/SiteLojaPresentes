@@ -1,5 +1,4 @@
 "use client";
-
 import { RootState } from "@/store/store";
 import Link from "next/link";
 import { useSelector } from "react-redux";
@@ -9,7 +8,7 @@ export default function BasketSvg() {
 
   return (
     <div className="flex-none">
-      <div className="dropdown dropdown-top md:dropdown-end">
+      <div className="dropdown dropdown-top md:dropdown-bottom md:dropdown-end">
         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
           <div className="indicator">
             <svg

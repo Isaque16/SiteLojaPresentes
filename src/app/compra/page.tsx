@@ -1,5 +1,5 @@
 "use client";
-import ProductCardBasket from "@/components/ProductCardBasket";
+import BasketItem from "@/components/BasketItem";
 import { RootState } from "@/store/store";
 import Link from "next/link";
 import { useSelector } from "react-redux";
@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 export default function Compra() {
   const basket = useSelector((state: RootState) => state.basket);
   return basket.items.length == 0 ? (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen px-5">
       <p className="text-2xl text-center">
         Tudo limpo por aqui,{" "}
         <Link href="/catalogo" className="link-hover text-info">
@@ -63,7 +63,7 @@ export default function Compra() {
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Resumo do pedido</h1>
         {basket.items.map((item, index) => (
-          <ProductCardBasket key={item._id} item={item} index={index} />
+          <BasketItem key={item._id} item={item} index={index} />
         ))}
       </div>
       <div>

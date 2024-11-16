@@ -58,7 +58,7 @@ export default function RootLayout({
               </div>
               <ul
                 tabIndex={0}
-                className="hidden md:flex menu menu-vertical md:menu-horizontal rounded-box"
+                className="hidden md:flex menu menu-vertical md:menu-horizontal rounded-box text-xl"
               >
                 <li>
                   <Link href={"#"}>Item 1</Link>
@@ -76,7 +76,9 @@ export default function RootLayout({
               </div>
             </div>
           </header>
+
           {children}
+
           <div className="md:hidden bg-base-100 menu menu-horizontal fixed w-full h-16 flex flex-row justify-around px-4 items-center shadow-md bottom-0 rounded-tl-box rounded-tr-box">
             <BasketSvg />
             <UserAvatarSvg />

@@ -8,7 +8,7 @@ export default function UserAvatarSvg() {
 
   return (
     <div className="flex-none">
-      <div className="dropdown dropdown-top md:dropdown-end">
+      <div className="dropdown dropdown-top dropdown-left md:dropdown-bottom md:dropdown-end">
         <div role="button" tabIndex={0} className="avatar placeholder">
           <div className="bg-neutral text-neutral-content w-12 rounded-full">
             <span>C</span>

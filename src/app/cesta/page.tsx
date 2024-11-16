@@ -1,5 +1,5 @@
 "use client";
-import ProductCardBasket from "@/components/ProductCardBasket";
+import BasketItem from "@/components/BasketItem";
 import { RootState } from "@/store/store";
 import Link from "next/link";
 import { useSelector } from "react-redux";
@@ -8,13 +8,15 @@ export default function Cesta() {
   const basket = useSelector((state: RootState) => state.basket);
 
   return basket.items.length == 0 ? (
-    <p className="text-2xl text-center flex flex-col justify-center items-center h-screen">
-      Tudo limpo por aqui,{" "}
-      <Link href="/catalogo" className="link-hover text-info">
-        adicione
-      </Link>{" "}
-      um novo produto à cesta.
-    </p>
+    <div className="flex flex-col justify-center items-center h-screen px-5">
+      <p className="text-2xl text-center">
+        Tudo limpo por aqui,{" "}
+        <Link href="/catalogo" className="link-hover text-info">
+          adicione
+        </Link>{" "}
+        um novo produto à cesta.
+      </p>
+    </div>
   ) : (
     <>
       <main className="flex flex-col items-center justify-center h-full">
@@ -25,9 +27,9 @@ export default function Cesta() {
             </h1>
             <div className="border-2 border-white w-1/2 mb-5"></div>
           </div>
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between border-base-300 border-2 rounded-box">
             {basket.items.map((item, index) => (
-              <ProductCardBasket key={item._id} item={item} index={index} />
+              <BasketItem key={item._id} item={item} index={index} />
             ))}
             <div className="bg-base-200 py-2 px-5">
               <p className="text-xl font-bold">
@@ -39,6 +41,12 @@ export default function Cesta() {
               </p>
             </div>
             <div>
+              <Link
+                href="/catalogo"
+                className="btn btn-primary w-fit m-5 text-xl text-white"
+              >
+                Continuar comprando
+              </Link>
               <Link
                 href="/compra"
                 className="btn btn-success w-fit m-5 text-xl text-white"
