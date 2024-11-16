@@ -13,7 +13,7 @@ export async function GET(
   { params }: { params: { nome: string } }
 ) {
   try {
-    const nome = decodeURIComponent(params.nome);
+    const nome = decodeURIComponent((await params).nome);
     const customer = await findCustomerByUserName(nome);
 
     return NextResponse.json(customer, { status: 200 });
@@ -31,7 +31,7 @@ export async function DELETE(
   { params }: { params: { nome: string } }
 ) {
   try {
-    const nome = decodeURIComponent(params.nome);
+    const nome = decodeURIComponent((await params).nome);
     const customer = await findCustomerByUserName(nome);
 
     if (!customer) {

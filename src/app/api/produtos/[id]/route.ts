@@ -13,7 +13,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await findProductById(params.id);
+    const product = await findProductById((await params).id);
     if (!product) {
       return NextResponse.json(
         { message: "Produto não encontrado!" },
@@ -35,15 +35,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await findProductById(params.id);
-    if (!product) {
-      return NextResponse.json(
-        { message: "Produto não encontrado!" },
-        { status: 404 }
-      );
-    }
-
-    await removeProductById(params.id);
+    await removeProductById((await params).id);
     return NextResponse.json(
       { message: "Produto removido com sucesso!" },
       { status: 200 }
