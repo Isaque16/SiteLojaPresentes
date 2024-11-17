@@ -10,7 +10,7 @@ export default function Catalogo() {
 
   // Função para buscar os produtos
   async function getProducts(): Promise<void> {
-    setLoadingProducts((prods) => prods != true);
+    setLoadingProducts(true);
     try {
       const response = await fetch("/api/produtos");
       const data = await response.json();

@@ -1,6 +1,8 @@
 "use client";
 import BasketItem from "@/components/BasketItem";
-import IOrder, { EFormaPagamento, EStatus } from "@/interfaces/IOrder";
+import EFormaPagamento from "@/interfaces/EFormaPagamento";
+import EStatus from "@/interfaces/EStatus";
+import IOrder from "@/interfaces/IOrder";
 import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
 import Link from "next/link";
@@ -31,7 +33,7 @@ export default function Compra() {
       metodoEnvio: entrega
     };
 
-    await fetch("/api/pedido", {
+    await fetch("/api/pedidos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(customersOrder)
@@ -141,11 +143,14 @@ export default function Compra() {
         <div className="flex flex-row gap-5 py-5">
           <button
             onClick={sendCreatOrder}
-            className="btn btn-success text-white"
+            className="btn btn-success w-fit m-2 text-xl text-white"
           >
             Confirmar pedido
           </button>
-          <button onClick={cancelOrder} className="btn btn-error text-white">
+          <button
+            onClick={cancelOrder}
+            className="btn btn-error w-fit m-2 text-xl text-white"
+          >
             Cancelar pedido
           </button>
         </div>

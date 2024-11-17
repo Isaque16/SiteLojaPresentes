@@ -38,7 +38,7 @@ export default function RootLayout({
             <div className="flex flex-row md:flex-row navbar justify-between bg-base-100">
               <div className="flex flex-row">
                 <div className="flex-1">
-                  <Link href={"/"} className="btn btn-ghost text-xl">
+                  <Link href="/" className="btn btn-ghost text-xl">
                     Crer Presentes
                   </Link>
                 </div>
@@ -61,13 +61,13 @@ export default function RootLayout({
                 className="hidden md:flex menu menu-vertical md:menu-horizontal rounded-box text-xl"
               >
                 <li>
-                  <Link href={"#"}>Item 1</Link>
+                  <Link href="/">Sobre nós</Link>
                 </li>
                 <li>
-                  <Link href={"#"}>Item 2</Link>
+                  <Link href="/catalogo">Produtos</Link>
                 </li>
                 <li>
-                  <Link href={"#"}>Item 3</Link>
+                  <Link href="/catalogo">Cestas</Link>
                 </li>
               </ul>
               <div className="hidden md:flex flex-row justify-center items-center gap-5">

@@ -1,7 +1,9 @@
-import IOrder, { EFormaPagamento, EStatus } from "@/interfaces/IOrder";
+import IOrder from "@/interfaces/IOrder";
 import { Schema, model, models } from "mongoose";
 import Cliente from "./CustomerModel";
 import Produto from "./ProductModel";
+import EFormaPagamento from "@/interfaces/EFormaPagamento";
+import EStatus from "@/interfaces/EStatus";
 
 const orderSchema = new Schema<IOrder>({
   cliente: {

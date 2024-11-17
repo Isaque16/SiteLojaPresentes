@@ -106,7 +106,6 @@ export default function StockManager() {
       setIsLoadingProducts(false);
     }
   }
-
   useEffect(() => {
     fetchProducts();
   }, []);

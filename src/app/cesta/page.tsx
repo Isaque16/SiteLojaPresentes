@@ -1,10 +1,12 @@
 "use client";
 import BasketItem from "@/components/BasketItem";
+import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Cesta() {
+  const dispatch = useDispatch();
   const basket = useSelector((state: RootState) => state.basket);
 
   return basket.items.length == 0 ? (
@@ -43,7 +45,7 @@ export default function Cesta() {
             <div>
               <Link
                 href="/catalogo"
-                className="btn btn-primary w-fit m-5 text-xl text-white"
+                className="btn btn-info w-fit m-5 text-xl text-white"
               >
                 Continuar comprando
               </Link>
@@ -53,6 +55,12 @@ export default function Cesta() {
               >
                 Finalizar compra
               </Link>
+              <button
+                onClick={() => dispatch(clearBasket())}
+                className="btn btn-error w-fit m-5 text-xl text-white"
+              >
+                Limpar Lista
+              </button>
             </div>
           </div>
         </div>

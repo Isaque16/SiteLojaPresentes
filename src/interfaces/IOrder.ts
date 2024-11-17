@@ -1,32 +1,11 @@
+import EFormaPagamento from "./EFormaPagamento";
+import EStatus from "./EStatus";
+import IAddress from "./IAdress";
 import ICustomer from "./ICustomer";
 import IProduct from "./IProduct";
 
-export enum EStatus {
-  "PENDENTE",
-  "PREPRANDO",
-  "A_CAMINHO",
-  "ENTREGUE"
-}
-
-export interface IAddress {
-  CEP: string;
-  estado: string;
-  bairro: string;
-  rua: string;
-  numero: string;
-  complemento?: string;
-}
-
-export enum EFormaPagamento {
-  "pix" = "PIX",
-  "dinheiro" = "DINHEIRO",
-  "credito" = "CARTAO_CREDITO",
-  "debito" = "CARTAO_DEBITO",
-  "boleto" = "BOLETO_BANCARIO"
-}
-
 export default interface IOrder {
-  readonly id?: string;
+  readonly _id?: string;
   cliente: Omit<ICustomer, "senha">;
   cesta: IProduct[];
   subTotal: number;

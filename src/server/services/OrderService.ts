@@ -1,10 +1,13 @@
 "use server";
 import Order from "../models/OrderModel";
-import IOrder, { EStatus } from "../../interfaces/IOrder";
+import IOrder from "../../interfaces/IOrder";
+import EStatus from "@/interfaces/EStatus";
 
 export async function getAllOrders(): Promise<IOrder[]> {
   try {
-    const orders: IOrder[] = await Order.find();
+    const orders: IOrder[] = await Order.find()
+      .populate("cliente", "nomeCompleto")
+      .populate("cesta");
     return orders;
   } catch (error) {
     console.error("Erro ao listar pedidos:", error);
@@ -32,75 +35,30 @@ export async function createOrder(order: IOrder) {
   }
 }
 
-export async function applyDiscount(
-  orderId: string,
-  desconto: number
-): Promise<IOrder | null> {
-  try {
-    const updatedDiscount: IOrder | null = await Order.findByIdAndUpdate(
-      orderId,
-      { desconto },
-      { new: true }
-    );
-    return updatedDiscount;
-  } catch (error) {
-    console.error("Erro ao aplicar desconto:", error);
-    throw error;
-  }
-}
-
-export async function setDeliveryDate(
-  orderId: string,
-  deliveryDate: Date
-): Promise<IOrder | null> {
-  try {
-    const settedDeliveryDate: IOrder | null = await Order.findByIdAndUpdate(
-      orderId,
-      { deliveryDate },
-      { new: true }
-    );
-    return settedDeliveryDate;
-  } catch (error) {
-    console.error("Erro ao definir data de entrega:", error);
-    throw error;
-  }
-}
+// Criar uma função para criar um novo CUPOM
 
 export async function updateStatus(
   orderId: string,
-  status: EStatus
+  updatedStatus: EStatus
 ): Promise<IOrder | null> {
+  if (updatedStatus == EStatus.ENTREGUE) {
+    await removeOrderById(orderId);
+    return null;
+  }
   try {
-    const updatedStatus: IOrder | null = await Order.findByIdAndUpdate(
+    const foundUpdatedStatus: IOrder | null = await Order.findByIdAndUpdate(
       orderId,
-      { status },
+      { status: updatedStatus },
       { new: true }
     );
-    return updatedStatus;
+    return foundUpdatedStatus;
   } catch (error) {
     console.error("Erro ao atualizar status do pedido:", error);
     throw error;
   }
 }
 
-export async function updateShippingCost(
-  orderId: string,
-  shippingCost: number
-): Promise<IOrder | null> {
-  try {
-    const updatedShippingCost: IOrder | null = await Order.findByIdAndUpdate(
-      orderId,
-      { shippingCost },
-      { new: true }
-    );
-    return updatedShippingCost;
-  } catch (error) {
-    console.error("Erro ao atualizar custo de envio:", error);
-    throw error;
-  }
-}
-
-export async function removeOrder(orderId: string): Promise<boolean> {
+export async function removeOrderById(orderId: string): Promise<boolean> {
   try {
     const removedOrder: IOrder | null = await Order.findByIdAndDelete(orderId);
     return removedOrder !== null;
