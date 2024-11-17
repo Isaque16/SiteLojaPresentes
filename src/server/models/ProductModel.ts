@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import IProduct from "@/interfaces/IProduct";
+import { Schema, model, models } from "mongoose";
 
-const productSchema = new mongoose.Schema({
+const productSchema = new Schema<IProduct>({
   nome: {
     type: String,
     trim: true,
@@ -30,6 +31,4 @@ const productSchema = new mongoose.Schema({
   nomeImagem: { type: String }
 });
 
-const Product =
-  mongoose.models.Produto || mongoose.model("Produto", productSchema);
-export default Product;
+export default models.Produto || model<IProduct>("Produto", productSchema);

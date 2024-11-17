@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import ICustomer from "@/interfaces/ICustomer";
+import { Schema, model, models } from "mongoose";
 
-const customerSchema = new mongoose.Schema({
+const customerSchema = new Schema<ICustomer>({
   nomeCompleto: {
     type: String,
     trim: true,
@@ -34,6 +35,4 @@ const customerSchema = new mongoose.Schema({
   // purchaseHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 });
 
-const Customer =
-  mongoose.models.Cliente || mongoose.model("Cliente", customerSchema);
-export default Customer;
+export default models.Cliente || model<ICustomer>("Cliente", customerSchema);

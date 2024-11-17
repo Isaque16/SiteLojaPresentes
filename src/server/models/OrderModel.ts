@@ -1,16 +1,18 @@
-import { EFormaPagamento, EStatus } from "@/interfaces/IOrder";
-import mongoose from "mongoose";
+import IOrder, { EFormaPagamento, EStatus } from "@/interfaces/IOrder";
+import { Schema, model, models } from "mongoose";
+import Cliente from "./CustomerModel";
+import Produto from "./ProductModel";
 
-const orderSchema = new mongoose.Schema({
+const orderSchema = new Schema<IOrder>({
   cliente: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Cliente",
+    type: Schema.Types.ObjectId,
+    ref: Cliente,
     required: true
   },
   cesta: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Produto",
+      type: Schema.Types.ObjectId,
+      ref: Produto,
       required: true
     }
   ],
@@ -64,5 +66,4 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-const Order = mongoose.models.Pedido || mongoose.model("Pedido", orderSchema);
-export default Order;
+export default models.Pedido || model<IOrder>("Pedido", orderSchema);
