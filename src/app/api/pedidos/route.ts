@@ -22,11 +22,8 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const orderData: IOrder = await req.json();
-    await createOrder(orderData);
-    return NextResponse.json(
-      { message: "Pedido criado com sucesso!" },
-      { status: 201 }
-    );
+    const order: IOrder | null = await createOrder(orderData);
+    return NextResponse.json(order, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

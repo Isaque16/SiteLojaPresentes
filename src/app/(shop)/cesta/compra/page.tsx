@@ -1,6 +1,6 @@
 "use client";
-import BasketItem from "@/components/BasketItem";
 import InputComponent from "@/components/InputComponent";
+import ProductCardBasket from "@/components/ProductCardBasket";
 import EFormaPagamento from "@/interfaces/EFormaPagamento";
 import EStatus from "@/interfaces/EStatus";
 import IAddress from "@/interfaces/IAdress";
@@ -58,12 +58,6 @@ export default function Compra() {
       enderecoEntrega: entrega == "entrega" ? getValues() : undefined
     };
 
-    await fetch("/api/pedidos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(customersOrder)
-    });
-
     if (entrega == "entrega" && isSaved) {
       await fetch("/api/cliente/endereco", {
         method: "PUT",
@@ -76,6 +70,15 @@ export default function Compra() {
     }
 
     // Checkout com Stripe
+
+    const response = await fetch("/api/pedidos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customersOrder)
+    });
+
+    const { _id }: { _id: string } = await response.json();
+    router.push(`/cesta/compra/comprado/${_id}`);
   }
 
   function cancelOrder() {
@@ -199,7 +202,7 @@ export default function Compra() {
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Resumo do pedido</h1>
         {basket.items.map((item, index) => (
-          <BasketItem key={item._id} item={item} index={index} />
+          <ProductCardBasket key={item._id} item={item} index={index} />
         ))}
       </div>
       <div>

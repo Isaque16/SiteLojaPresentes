@@ -2,6 +2,7 @@
 import Order from "../models/OrderModel";
 import IOrder from "../../interfaces/IOrder";
 import EStatus from "@/interfaces/EStatus";
+import IProduct from "@/interfaces/IProduct";
 
 export async function getAllOrders(): Promise<IOrder[]> {
   try {
@@ -17,7 +18,9 @@ export async function getAllOrders(): Promise<IOrder[]> {
 
 export async function findOrderById(id: string): Promise<IOrder | null> {
   try {
-    const foundOrder: IOrder | null = await Order.findById(id);
+    const foundOrder: IOrder | null = await Order.findById(id)
+      .populate("cliente", "nomeCompleto")
+      .populate("cesta");
     return foundOrder;
   } catch (error) {
     console.error("Erro ao buscar pedido:", error);
@@ -27,8 +30,10 @@ export async function findOrderById(id: string): Promise<IOrder | null> {
 
 export async function createOrder(order: IOrder) {
   try {
-    const createdOrder = await Order.create(order);
-    return createdOrder;
+    const createdOrder: IProduct = await Order.create(order);
+    const foundOrder = await findOrderById(createdOrder._id!);
+    console.log(foundOrder);
+    return foundOrder;
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
     throw error;

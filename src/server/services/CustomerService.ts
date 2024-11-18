@@ -86,7 +86,6 @@ export async function checkCustomerByEmail(email: string): Promise<boolean> {
 }
 
 export async function saveCustomerAdress(customerId: string, adress: IAddress) {
-  console.log(customerId, adress);
   try {
     const foundCustomer: ICustomer | null = await Customer.findByIdAndUpdate(
       customerId,

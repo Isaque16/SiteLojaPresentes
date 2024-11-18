@@ -8,20 +8,20 @@ export default function OrdersManage() {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
-  async function fetchOrders(): Promise<void> {
-    setIsLoadingOrders(true);
-    try {
-      const response = await fetch("/api/pedidos");
-      const data = await response.json();
-      setOrders(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingOrders(false);
-    }
-  }
   useEffect(() => {
-    fetchOrders();
+    (async () => {
+      setIsLoadingOrders(true);
+      try {
+        const response = await fetch("/api/pedidos");
+        const data = await response.json();
+        setOrders(data);
+      } catch (error) {
+        console.error(error);
+        setOrders([]);
+      } finally {
+        setIsLoadingOrders(false);
+      }
+    })();
   }, []);
 
   async function sendUpdateStatus(orderId: string, currentStatus: EStatus) {
