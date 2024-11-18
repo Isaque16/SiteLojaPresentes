@@ -6,27 +6,25 @@ import LoadingCatalog from "./loading";
 
 export default function Catalogo() {
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
-  // Função para buscar os produtos
-  async function getProducts(): Promise<void> {
-    setLoadingProducts(true);
-    try {
-      const response = await fetch("/api/produtos");
-      const data = await response.json();
-      setProducts(data);
-      setTimeout(() => setLoadingProducts(false), 1000);
-    } catch (error) {
-      console.error(error);
-      setProducts([]);
-      setLoadingProducts(false);
-    }
-  }
   useEffect(() => {
-    getProducts();
+    (async () => {
+      setIsLoadingProducts(true);
+      try {
+        const response = await fetch("/api/produtos");
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error(error);
+        setProducts([]);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    })();
   }, []);
 
-  if (loadingProducts) return <LoadingCatalog />;
+  if (isLoadingProducts) return <LoadingCatalog />;
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="flex flex-col items-center">

@@ -13,23 +13,22 @@ export default function Produto() {
 
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<IProduct>({} as IProduct);
-  const [loadingProduct, setLoadingProduct] = useState(true);
+  const [isLoadingProduct, setIsLoadingProducts] = useState(true);
 
-  // Função para buscar os produtos
-  async function getProduct(): Promise<void> {
-    setLoadingProduct(true);
-    try {
-      const response = await fetch(`/api/produtos/${productId}`);
-      const data = await response.json();
-      setProduct(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoadingProduct(false);
-    }
-  }
   useEffect(() => {
-    getProduct();
+    (async () => {
+      setIsLoadingProducts(true);
+      try {
+        const response = await fetch(`/api/produtos/${productId}`);
+        const data = await response.json();
+        setProduct(data);
+      } catch (error) {
+        console.error(error);
+        setProduct({} as IProduct);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    })(); // A função é criada e imediatamente executada
   }, []);
 
   function sendAddToBasket(): void {
@@ -37,7 +36,7 @@ export default function Produto() {
     router.replace("/cesta");
   }
 
-  if (loadingProduct) return <LoadingProduct />;
+  if (isLoadingProduct) return <LoadingProduct />;
   return (
     <main className="flex flex-col md:flex-row justify-around items-center gap-10 h-full md:h-screen">
       <figure className="bg-base-100 w-1/2 h-96 p-4 rounded-box m-5 image-full">
