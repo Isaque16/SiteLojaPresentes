@@ -50,7 +50,7 @@ export default function Cesta() {
                 Continuar comprando
               </Link>
               <Link
-                href="/compra"
+                href="/cesta/compra"
                 className="btn btn-success w-fit m-5 text-xl text-white"
               >
                 Finalizar compra

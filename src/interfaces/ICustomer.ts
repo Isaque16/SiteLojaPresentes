@@ -1,3 +1,4 @@
+import IAddress from "./IAdress";
 import IOrder from "./IOrder";
 
 export default interface ICustomer {
@@ -7,6 +8,6 @@ export default interface ICustomer {
   senha: string;
   email: string;
   telefone: string;
-  CEP?: string;
+  endereco?: IAddress;
   historicoDeCompras?: IOrder[];
 }

@@ -95,6 +95,14 @@ export default function OrdersManage() {
                     Metodo de envio:{" "}
                     <span className="font-bold">{order.metodoEnvio}</span>
                   </p>
+                  {order.metodoEnvio == "entrega" || (
+                    <p>
+                      Endereço:{" "}
+                      <span className="font-bold">
+                        {order.enderecoEntrega?.CEP}
+                      </span>
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-row gap-5 mb-10 md:mb-0">
                   <button

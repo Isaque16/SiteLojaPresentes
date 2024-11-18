@@ -1,4 +1,5 @@
 "use server";
+import IAddress from "@/interfaces/IAdress";
 import ICustomer from "../../interfaces/ICustomer";
 import Customer from "../models/CustomerModel"; // Modelo do Mongoose
 
@@ -81,5 +82,20 @@ export async function checkCustomerByEmail(email: string): Promise<boolean> {
     return !!customer;
   } catch (error) {
     throw new Error(`Erro ao verificar cliente pelo e-mail: ${error}`);
+  }
+}
+
+export async function saveCustomerAdress(customerId: string, adress: IAddress) {
+  console.log(customerId, adress);
+  try {
+    const foundCustomer: ICustomer | null = await Customer.findByIdAndUpdate(
+      customerId,
+      { endereco: adress },
+      { new: true }
+    );
+    console.log(foundCustomer);
+    return foundCustomer;
+  } catch (error) {
+    throw new Error(`Erro ao tentar atualizar endereço: ${error}`);
   }
 }

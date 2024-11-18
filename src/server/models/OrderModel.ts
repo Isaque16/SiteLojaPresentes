@@ -56,7 +56,7 @@ const orderSchema = new Schema<IOrder>({
     required: false
   },
   enderecoEntrega: {
-    type: String,
+    type: Object,
     trim: true,
     required: false
   },

@@ -27,8 +27,8 @@ const customerSchema = new Schema<ICustomer>({
     trim: true,
     required: true
   },
-  CEP: {
-    type: String,
+  endereco: {
+    type: Object,
     trim: true,
     required: false
   }

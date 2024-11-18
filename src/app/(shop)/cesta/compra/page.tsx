@@ -1,14 +1,29 @@
 "use client";
 import BasketItem from "@/components/BasketItem";
+import InputComponent from "@/components/InputComponent";
 import EFormaPagamento from "@/interfaces/EFormaPagamento";
 import EStatus from "@/interfaces/EStatus";
+import IAddress from "@/interfaces/IAdress";
 import IOrder from "@/interfaces/IOrder";
 import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import { z } from "zod";
+
+const formDataSchema = z.object({
+  CEP: z.string(),
+  estado: z.string().min(3, "Precisa ter pelo menos 3 caracteres"),
+  cidade: z.string().min(3, "Precisa ter pelo menos 3 caracteres"),
+  bairro: z.string().min(6, "Precisa ter pelo menos 6 caracteres"),
+  rua: z.string().min(3, "Precisa ter pelo menos 3 caracteres"),
+  numero: z.string().min(1, "Deve ter pelo menos 11 dígitos"),
+  complemento: z.string().optional()
+});
 
 export default function Compra() {
   const router = useRouter();
@@ -16,7 +31,16 @@ export default function Compra() {
   const cesta = useSelector((state: RootState) => state.basket);
   const dispatch = useDispatch();
 
+  const {
+    register,
+    getValues,
+    formState: { errors }
+  } = useForm<IAddress>({
+    resolver: zodResolver(formDataSchema),
+    mode: "onChange"
+  });
   const [entrega, setEntrega] = useState<string>("sem_entrega");
+  const [isSaved, setIsSaved] = useState<boolean>(false);
   const [pagamento, setPagamento] = useState<string>("pix");
 
   async function sendCreatOrder() {
@@ -30,7 +54,8 @@ export default function Compra() {
       formaPagamento:
         EFormaPagamento[pagamento as keyof typeof EFormaPagamento],
       dataPedido: new Date(),
-      metodoEnvio: entrega
+      metodoEnvio: entrega,
+      enderecoEntrega: entrega == "entrega" ? getValues() : undefined
     };
 
     await fetch("/api/pedidos", {
@@ -38,6 +63,17 @@ export default function Compra() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(customersOrder)
     });
+
+    if (entrega == "entrega" && isSaved) {
+      await fetch("/api/cliente/endereco", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          _id: customersOrder.cliente._id,
+          endereco: customersOrder.enderecoEntrega
+        })
+      });
+    }
 
     // Checkout com Stripe
   }
@@ -66,41 +102,80 @@ export default function Compra() {
         </h1>
       </div>
       <div className="card card-body card-bordered shadow-md">
-        <h1 className="card-title text-2xl">Endereço de entrega</h1>
-        <div className="flex flex-row items-center gap-2">
-          <label className="label" htmlFor="sem_entrega">
-            Pegar
-          </label>
-          <input
-            className="radio radio-xs radio-primary"
-            type="radio"
-            name="entrega"
-            id="sem_entrega"
-            value="sem_entrega"
-            checked={entrega === "sem_entrega"}
-            onChange={(e) => setEntrega(e.target.value)}
-          />
-          <label className="label" htmlFor="entrega">
-            Delivery
-          </label>
-          <input
-            className="radio radio-xs radio-primary"
-            type="radio"
-            name="entrega"
-            id="entrega"
-            value="entrega"
-            checked={entrega === "entrega"}
-            onChange={(e) => setEntrega(e.target.value)}
-          />
+        <h1 className="card-title text-2xl">
+          Entrega para {userData.nomeCompleto}
+        </h1>
+        <div className="flex flex-col justify-center gap-2">
+          <div className="flex flex-row gap-5">
+            <div className="flex flex-row items-center">
+              <label className="label" htmlFor="sem_entrega">
+                Pegar na loja
+              </label>
+              <input
+                className="radio radio-xs radio-primary"
+                type="radio"
+                name="entrega"
+                id="sem_entrega"
+                value="sem_entrega"
+                checked={entrega === "sem_entrega"}
+                onChange={(e) => setEntrega(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-row items-center">
+              <label className="label" htmlFor="entrega">
+                Delivery
+              </label>
+              <input
+                className="radio radio-xs radio-primary"
+                type="radio"
+                name="entrega"
+                id="entrega"
+                value="entrega"
+                checked={entrega === "entrega"}
+                onChange={(e) => setEntrega(e.target.value)}
+              />
+            </div>
+          </div>
           {entrega === "entrega" ? (
-            <input
-              type="text"
-              name="endereco"
-              id="endereco"
-              placeholder="Digite seu endereco"
-            />
+            <form>
+              {[
+                "CEP",
+                "estado",
+                "cidade",
+                "bairro",
+                "rua",
+                "numero",
+                "complemento"
+              ].map((field) => (
+                <div key={field}>
+                  <InputComponent
+                    label={field.charAt(0).toUpperCase() + field.slice(1)}
+                    name={field}
+                    type={field === "numero" ? "number" : "text"}
+                    placeholder={`Digite seu ${field}`}
+                    register={register}
+                  />
+                  {errors[field as keyof IAddress] && (
+                    <p className="text-error py-2 w-full max-w-xs">
+                      {errors[field as keyof IAddress]?.message}
+                    </p>
+                  )}
+                </div>
+              ))}
+              <div className="flex flex-row items-center gap-2 mt-5">
+                <input
+                  type="checkbox"
+                  name="save"
+                  id="save"
+                  className="checkbox"
+                  checked={isSaved}
+                  onChange={(e) => setIsSaved(e.target.checked)}
+                />
+                <label htmlFor="save">Salvar para compras futuras</label>
+              </div>
+            </form>
           ) : (
-            "endereço"
+            "Endereço da loja"
           )}
         </div>
       </div>
