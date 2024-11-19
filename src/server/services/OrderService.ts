@@ -2,7 +2,6 @@
 import Order from "../models/OrderModel";
 import IOrder from "../../interfaces/IOrder";
 import EStatus from "@/interfaces/EStatus";
-import IProduct from "@/interfaces/IProduct";
 
 export async function getAllOrders(): Promise<IOrder[]> {
   try {
@@ -30,9 +29,9 @@ export async function findOrderById(id: string): Promise<IOrder | null> {
 
 export async function createOrder(order: IOrder) {
   try {
-    const createdOrder: IProduct = await Order.create(order);
+    const createdOrder: IOrder = await Order.create(order);
     const foundOrder = await findOrderById(createdOrder._id!);
-    console.log(foundOrder);
+    console.log("foundOrder: ", foundOrder);
     return foundOrder;
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
@@ -42,7 +41,7 @@ export async function createOrder(order: IOrder) {
 
 // Criar uma função para criar um novo CUPOM
 
-export async function updateStatus(
+export async function updateOrderStatus(
   orderId: string,
   updatedStatus: EStatus
 ): Promise<IOrder | null> {

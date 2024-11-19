@@ -1,46 +1,31 @@
 "use client";
 import EStatus, { nextStatus } from "@/interfaces/EStatus";
-import IOrder from "@/interfaces/IOrder";
 import { useEffect, useState } from "react";
 import LoadingOrders from "./loading";
+import { trpc } from "@/trpc/client/trpc";
 
 export default function OrdersManage() {
-  const [orders, setOrders] = useState<IOrder[]>([]);
-  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const { data, isLoading } = trpc.orders.getAll.useQuery();
+  const [orders, setOrders] = useState<typeof data>(undefined);
+  const { mutate: updateStatusMutation } =
+    trpc.orders.updateStatus.useMutation();
 
   useEffect(() => {
-    (async () => {
-      setIsLoadingOrders(true);
-      try {
-        const response = await fetch("/api/pedidos");
-        const data = await response.json();
-        setOrders(data);
-      } catch (error) {
-        console.error(error);
-        setOrders([]);
-      } finally {
-        setIsLoadingOrders(false);
-      }
-    })();
-  }, []);
+    setOrders(data);
+  }, [data]);
 
   async function sendUpdateStatus(orderId: string, currentStatus: EStatus) {
     const updatedStatus: EStatus = nextStatus(currentStatus);
-    console.log(updatedStatus);
-    const response = await fetch("/api/pedidos/status", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId, updatedStatus })
+    updateStatusMutation({
+      orderId: orderId,
+      updatedStatus: updatedStatus
     });
-    console.log(response.json());
 
-    if (response.ok) {
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === orderId ? { ...order, status: updatedStatus } : order
-        )
-      );
-    }
+    setOrders((prevOrders) =>
+      prevOrders?.map((order) =>
+        order._id === orderId ? { ...order, status: updatedStatus } : order
+      )
+    );
   }
 
   return (
@@ -54,10 +39,10 @@ export default function OrdersManage() {
           id="orders_container"
           className="grid grid-col-1 gap-5 justify-center md:justify-normal md:w-96 w-full overflow-y-scroll overflow-x-hidden min-w-80 md:min-w-fit max-h-screen border-2 border-white rounded-lg p-10"
         >
-          {isLoadingOrders ? (
+          {isLoading ? (
             <LoadingOrders />
           ) : (
-            orders.map((order) => (
+            orders?.map((order) => (
               <div
                 key={order._id}
                 className="bg-base-300 py-2 rounded-box flex flex-col items-center justify-center gap-2"

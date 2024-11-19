@@ -7,6 +7,7 @@ import IAddress from "@/interfaces/IAdress";
 import IOrder from "@/interfaces/IOrder";
 import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
+import { trpc } from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,14 @@ export default function Compra() {
   const cesta = useSelector((state: RootState) => state.basket);
   const dispatch = useDispatch();
 
+  const { mutateAsync: saveOrder } = trpc.orders.save.useMutation({
+    onSuccess(data) {
+      router.push(`/cesta/compra/comprado/${data?._id}`);
+    }
+  });
+  const { mutate: saveCustomerAdress } =
+    trpc.customers.saveEndereco.useMutation();
+
   const {
     register,
     getValues,
@@ -39,6 +48,7 @@ export default function Compra() {
     resolver: zodResolver(formDataSchema),
     mode: "onChange"
   });
+
   const [entrega, setEntrega] = useState<string>("sem_entrega");
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [pagamento, setPagamento] = useState<string>("pix");
@@ -58,27 +68,15 @@ export default function Compra() {
       enderecoEntrega: entrega == "entrega" ? getValues() : undefined
     };
 
-    if (entrega == "entrega" && isSaved) {
-      await fetch("/api/cliente/endereco", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          _id: customersOrder.cliente._id,
-          endereco: customersOrder.enderecoEntrega
-        })
+    if (entrega == "entrega" && isSaved)
+      saveCustomerAdress({
+        _id: customersOrder.cliente._id!,
+        endereco: customersOrder.enderecoEntrega!
       });
-    }
 
     // Checkout com Stripe
 
-    const response = await fetch("/api/pedidos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(customersOrder)
-    });
-
-    const { _id }: { _id: string } = await response.json();
-    router.push(`/cesta/compra/comprado/${_id}`);
+    await saveOrder(customersOrder);
   }
 
   function cancelOrder() {

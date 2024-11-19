@@ -1,9 +1,8 @@
 "use client";
-
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
 import { setUserData } from "@/store/slices/userSlice";
-// import LoadingSvg from "@/svg_components/LoadingSvg";
+import { trpc } from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -24,9 +23,11 @@ const formDataSchema = z.object({
 export default function Cadastro() {
   const router = useRouter();
   const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
+    getValues,
     setError,
     formState: { errors, isValid, isSubmitting }
   } = useForm<ICustomer>({
@@ -34,31 +35,28 @@ export default function Cadastro() {
     mode: "onChange"
   });
 
-  async function createUser(data: ICustomer) {
-    try {
-      const encodedNomeUsuario = encodeURIComponent(data.nomeUsuario);
-      const userData = await fetch(`/api/cliente/${encodedNomeUsuario}`);
-      const responseData: ICustomer = await userData.json();
-
-      if (responseData?.nomeUsuario === data.nomeUsuario) {
-        setError("nomeUsuario", { message: "Este nome já está em uso" });
-        return;
-      }
-
-      const response = await fetch("/api/cliente", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok)
-        throw new Error("Erro ao criar o usuário, tente novamente.");
-
+  const { refetch } = trpc.customers.getByName.useQuery(
+    getValues().nomeUsuario,
+    { enabled: false }
+  );
+  const { mutateAsync: saveCustomer } = trpc.customers.save.useMutation({
+    onSuccess(data) {
       dispatch(setUserData(data));
       router.replace("/");
-    } catch (error) {
+    },
+    onError(error) {
       console.error("Erro ao criar o usuário:", error);
     }
+  });
+
+  async function createUser(customerData: ICustomer) {
+    const { data } = await refetch();
+    if (data?.nomeUsuario === customerData.nomeUsuario) {
+      setError("nomeUsuario", { message: "Este nome já está em uso" });
+      return;
+    }
+
+    await saveCustomer(customerData);
   }
 
   return (

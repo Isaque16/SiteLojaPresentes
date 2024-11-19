@@ -1,8 +1,7 @@
 "use client";
-
 import InputComponent from "@/components/InputComponent";
-import ICustomer from "@/interfaces/ICustomer";
 import { setUserData } from "@/store/slices/userSlice";
+import { trpc } from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -21,9 +20,11 @@ type LoginType = { nomeUsuario: string; senha: string };
 export default function Cadastro() {
   const router = useRouter();
   const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
+    getValues,
     reset,
     setError,
     formState: { errors, isValid, isSubmitting }
@@ -32,15 +33,17 @@ export default function Cadastro() {
     mode: "onChange"
   });
 
+  const { refetch } = trpc.customers.getByName.useQuery(
+    getValues().nomeUsuario,
+    { enabled: false }
+  );
+
   async function loginUser({ nomeUsuario, senha }: LoginType) {
     try {
-      const encodedNomeUsuario = encodeURIComponent(nomeUsuario);
-      const userData = await fetch(`/api/cliente/${encodedNomeUsuario}`);
-      const responseData: ICustomer = await userData.json();
+      const { data } = await refetch();
 
       const doesUserExist =
-        responseData?.nomeUsuario === nomeUsuario &&
-        responseData?.senha === senha;
+        data?.nomeUsuario === nomeUsuario && data?.senha === senha;
 
       if (!doesUserExist) {
         reset();
@@ -48,7 +51,7 @@ export default function Cadastro() {
         return;
       }
 
-      dispatch(setUserData(responseData));
+      dispatch(setUserData(data));
       router.replace("/catalogo");
     } catch (error) {
       console.error("Erro ao logar o usuário:", error);

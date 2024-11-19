@@ -43,9 +43,7 @@ export async function saveCustomer(
       savedCustomer = await Customer.findByIdAndUpdate(
         customerData._id,
         customerData,
-        {
-          new: true
-        }
+        { new: true }
       );
     else savedCustomer = await Customer.create(customerData);
     return savedCustomer;

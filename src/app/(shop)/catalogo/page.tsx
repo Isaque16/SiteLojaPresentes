@@ -1,28 +1,14 @@
 "use client";
 import ProductCard from "@/components/ProductCard";
-import IProduct from "@/interfaces/IProduct";
-import { useEffect, useState } from "react";
 import LoadingCatalog from "./loading";
+import { trpc } from "@/trpc/client/trpc";
+import { useEffect, useState } from "react";
 
 export default function Catalogo() {
-  const [products, setProducts] = useState<IProduct[]>([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      setIsLoadingProducts(true);
-      try {
-        const response = await fetch("/api/produtos");
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error(error);
-        setProducts([]);
-      } finally {
-        setIsLoadingProducts(false);
-      }
-    })();
-  }, []);
+  const { data, isLoading: isLoadingProducts } =
+    trpc.products.getAll.useQuery();
+  const [products, setProducts] = useState<typeof data>(undefined);
+  useEffect(() => setProducts(data), [data]);
 
   if (isLoadingProducts) return <LoadingCatalog />;
   return (
@@ -32,7 +18,7 @@ export default function Catalogo() {
         <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {products.map((product) => (
+        {products?.map((product) => (
           <ProductCard
             key={product._id}
             imagePath={product.imagem}

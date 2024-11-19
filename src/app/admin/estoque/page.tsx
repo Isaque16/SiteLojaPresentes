@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import IProduct from "@/interfaces/IProduct";
 import LoadingProducts from "./loading";
 import { z } from "zod";
+import { trpc } from "@/trpc/client/trpc";
 
 const formDataSchema = z.object({
   _id: z.string().optional().readonly(),
@@ -30,8 +30,44 @@ const formDataSchema = z.object({
 
 export default function StockManager() {
   const {
+    data,
+    isLoading: isLoadingProducts,
+    refetch
+  } = trpc.products.getAll.useQuery();
+
+  const [products, setProducts] = useState<typeof data>(undefined);
+  useEffect(() => {
+    setProducts(data);
+  }, [data]);
+
+  const [responseMessage, setResponseMessage] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setResponseMessage(""), 5000);
+    return () => clearTimeout(timer);
+  }, [responseMessage]);
+
+  const { mutateAsync: saveProductMutation } = trpc.products.save.useMutation({
+    onSuccess() {
+      reset();
+      refetch();
+      setResponseMessage("Estoque atualizado com sucesso!");
+    },
+    onError(err) {
+      console.error("Erro ao enviar o formulário:", err);
+    }
+  });
+
+  const { mutate: deleteProduct } = trpc.products.delete.useMutation({
+    onSuccess() {
+      refetch();
+      setResponseMessage("Produto removido com sucesso!");
+    }
+  });
+
+  const {
     register,
     handleSubmit,
+    getValues,
     reset,
     trigger,
     formState: { errors, isValid }
@@ -39,96 +75,11 @@ export default function StockManager() {
     resolver: zodResolver(formDataSchema),
     mode: "onChange"
   });
-  const [products, setProducts] = useState<IProduct[]>([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-  const [responseMessage, setResponseMessage] = useState("");
-  useEffect(() => {
-    const timer = setTimeout(() => setResponseMessage(""), 5000);
-    return () => clearTimeout(timer);
-  }, [responseMessage]);
-
-  // Função principal de envio do formulário
-  async function onSubmit(data: IProduct) {
-    try {
-      if (data._id) await updateProduct(data); // Atualiza se tiver ID
-      else await createProduct(data); // Cria um novo produto
-
-      reset(); // Limpa o formulário
-      fetchProducts(); // Atualiza a lista de produtos
-    } catch (error) {
-      console.error("Erro ao enviar o formulário:", error);
-    }
-  }
-
-  // Função para criar novo produto (POST)
-  async function createProduct(data: IProduct) {
-    try {
-      const response = await fetch("/api/produtos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      const { message } = await response.json();
-      if (response.ok) setResponseMessage(message);
-    } catch (error) {
-      console.error("Erro ao criar o produto:", error);
-      throw error;
-    }
-  }
-
-  // Função para atualizar produto existente (PUT)
-  async function updateProduct(data: IProduct) {
-    try {
-      const response = await fetch(`/api/produtos/`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      const { message } = await response.json();
-      if (response.ok) setResponseMessage(message);
-    } catch (error) {
-      console.error("Erro ao atualizar o produto:", error);
-      throw error;
-    }
-  }
-
-  // Função para buscar os produtos
-  async function fetchProducts(): Promise<void> {
-    setIsLoadingProducts(true);
-    try {
-      const response = await fetch("/api/produtos");
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error(error);
-      setProducts([]);
-    } finally {
-      setIsLoadingProducts(false);
-    }
-  }
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   function editProduct(id: string) {
-    const selectedCard = products.find((prod) => prod._id === id);
+    const selectedCard = products?.find((prod) => prod._id === id);
     reset(selectedCard);
     trigger();
-  }
-
-  async function deleteProduct(id: string) {
-    try {
-      const response = await fetch(`/api/produtos/${id}`, {
-        method: "DELETE"
-      });
-      const { message } = await response.json();
-      if (response.ok) {
-        fetchProducts();
-        setResponseMessage(message);
-      }
-    } catch (error) {
-      console.error("Erro ao deletar o produto:", error);
-    }
   }
 
   return (
@@ -140,7 +91,7 @@ export default function StockManager() {
         <div className="border-2 border-white md:w-1/12 w-1/2 mb-5"></div>
       </div>
       <div className="flex min-h-screen flex-col md:flex-row items-center justify-around">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(() => saveProductMutation(getValues()))}>
           <div className="flex flex-col items-start p-5 gap-5">
             {[
               "nome",
@@ -190,7 +141,7 @@ export default function StockManager() {
           {isLoadingProducts ? (
             <LoadingProducts />
           ) : (
-            products.map((product) => (
+            products?.map((product) => (
               <div
                 key={product._id}
                 className="bg-base-300 py-2 rounded-box flex flex-col items-center justify-center gap-2"

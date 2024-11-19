@@ -1,31 +1,17 @@
 "use client";
 import ProductCardBasket from "@/components/ProductCardBasket";
-import IOrder from "@/interfaces/IOrder";
+import { trpc } from "@/trpc/client/trpc";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Comprado() {
   const { _id } = useParams();
-  const [order, setOrder] = useState<IOrder>({} as IOrder);
-  const [isLoadingOrder, setIsLoadingOrder] = useState(true);
-
+  const { data } = trpc.orders.getById.useQuery(_id as string);
+  const [order, setOrder] = useState<typeof data>(undefined);
   useEffect(() => {
-    (async () => {
-      setIsLoadingOrder(true);
-      try {
-        const response = await fetch(`/api/pedidos/${_id}`);
-        const data: IOrder = await response.json();
-        setOrder(data);
-      } catch (error) {
-        console.error(error);
-        setOrder({} as IOrder);
-      } finally {
-        setIsLoadingOrder(false);
-      }
-    })();
-  }, []);
-  const { enderecoEntrega } = order;
+    setOrder(data);
+  }, [data]);
 
   return (
     <main className="card card-body p-5">
@@ -37,18 +23,18 @@ export default function Comprado() {
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Detalhes do pedido</h1>
         <div className="grid grid-cols-1 md:grid-cols-3">
-          {order.metodoEnvio == "entrega" && (
+          {order?.metodoEnvio == "entrega" && (
             <div>
               <h1 className="text-xl">Endereço de envio</h1>
               <ul>
-                <li>{order.cliente?.nomeCompleto}</li>
+                <li>{order?.cliente?.nomeCompleto}</li>
                 <li>
-                  {enderecoEntrega?.rua} {enderecoEntrega?.numero}
+                  {order.enderecoEntrega?.rua} {order.enderecoEntrega?.numero}
                 </li>
-                <li>{enderecoEntrega?.bairro}</li>
+                <li>{order.enderecoEntrega?.bairro}</li>
                 <li>
-                  {enderecoEntrega?.cidade}, {enderecoEntrega?.estado},{" "}
-                  {enderecoEntrega?.CEP}
+                  {order.enderecoEntrega?.cidade},{" "}
+                  {order.enderecoEntrega?.estado}, {order.enderecoEntrega?.CEP}
                 </li>
               </ul>
             </div>
@@ -56,15 +42,15 @@ export default function Comprado() {
           <div>
             <h1 className="text-xl">Método de pagamento</h1>
             <ul>
-              <li>{order.formaPagamento}</li>
+              <li>{order?.formaPagamento}</li>
             </ul>
           </div>
           <div>
             <h1 className="text-xl">Resumo do pedido</h1>
             <ul>
-              <li>Subtotal do(s) item(s): R${order.subTotal}</li>
-              <li>Frete e manuseio: R${order.valorFrete}</li>
-              <li>Total: R${order.valorTotal}</li>
+              <li>Subtotal do(s) item(s): R${order?.subTotal}</li>
+              <li>Frete e manuseio: R${order?.valorFrete}</li>
+              <li>Total: R${order?.valorTotal}</li>
             </ul>
           </div>
         </div>
@@ -72,7 +58,7 @@ export default function Comprado() {
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Resumo do pedido</h1>
         <div>
-          {order.cesta?.map((item, index) => (
+          {order?.cesta?.map((item, index) => (
             <ProductCardBasket key={item._id} item={item} index={index} />
           ))}
         </div>

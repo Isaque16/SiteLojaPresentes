@@ -6,6 +6,7 @@ import BasketSvg from "@/svg_components/BasketSvg";
 import SearchSgv from "@/svg_components/SearchSvg";
 import StoreProvider from "@/store/StoreProvider";
 import UserAvatarSvg from "@/svg_components/UserAvatarSvg";
+import TRPCProvider from "@/trpc/TRPCProvider";
 
 const geistSans = localFont({
   src: "/fonts/GeistVF.woff",
@@ -34,63 +35,66 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StoreProvider>
-          <header className="bg-base-100 menu menu-horizontal sticky w-full flex flex-row justify-between px-4 items-center shadow-md z-50">
-            <div className="flex flex-row md:flex-row navbar justify-between bg-base-100">
-              <div className="flex flex-row">
-                <div className="flex-1">
-                  <Link href="/" className="btn btn-ghost text-xl">
-                    Crer Presentes
-                  </Link>
-                </div>
-                <div className="flex flex-row justify-start">
-                  <label htmlFor="search" className="btn btn-ghost btn-circle">
-                    <SearchSgv />
-                  </label>
-                  <div className="form-control">
-                    <input
-                      type="text"
-                      name="search"
-                      placeholder="Pesquisa..."
-                      className="input input-bordered w-24 md:w-auto"
-                    />
+          <TRPCProvider>
+            <header className="bg-base-100 menu menu-horizontal sticky w-full flex flex-row justify-between px-4 items-center shadow-md z-50">
+              <div className="flex flex-row md:flex-row navbar justify-between bg-base-100">
+                <div className="flex flex-row">
+                  <div className="flex-1">
+                    <Link href="/" className="btn btn-ghost text-xl">
+                      Crer Presentes
+                    </Link>
+                  </div>
+                  <div className="flex flex-row justify-start">
+                    <label
+                      htmlFor="search"
+                      className="btn btn-ghost btn-circle"
+                    >
+                      <SearchSgv />
+                    </label>
+                    <div className="form-control">
+                      <input
+                        type="text"
+                        name="search"
+                        placeholder="Pesquisa..."
+                        className="input input-bordered w-24 md:w-auto"
+                      />
+                    </div>
                   </div>
                 </div>
+                <ul
+                  tabIndex={0}
+                  className="hidden md:flex menu menu-vertical md:menu-horizontal rounded-box text-xl"
+                >
+                  <li>
+                    <Link href="/">Sobre nós</Link>
+                  </li>
+                  <li>
+                    <Link href="/catalogo">Produtos</Link>
+                  </li>
+                  <li>
+                    <Link href="/catalogo">Cestas</Link>
+                  </li>
+                </ul>
+                <div className="hidden md:flex flex-row justify-center items-center gap-5">
+                  <BasketSvg />
+                  <UserAvatarSvg />
+                </div>
               </div>
-              <ul
-                tabIndex={0}
-                className="hidden md:flex menu menu-vertical md:menu-horizontal rounded-box text-xl"
-              >
-                <li>
-                  <Link href="/">Sobre nós</Link>
-                </li>
-                <li>
-                  <Link href="/catalogo">Produtos</Link>
-                </li>
-                <li>
-                  <Link href="/catalogo">Cestas</Link>
-                </li>
-              </ul>
-              <div className="hidden md:flex flex-row justify-center items-center gap-5">
-                <BasketSvg />
-                <UserAvatarSvg />
-              </div>
+            </header>
+            {children}
+            <div className="md:hidden bg-base-100 menu menu-horizontal fixed w-full h-16 flex flex-row justify-around px-4 items-center shadow-md bottom-0 rounded-tl-box rounded-tr-box">
+              <BasketSvg />
+              <UserAvatarSvg />
             </div>
-          </header>
-
-          {children}
-
-          <div className="md:hidden bg-base-100 menu menu-horizontal fixed w-full h-16 flex flex-row justify-around px-4 items-center shadow-md bottom-0 rounded-tl-box rounded-tr-box">
-            <BasketSvg />
-            <UserAvatarSvg />
-          </div>
-          <footer className="footer p-5 bg-base-100 border-t-2 border-white mt-5">
-            <address>
-              <p>Tel. </p>
-              <p>Email. </p>
-              <p>Endereço. </p>
-              <p>CNPJ. </p>
-            </address>
-          </footer>
+            <footer className="footer p-5 bg-base-100 border-t-2 border-white mt-5">
+              <address>
+                <p>Tel. </p>
+                <p>Email. </p>
+                <p>Endereço. </p>
+                <p>CNPJ. </p>
+              </address>
+            </footer>
+          </TRPCProvider>
         </StoreProvider>
       </body>
     </html>
