@@ -1,12 +1,11 @@
 "use client";
-import { RootState } from "@/store/store";
 import { trpc } from "@/trpc/client/trpc";
+import { setCookie, getCookie } from "cookies-next/client";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 export default function UserConfiguration() {
-  const { _id } = useSelector((state: RootState) => state.user);
-  const { data, refetch } = trpc.customers.getById.useQuery(_id!);
+  const userId = getCookie("id");
+  const { data, refetch } = trpc.customers.getById.useQuery(userId as string);
   const { mutate: saveUserData } = trpc.customers.save.useMutation({
     onSuccess() {
       refetch();
@@ -97,7 +96,12 @@ export default function UserConfiguration() {
               Escuro
             </label>
           </div>
-          <button className="btn btn-primary mt-2">Salvar</button>
+          <button
+            onClick={() => setCookie("theme", theme)}
+            className="btn btn-primary mt-2"
+          >
+            Salvar
+          </button>
         </form>
       </div>
 
@@ -142,7 +146,7 @@ export default function UserConfiguration() {
           </p>
 
           {endereco ? (
-            <button className="btn btn-warning">Editar Endereço Atual</button>
+            <button className="btn btn-natural">Editar Endereço Atual</button>
           ) : (
             <button className="btn btn-secondary">Adicionar Endereço</button>
           )}

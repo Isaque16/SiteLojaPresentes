@@ -3,6 +3,7 @@ import InputComponent from "@/components/InputComponent";
 import { setUserData } from "@/store/slices/userSlice";
 import { trpc } from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { setCookie } from "cookies-next/client";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -51,7 +52,8 @@ export default function Cadastro() {
         return;
       }
 
-      dispatch(setUserData({ _id: data._id, nomeUsuario: data.nomeUsuario }));
+      dispatch(setUserData({ nomeUsuario: data.nomeUsuario }));
+      setCookie("id", data._id);
       router.replace("/catalogo");
     } catch (error) {
       console.error("Erro ao logar o usuário:", error);

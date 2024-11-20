@@ -17,6 +17,7 @@
     "@trpc/client": "^11.0.0-rc.638",
     "@trpc/react-query": "^11.0.0-rc.638",
     "@trpc/server": "^11.0.0-rc.638",
+    "cookies-next": "^5.0.2",
     "dotenv": "^16.4.5",
     "mongoose": "^8.7.3",
     "next": "15.0.1",

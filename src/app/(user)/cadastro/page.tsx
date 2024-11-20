@@ -4,6 +4,7 @@ import ICustomer from "@/interfaces/ICustomer";
 import { setUserData } from "@/store/slices/userSlice";
 import { trpc } from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { setCookie } from "cookies-next/client";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -41,7 +42,8 @@ export default function Cadastro() {
   );
   const { mutateAsync: saveCustomer } = trpc.customers.save.useMutation({
     onSuccess(data) {
-      dispatch(setUserData({ _id: data?._id, nomeUsuario: data?.nomeUsuario }));
+      dispatch(setUserData({ nomeUsuario: data?.nomeUsuario }));
+      setCookie("id", data?._id);
       router.replace("/");
     },
     onError(error) {
