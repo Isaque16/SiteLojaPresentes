@@ -2,12 +2,9 @@
 import ICustomer from "@/interfaces/ICustomer";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState: Omit<ICustomer, "senha"> = {
+const initialState: Pick<ICustomer, "_id" | "nomeUsuario"> = {
   _id: "",
-  nomeCompleto: "",
-  nomeUsuario: "",
-  email: "",
-  telefone: ""
+  nomeUsuario: ""
 };
 
 const userSlice = createSlice({
@@ -15,18 +12,9 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUserData: (state, { payload }) => {
-      const {
-        _id,
-        nomeCompleto,
-        nomeUsuario,
-        email,
-        telefone
-      }: typeof initialState = payload;
+      const { _id, nomeUsuario }: typeof initialState = payload;
       state._id = _id;
-      state.nomeCompleto = nomeCompleto;
       state.nomeUsuario = nomeUsuario;
-      state.email = email;
-      state.telefone = telefone;
     }
   }
 });

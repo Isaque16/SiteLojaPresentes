@@ -1,4 +1,5 @@
 import {
+  findCustomerById,
   findCustomerByUserName,
   getAllCustomers,
   removeCustomerByUserName,
@@ -23,6 +24,15 @@ export const customerRouter = router({
   getByName: procedure.input(z.string()).query(async ({ input }) => {
     try {
       const foundCustomer = await findCustomerByUserName(input);
+      return foundCustomer;
+    } catch (error) {
+      console.error("Erro ao buscar cliente:", error);
+      throw new Error("Falha ao buscar o cliente");
+    }
+  }),
+  getById: procedure.input(z.string()).query(async ({ input }) => {
+    try {
+      const foundCustomer = await findCustomerById(input);
       return foundCustomer;
     } catch (error) {
       console.error("Erro ao buscar cliente:", error);

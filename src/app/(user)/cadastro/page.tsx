@@ -41,7 +41,7 @@ export default function Cadastro() {
   );
   const { mutateAsync: saveCustomer } = trpc.customers.save.useMutation({
     onSuccess(data) {
-      dispatch(setUserData(data));
+      dispatch(setUserData({ _id: data?._id, nomeUsuario: data?.nomeUsuario }));
       router.replace("/");
     },
     onError(error) {

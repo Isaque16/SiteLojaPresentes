@@ -51,7 +51,7 @@ export default function Cadastro() {
         return;
       }
 
-      dispatch(setUserData(data));
+      dispatch(setUserData({ _id: data._id, nomeUsuario: data.nomeUsuario }));
       router.replace("/catalogo");
     } catch (error) {
       console.error("Erro ao logar o usuário:", error);

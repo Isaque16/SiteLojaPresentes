@@ -4,6 +4,7 @@ import ProductCardBasket from "@/components/ProductCardBasket";
 import EFormaPagamento from "@/interfaces/EFormaPagamento";
 import EStatus from "@/interfaces/EStatus";
 import IAddress from "@/interfaces/IAdress";
+import ICustomer from "@/interfaces/ICustomer";
 import IOrder from "@/interfaces/IOrder";
 import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
@@ -29,6 +30,7 @@ const formDataSchema = z.object({
 export default function Compra() {
   const router = useRouter();
   const userData = useSelector((state: RootState) => state.user);
+  const { data } = trpc.customers.getByName.useQuery(userData.nomeUsuario);
   const cesta = useSelector((state: RootState) => state.basket);
   const dispatch = useDispatch();
 
@@ -55,7 +57,7 @@ export default function Compra() {
 
   async function sendCreatOrder() {
     const customersOrder: IOrder = {
-      cliente: userData,
+      cliente: data as ICustomer,
       cesta: cesta.items,
       subTotal: cesta.totalValue,
       valorFrete: 10,
@@ -104,7 +106,7 @@ export default function Compra() {
       </div>
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">
-          Entrega para {userData.nomeCompleto}
+          Entrega para {data?.nomeCompleto}
         </h1>
         <div className="flex flex-col justify-center gap-2">
           <div className="flex flex-row gap-5">
