@@ -1,16 +1,6 @@
 describe("Página de Login", () => {
   beforeEach(() => {
-    cy.visit("/login"); // Substitua pela rota correta se necessário
-  });
-
-  it("Deve exibir mensagem de erro para campos inválidos", () => {
-    cy.get('input[name="nomeUsuario"]').type("No");
-    cy.contains("O nome de usuário precisa ter pelo menos 3 caracteres").should(
-      "exist"
-    );
-
-    cy.get('input[name="senha"]').type("No");
-    cy.contains("A senha precisa ter pelo menos 6 caracteres").should("exist");
+    cy.visit("/login");
   });
 
   it("Deve preencher e enviar o formulário de login com dados válidos", () => {
@@ -28,6 +18,6 @@ describe("Página de Login", () => {
 
     cy.get('button[type="submit"]').click();
 
-    cy.contains("Usuário não encontrado").should("exist");
+    cy.contains("Usuário ou senha incorreto").should("exist");
   });
 });

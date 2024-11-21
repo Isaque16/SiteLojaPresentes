@@ -1,6 +1,6 @@
 describe("Página de Cadastro", () => {
   beforeEach(() => {
-    cy.visit("/cadastro"); // Substitua pela rota correta se necessário
+    cy.visit("/cadastro");
   });
 
   it("Deve exibir mensagem de erro para campos obrigatórios com entrada inválida", () => {
