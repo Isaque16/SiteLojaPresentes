@@ -8,7 +8,7 @@ import ICustomer from "@/interfaces/ICustomer";
 import IOrder from "@/interfaces/IOrder";
 import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

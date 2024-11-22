@@ -1,5 +1,5 @@
 "use client";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 import { deleteCookie, getCookie } from "cookies-next/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

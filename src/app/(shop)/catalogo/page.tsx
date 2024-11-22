@@ -1,7 +1,7 @@
 "use client";
 import ProductCard from "@/components/ProductCard";
 import LoadingCatalog from "./loading";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 import { useEffect, useState } from "react";
 
 export default function Catalogo() {

@@ -51,8 +51,7 @@ export const customerRouter = router({
 
   save: procedure.input(customerSchema).mutation(async ({ input }) => {
     try {
-      await saveCustomer(input);
-      return { message: "Cliente criado com sucesso!" };
+      return await saveCustomer(input);
     } catch (error) {
       throw new TRPCError({
         code: "BAD_REQUEST",

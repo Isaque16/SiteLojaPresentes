@@ -2,7 +2,7 @@
 import EStatus, { nextStatus } from "@/interfaces/EStatus";
 import { useEffect, useState } from "react";
 import LoadingOrders from "./loading";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 
 export default function OrdersManage() {
   const { data, isLoading } = trpc.orders.getAll.useQuery();

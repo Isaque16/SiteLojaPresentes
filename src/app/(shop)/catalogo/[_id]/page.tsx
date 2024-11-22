@@ -4,7 +4,7 @@ import { useState } from "react";
 import LoadingProduct from "./loading";
 import { useDispatch } from "react-redux";
 import { addToBasket } from "@/store/slices/basketSlice";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 
 export default function Produto() {
   const { _id: productId }: { _id: string } = useParams();

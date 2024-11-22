@@ -1,6 +1,6 @@
 "use client";
 import ProductCardBasket from "@/components/ProductCardBasket";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";

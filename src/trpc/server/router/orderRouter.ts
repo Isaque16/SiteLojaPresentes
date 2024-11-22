@@ -38,8 +38,7 @@ export const orderRouter = router({
 
   save: procedure.input(orderSchema).mutation(async ({ input }) => {
     try {
-      await createOrder(input);
-      return { message: "Pedido criado com sucesso!" };
+      return await createOrder(input);
     } catch (error) {
       throw new TRPCError({
         code: "BAD_REQUEST",

@@ -1,17 +1,12 @@
 "use client";
-import { trpc } from "@/trpc/client/trpc";
+import IAddress from "@/interfaces/IAdress";
+import trpc from "@/trpc/client/trpc";
 import { setCookie, getCookie } from "cookies-next/client";
 import React, { useEffect, useState } from "react";
 
 export default function UserConfiguration() {
   const userId = getCookie("id");
   const { data, refetch } = trpc.customers.getById.useQuery(userId as string);
-  const { mutate: saveUserData } = trpc.customers.save.useMutation({
-    onSuccess() {
-      refetch();
-      setEditUserDataResponseMessage("");
-    }
-  });
 
   // Preferência de Temas
   const [theme, setTheme] = useState("escuro");
@@ -27,6 +22,12 @@ export default function UserConfiguration() {
   }, []);
 
   // Alteração de Dados Pessoais
+  const { mutate: saveUserData } = trpc.customers.save.useMutation({
+    onSuccess() {
+      refetch();
+      setEditUserDataResponseMessage("");
+    }
+  });
   const [usuario, setUsuario] = useState<string>(data?.nomeUsuario ?? "");
   const [email, setEmail] = useState<string>(data?.email ?? "");
   const [editUserDataResponseMessage, setEditUserDataResponseMessage] =
@@ -42,19 +43,33 @@ export default function UserConfiguration() {
   }
 
   // Gerenciamento de Endereços
-  const [endereco, setEndereco] = useState(
-    data?.endereco ?? { rua: "", numero: "", bairro: "", cidade: "" }
+  const [endereco, setEndereco] = useState<IAddress>(
+    data?.endereco ?? {
+      CEP: "",
+      estado: "",
+      rua: "",
+      numero: "",
+      bairro: "",
+      cidade: "",
+      complemento: ""
+    }
   );
 
   // Sincronização dos valores de `data` com os estados
   useEffect(() => {
-    if (data) {
-      setUsuario(data.nomeUsuario ?? "");
-      setEmail(data.email ?? "");
-      setEndereco(
-        data.endereco ?? { rua: "", numero: "", bairro: "", cidade: "" }
-      );
-    }
+    setUsuario(data?.nomeUsuario ?? "");
+    setEmail(data?.email ?? "");
+    setEndereco(
+      data?.endereco ?? {
+        CEP: "",
+        estado: "",
+        rua: "",
+        numero: "",
+        bairro: "",
+        cidade: "",
+        complemento: ""
+      }
+    );
   }, [data]);
 
   return (

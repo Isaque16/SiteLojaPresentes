@@ -2,7 +2,7 @@
 import InputComponent from "@/components/InputComponent";
 import ICustomer from "@/interfaces/ICustomer";
 import { setUserData } from "@/store/slices/userSlice";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next/client";
 import { useRouter } from "next/navigation";

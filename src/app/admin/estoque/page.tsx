@@ -7,7 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import IProduct from "@/interfaces/IProduct";
 import LoadingProducts from "./loading";
 import { z } from "zod";
-import { trpc } from "@/trpc/client/trpc";
+import trpc from "@/trpc/client/trpc";
 
 const formDataSchema = z.object({
   _id: z.string().optional().readonly(),

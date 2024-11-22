@@ -1,5 +1,5 @@
+import { createContext } from "@/trpc/server/context";
 import { appRouter } from "@/trpc/server/router/appRouter";
-import { createContext } from "@/trpc/server/trpc";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 export const runtime = "nodejs";
