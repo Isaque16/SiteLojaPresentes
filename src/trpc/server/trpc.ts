@@ -1,13 +1,8 @@
-import connectToDatabase from "@/server/database/connectDB";
 import { initTRPC } from "@trpc/server";
-
-export const createContext = async () => {
-  await connectToDatabase(); // Garantir que está no local certo
-  return {};
-};
+import { Context } from "./context";
 
 // Inicializa o tRPC
-const t = initTRPC.context<typeof createContext>().create();
+const t = initTRPC.context<Context>().create();
 
 export const router = t.router;
 export const procedure = t.procedure;

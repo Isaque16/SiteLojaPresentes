@@ -7,4 +7,5 @@ export async function createContext() {
     db
   };
 }
+
 export type Context = Awaited<ReturnType<typeof createContext>>;

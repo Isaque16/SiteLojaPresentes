@@ -9,51 +9,71 @@ import { router, procedure } from "../trpc";
 import { z } from "zod";
 import orderSchema from "@/trpc/schemas/orderSchema";
 import statusEnum from "@/trpc/schemas/statusEnum";
+import { TRPCError } from "@trpc/server";
 
 export const orderRouter = router({
   getAll: procedure.query(async () => {
     try {
-      const orders = await getAllOrders();
-      return orders;
+      return await getAllOrders();
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      throw new Error("Failed to fetch orders");
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Erro ao buscar pedidos",
+        cause: error
+      });
     }
   }),
+
   getById: procedure.input(z.string()).query(async ({ input }) => {
     try {
-      const foundOrder = await findOrderById(input);
-      if (!foundOrder) throw new Error("Pedido não encontrado");
-      return foundOrder;
+      return await findOrderById(input);
     } catch (error) {
-      console.error("Erro ao buscar pedido:", error);
-      throw new Error("Falha ao buscar o pedido");
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Falha ao buscar o pedido",
+        cause: error
+      });
     }
   }),
+
   save: procedure.input(orderSchema).mutation(async ({ input }) => {
     try {
-      const createdOrder = await createOrder(input);
-      return createdOrder;
+      await createOrder(input);
+      return { message: "Pedido criado com sucesso!" };
     } catch (error) {
-      console.error("Erro ao salvar o pedido:", error);
-      throw new Error("Erro ao criar pedido");
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Erro ao criar pedido",
+        cause: error
+      });
     }
   }),
+
   updateStatus: procedure
     .input(z.object({ orderId: z.string(), updatedStatus: statusEnum }))
     .mutation(async ({ input }) => {
-      await updateOrderStatus(input.orderId, input.updatedStatus);
-      return { message: "Status atualizado com sucesso!" };
+      try {
+        await updateOrderStatus(input.orderId, input.updatedStatus);
+        return { message: "Status atualizado com sucesso!" };
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Erro ao atualizar o status do pedido",
+          cause: error
+        });
+      }
     }),
+
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await removeOrderById(input);
       return { message: "Pedido removido com sucesso!" };
     } catch (error) {
-      console.error(error);
-      return { message: "Erro ao remover pedido" };
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Erro ao remover pedido",
+        cause: error
+      });
     }
   })
 });
-
-export type OrderRouter = typeof orderRouter;

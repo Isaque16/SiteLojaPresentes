@@ -10,64 +10,83 @@ import { procedure, router } from "../trpc";
 import { z } from "zod";
 import addressSchema from "@/trpc/schemas/addressSchema";
 import customerSchema from "@/trpc/schemas/customerSchema";
+import { TRPCError } from "@trpc/server";
 
 export const customerRouter = router({
   getAll: procedure.query(async () => {
     try {
-      const customers = await getAllCustomers();
-      return customers;
+      return await getAllCustomers();
     } catch (error) {
-      console.error("Error fetching customers:", error);
-      throw new Error("Failed to fetch customers");
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Erro ao buscar clientes",
+        cause: error
+      });
     }
   }),
+
   getByName: procedure.input(z.string()).query(async ({ input }) => {
     try {
-      const foundCustomer = await findCustomerByUserName(input);
-      return foundCustomer;
+      return await findCustomerByUserName(input);
     } catch (error) {
-      console.error("Erro ao buscar cliente:", error);
-      throw new Error("Falha ao buscar o cliente");
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Falha ao buscar o cliente pelo userName",
+        cause: error
+      });
     }
   }),
+
   getById: procedure.input(z.string()).query(async ({ input }) => {
     try {
-      const foundCustomer = await findCustomerById(input);
-      return foundCustomer;
+      return await findCustomerById(input);
     } catch (error) {
-      console.error("Erro ao buscar cliente:", error);
-      throw new Error("Falha ao buscar o cliente");
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Falha ao buscar o cliente pelo ID",
+        cause: error
+      });
     }
   }),
+
   save: procedure.input(customerSchema).mutation(async ({ input }) => {
     try {
-      const savedCustomer = await saveCustomer(input);
-      return savedCustomer;
+      await saveCustomer(input);
+      return { message: "Cliente criado com sucesso!" };
     } catch (error) {
-      console.error("Erro ao salvar o cliente:", error);
-      throw new Error("Erro ao criar cliente");
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Erro ao criar cliente",
+        cause: error
+      });
     }
   }),
+
   saveEndereco: procedure
     .input(z.object({ _id: z.string(), endereco: addressSchema }))
     .mutation(async ({ input }) => {
       try {
         await saveCustomerAdress(input._id, input.endereco);
-        return { message: "Endereço salvo com sucesso" };
-      } catch (err) {
-        console.error(err);
-        return { message: "Erro ao salvar endereco" };
+        return { message: "Endereço salvo com sucesso!" };
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Erro ao salvar endereço",
+          cause: error
+        });
       }
     }),
+
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await removeCustomerByUserName(input);
       return { message: "Cliente removido com sucesso!" };
     } catch (error) {
-      console.error(error);
-      return { message: "Erro ao remover cliente" };
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Erro ao remover cliente",
+        cause: error
+      });
     }
   })
 });
-
-export type CustomerRouter = typeof customerRouter;
