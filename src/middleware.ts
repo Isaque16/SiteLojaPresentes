@@ -1,12 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 
 export default function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const isUserToken = req.cookies.has("id");
-  const isNotAllowedUrl =
-    url.pathname.startsWith("/cesta") || url.pathname.startsWith("/admin");
 
-  if (!isUserToken && isNotAllowedUrl) {
+  if (!isUserToken) {
     url.pathname = "/login";
     return NextResponse.redirect(url); // Retorna o redirecionamento
   }
@@ -14,6 +12,6 @@ export default function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = {
-  matcher: ["/cesta/:path*", "/admin/:path*"]
+export const config: MiddlewareConfig = {
+  matcher: ["/cesta/:path*", "/admin/:path*", "/config/:path*"]
 };
