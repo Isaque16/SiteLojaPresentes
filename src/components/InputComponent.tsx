@@ -5,6 +5,7 @@ interface InputProps {
   name: string;
   type: string;
   placeholder: string;
+  value?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: UseFormRegister<any>;
 }
@@ -14,6 +15,7 @@ export default function InputComponent({
   name,
   type,
   placeholder,
+  value,
   register
 }: InputProps) {
   return (
@@ -24,6 +26,7 @@ export default function InputComponent({
       <input
         type={type}
         placeholder={placeholder}
+        value={value}
         className={
           "input input-bordered focus-within:ring-white focus-within:ring-2 w-full max-w-xs"
         }
