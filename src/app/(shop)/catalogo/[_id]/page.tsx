@@ -21,6 +21,11 @@ export default function Produto() {
     router.replace("/cesta");
   }
 
+  function sendBuyProduct() {
+    dipatch(addToBasket({ product, quantity }));
+    router.replace("/cesta/compra");
+  }
+
   if (isLoadingProduct) return <LoadingProduct />;
   return (
     <main className="flex flex-col md:flex-row justify-around items-center gap-10 h-full md:h-screen">
@@ -67,7 +72,10 @@ export default function Produto() {
           >
             Adicionar à cesta
           </button>
-          <button className="bg-base-100 text-xl text-white btn btn-secondary rounded-btn">
+          <button
+            onClick={sendBuyProduct}
+            className="bg-base-100 text-xl text-white btn btn-secondary rounded-btn"
+          >
             Comprar
           </button>
         </div>
