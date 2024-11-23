@@ -8,13 +8,13 @@ import trpc from "@/trpc/client/trpc";
 
 export default function Produto() {
   const { _id: productId }: { _id: string } = useParams();
+  const { data: product, isLoading: isLoadingProduct } =
+    trpc.products.getById.useQuery(productId);
+
   const router = useRouter();
   const dipatch = useDispatch();
 
   const [quantity, setQuantity] = useState(1);
-
-  const { data: product, isLoading: isLoadingProduct } =
-    trpc.products.getById.useQuery(productId);
 
   function sendAddToBasket() {
     dipatch(addToBasket({ product, quantity }));

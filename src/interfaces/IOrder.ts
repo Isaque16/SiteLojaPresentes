@@ -16,6 +16,6 @@ export default interface IOrder {
   desconto?: number;
   metodoEnvio?: string;
   enderecoEntrega?: IAddress;
-  dataEntrega?: Date;
-  dataPedido: Date;
+  dataEntrega?: Date | string;
+  dataPedido: Date | string;
 }

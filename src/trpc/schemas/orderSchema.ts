@@ -18,10 +18,10 @@ export default z.object({
   metodoEnvio: z.string().optional(),
   enderecoEntrega: addressSchema.optional(),
   dataPedido: z
-    .union([z.string(), z.date()]) // Aceita string ou Date
-    .transform((val) => (typeof val === "string" ? new Date(val) : val)), // Converte string para Date
+    .union([z.date(), z.string()])
+    .transform((val) => (typeof val === "string" ? new Date(val) : val)),
   dataEntrega: z
-    .union([z.string(), z.date()]) // Opcional, mas com o mesmo tratamento
+    .union([z.date(), z.string()])
     .transform((val) => (typeof val === "string" ? new Date(val) : val))
     .optional()
 });

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputComponent from "@/components/InputComponent";
@@ -30,44 +30,35 @@ const formDataSchema = z.object({
 
 export default function StockManager() {
   const {
-    data,
+    data: products,
     isLoading: isLoadingProducts,
     refetch
   } = trpc.products.getAll.useQuery();
 
-  const [products, setProducts] = useState<typeof data>(undefined);
-  useEffect(() => {
-    setProducts(data);
-  }, [data]);
-
   const [responseMessage, setResponseMessage] = useState("");
-  useEffect(() => {
-    const timer = setTimeout(() => setResponseMessage(""), 5000);
-    return () => clearTimeout(timer);
-  }, [responseMessage]);
+  const showMessage = (message: string) => {
+    setResponseMessage(message);
+    setTimeout(() => setResponseMessage(""), 5000);
+  };
 
-  const { mutateAsync: saveProductMutation } = trpc.products.save.useMutation({
+  const { mutateAsync: saveProduct } = trpc.products.save.useMutation({
     onSuccess() {
       reset();
       refetch();
-      setResponseMessage("Estoque atualizado com sucesso!");
-    },
-    onError(err) {
-      console.error("Erro ao enviar o formulário:", err);
+      showMessage("Estoque atualizado com sucesso!");
     }
   });
 
   const { mutate: deleteProduct } = trpc.products.delete.useMutation({
     onSuccess() {
       refetch();
-      setResponseMessage("Produto removido com sucesso!");
+      showMessage("Produto removido com sucesso!");
     }
   });
 
   const {
     register,
     handleSubmit,
-    getValues,
     reset,
     trigger,
     formState: { errors, isValid }
@@ -76,47 +67,47 @@ export default function StockManager() {
     mode: "onChange"
   });
 
-  function editProduct(id: string) {
-    const selectedCard = products?.find((prod) => prod._id === id);
-    reset(selectedCard);
-    trigger();
-  }
+  const editProduct = (id: string) => {
+    const product = products?.find((prod) => prod._id === id);
+    if (product) {
+      reset(product);
+      trigger();
+    }
+  };
+
+  const fields = [
+    { name: "nome", label: "Nome", type: "text" },
+    { name: "categoria", label: "Categoria", type: "text" },
+    { name: "preco", label: "Preço", type: "number" },
+    { name: "quantidade", label: "Quantidade", type: "number" },
+    { name: "descricao", label: "Descrição", type: "text" },
+    { name: "imagem", label: "Imagem", type: "text" },
+    { name: "nomeImagem", label: "Nome da Imagem", type: "text" }
+  ];
 
   return (
     <main className="flex flex-col pt-16">
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold text-center pt-10 pb-2">
+        <h1 className="text-3xl font-bold text-center pb-2">
           Gerenciador de Estoque
         </h1>
         <div className="border-2 border-white md:w-1/12 w-1/2 mb-5"></div>
       </div>
       <div className="flex min-h-screen flex-col md:flex-row items-center justify-around">
-        <form onSubmit={handleSubmit(() => saveProductMutation(getValues()))}>
+        <form onSubmit={handleSubmit((data) => saveProduct(data))}>
           <div className="flex flex-col items-start p-5 gap-5">
-            {[
-              "nome",
-              "categoria",
-              "preco",
-              "quantidade",
-              "descricao",
-              "imagem",
-              "nomeImagem"
-            ].map((field) => (
-              <div key={field}>
+            {fields.map(({ name, label, type }) => (
+              <div key={name}>
                 <InputComponent
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
-                  name={field}
-                  type={
-                    field === "preco" || field === "quantidade"
-                      ? "number"
-                      : "text"
-                  }
-                  placeholder={`Digite ${field} do produto`}
+                  label={label}
+                  name={name}
+                  type={type}
+                  placeholder={`Digite ${label.toLowerCase()}`}
                   register={register}
                 />
-                {errors[field as keyof IProduct] && (
+                {errors[name as keyof IProduct] && (
                   <p className="text-error py-2">
-                    {errors[field as keyof IProduct]?.message}
+                    {errors[name as keyof IProduct]?.message}
                   </p>
                 )}
               </div>

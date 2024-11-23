@@ -10,6 +10,7 @@ import { clearBasket } from "@/store/slices/basketSlice";
 import { RootState } from "@/store/store";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,18 +30,20 @@ const formDataSchema = z.object({
 
 export default function Compra() {
   const router = useRouter();
-  const userData = useSelector((state: RootState) => state.user);
-  const { data } = trpc.customers.getByName.useQuery(userData.nomeUsuario);
+
+  const userId = getCookie("id");
+  const { data } = trpc.customers.getByName.useQuery(userId as string);
+
   const cesta = useSelector((state: RootState) => state.basket);
   const dispatch = useDispatch();
 
-  const { mutateAsync: saveOrder } = trpc.orders.save.useMutation({
-    onSuccess(data) {
+  const { mutate: saveOrder } = trpc.orders.save.useMutation({
+    onSuccess: (data) => {
+      dispatch(clearBasket());
       router.push(`/cesta/compra/comprado/${data?._id}`);
     }
   });
-  const { mutate: saveCustomerAdress } =
-    trpc.customers.saveEndereco.useMutation();
+  const { mutateAsync: saveCustomerAdress } = trpc.customers.save.useMutation();
 
   const {
     register,
@@ -71,14 +74,14 @@ export default function Compra() {
     };
 
     if (entrega == "entrega" && isSaved)
-      saveCustomerAdress({
-        _id: customersOrder.cliente._id!,
-        endereco: customersOrder.enderecoEntrega!
+      await saveCustomerAdress({
+        ...data!,
+        endereco: customersOrder.enderecoEntrega
       });
 
     // Checkout com Stripe
 
-    await saveOrder(customersOrder);
+    saveOrder(customersOrder);
   }
 
   function cancelOrder() {

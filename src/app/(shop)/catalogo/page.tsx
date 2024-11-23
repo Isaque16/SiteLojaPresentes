@@ -2,13 +2,10 @@
 import ProductCard from "@/components/ProductCard";
 import LoadingCatalog from "./loading";
 import trpc from "@/trpc/client/trpc";
-import { useEffect, useState } from "react";
 
 export default function Catalogo() {
-  const { data, isLoading: isLoadingProducts } =
+  const { data: products, isLoading: isLoadingProducts } =
     trpc.products.getAll.useQuery();
-  const [products, setProducts] = useState<typeof data>(undefined);
-  useEffect(() => setProducts(data), [data]);
 
   if (isLoadingProducts) return <LoadingCatalog />;
   return (
