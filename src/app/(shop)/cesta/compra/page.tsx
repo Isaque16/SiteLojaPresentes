@@ -32,7 +32,7 @@ export default function Compra() {
   const router = useRouter();
 
   const userId = getCookie("id");
-  const { data } = trpc.customers.getByName.useQuery(userId as string);
+  const { data } = trpc.customers.getById.useQuery(userId as string);
 
   const cesta = useSelector((state: RootState) => state.basket);
   const dispatch = useDispatch();

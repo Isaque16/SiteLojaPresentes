@@ -27,7 +27,9 @@ export async function findCustomerByUserName(
 
 export async function findCustomerById(id: string): Promise<ICustomer | null> {
   try {
-    const foundCustomer: ICustomer | null = await Customer.findById(id);
+    const foundCustomer: ICustomer | null = await Customer.findById(
+      id
+    ).populate("historicoDeCompras");
     return foundCustomer;
   } catch (error) {
     throw new Error(`Erro ao encontrar cliente pelo ID: ${error}`);

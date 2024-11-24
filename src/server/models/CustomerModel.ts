@@ -31,8 +31,14 @@ const customerSchema = new Schema<ICustomer>({
     type: Object,
     trim: true,
     required: false
-  }
-  // purchaseHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+  },
+  historicoDeCompras: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Pedido",
+      required: false
+    }
+  ]
 });
 
 export default models.Cliente || model<ICustomer>("Cliente", customerSchema);

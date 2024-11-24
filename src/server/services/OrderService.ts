@@ -2,6 +2,7 @@
 import Order from "../models/OrderModel";
 import IOrder from "../../interfaces/IOrder";
 import EStatus from "@/interfaces/EStatus";
+import Customer from "../models/CustomerModel";
 
 export async function getAllOrders(): Promise<IOrder[]> {
   try {
@@ -30,8 +31,12 @@ export async function findOrderById(id: string): Promise<IOrder | null> {
 export async function createOrder(order: IOrder) {
   try {
     const createdOrder: IOrder = await Order.create(order);
+    await Customer.findByIdAndUpdate(
+      order.cliente._id,
+      { $push: { historicoDeCompras: createdOrder } },
+      { new: true }
+    );
     const foundOrder = await findOrderById(createdOrder._id!);
-    console.log("foundOrder: ", foundOrder);
     return foundOrder;
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
