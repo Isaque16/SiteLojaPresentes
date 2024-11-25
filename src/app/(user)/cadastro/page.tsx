@@ -5,6 +5,7 @@ import { setUserData } from "@/store/slices/userSlice";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next/client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -61,6 +62,14 @@ export default function Cadastro() {
     await saveCustomer(customerData);
   }
 
+  const fields = [
+    { name: "nomeCompleto", label: "Nome Completo", type: "text" },
+    { name: "nomeUsuario", label: "Usuario", type: "text" },
+    { name: "senha", label: "Senha", type: "password" },
+    { name: "email", label: "Email", type: "text" },
+    { name: "telefone", label: "Telefone", type: "text" }
+  ];
+
   return (
     <main className="flex flex-col items-center justify-center h-full md:h-screen pt-10">
       <div className="grid grid-cols-1 md:grid-cols-2 items-center justify-center shadow-md">
@@ -80,24 +89,22 @@ export default function Cadastro() {
             className="form-control gap-5"
             onSubmit={handleSubmit(createUser)}
           >
-            {["nomeCompleto", "nomeUsuario", "senha", "email", "telefone"].map(
-              (field) => (
-                <div key={field}>
-                  <InputComponent
-                    label={field.charAt(0).toUpperCase() + field.slice(1)}
-                    name={field}
-                    type={field === "senha" ? "password" : "text"}
-                    placeholder={`Digite seu ${field}`}
-                    register={register}
-                  />
-                  {errors[field as keyof ICustomer] && (
-                    <p className="text-error py-2 w-full max-w-xs">
-                      {errors[field as keyof ICustomer]?.message}
-                    </p>
-                  )}
-                </div>
-              )
-            )}
+            {fields.map(({ name, label, type }) => (
+              <div key={name}>
+                <InputComponent
+                  label={label}
+                  name={name}
+                  type={type}
+                  placeholder={`Digite seu ${label}`}
+                  register={register}
+                />
+                {errors[name as keyof ICustomer] && (
+                  <p className="text-error py-2 w-full max-w-xs">
+                    {errors[name as keyof ICustomer]?.message}
+                  </p>
+                )}
+              </div>
+            ))}
             <button
               type="submit"
               className={`text-xl btn ${
@@ -112,6 +119,9 @@ export default function Cadastro() {
               )}
             </button>
           </form>
+          <Link href="/login" className="btn btn-link mt-2">
+            Já tenho uma conta
+          </Link>
         </div>
       </div>
     </main>

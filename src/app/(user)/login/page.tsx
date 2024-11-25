@@ -4,6 +4,7 @@ import { setUserData } from "@/store/slices/userSlice";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next/client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -61,6 +62,11 @@ export default function Cadastro() {
     }
   }
 
+  const fields = [
+    { name: "nomeUsuario", label: "Usuario", type: "text" },
+    { name: "senha", label: "Senha", type: "password" }
+  ];
+
   return (
     <main className="flex flex-col items-center justify-center h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 items-center justify-center shadow-md">
@@ -73,13 +79,13 @@ export default function Cadastro() {
             className="form-control gap-5"
             onSubmit={handleSubmit(loginUser)}
           >
-            {["nomeUsuario", "senha"].map((field, index) => (
-              <div key={index}>
+            {fields.map(({ name, label, type }) => (
+              <div key={name}>
                 <InputComponent
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
-                  name={field}
-                  type={field === "senha" ? "password" : "text"}
-                  placeholder={`Digite seu ${field}`}
+                  label={label}
+                  name={name}
+                  type={type}
+                  placeholder={`Digite seu ${label}`}
                   register={register}
                 />
               </div>
@@ -101,6 +107,9 @@ export default function Cadastro() {
               )}
             </button>
           </form>
+          <Link href="/cadastro" className="btn btn-link mt-2">
+            Não tenho uma conta
+          </Link>
         </div>
       </div>
     </main>

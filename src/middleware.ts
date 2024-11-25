@@ -5,13 +5,18 @@ export default function middleware(req: NextRequest) {
   const isUserToken = req.cookies.has("id");
 
   if (!isUserToken) {
-    url.pathname = "/login";
-    return NextResponse.redirect(url); // Retorna o redirecionamento
+    url.pathname = "/cadastro";
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
 export const config: MiddlewareConfig = {
-  matcher: ["/cesta/:path*", "/admin/:path*", "/config/:path*"]
+  matcher: [
+    "/cesta/:path*",
+    "/config/:path*",
+    "/historico/:path*",
+    "/admin/:path*"
+  ]
 };
