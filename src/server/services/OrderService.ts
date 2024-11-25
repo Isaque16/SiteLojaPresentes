@@ -3,6 +3,7 @@ import Order from "../models/OrderModel";
 import IOrder from "../../interfaces/IOrder";
 import EStatus from "@/interfaces/EStatus";
 import Customer from "../models/CustomerModel";
+import Product from "../models/ProductModel";
 
 export async function getAllOrders(): Promise<IOrder[]> {
   try {
@@ -30,12 +31,24 @@ export async function findOrderById(id: string): Promise<IOrder | null> {
 
 export async function createOrder(order: IOrder) {
   try {
+    // Create the order
     const createdOrder: IOrder = await Order.create(order);
+
+    // Regist the order in the customer history
     await Customer.findByIdAndUpdate(
       order.cliente._id,
       { $push: { historicoDeCompras: createdOrder } },
       { new: true }
     );
+
+    // Subtract the quantity of products of the DB
+    order.cesta.forEach(async (prod) => {
+      await Product.findByIdAndUpdate(prod._id, {
+        $inc: { quantidade: -order.cesta.length }
+      });
+    });
+
+    // Fetch the order and send as a response
     const foundOrder = await findOrderById(createdOrder._id!);
     return foundOrder;
   } catch (error) {

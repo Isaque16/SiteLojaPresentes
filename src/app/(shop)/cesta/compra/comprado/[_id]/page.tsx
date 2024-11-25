@@ -58,7 +58,7 @@ export default function Comprado() {
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Resumo do pedido</h1>
         <div>
-          {order?.cesta?.map((item, index) => (
+          {order?.cesta.map((item, index) => (
             <ProductCardBasket key={item._id} item={item} index={index} />
           ))}
         </div>

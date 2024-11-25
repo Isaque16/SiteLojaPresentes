@@ -30,6 +30,17 @@ const formDataSchema = z.object({
 
 export default function StockManager() {
   const {
+    register,
+    handleSubmit,
+    reset,
+    trigger,
+    formState: { errors, isValid }
+  } = useForm<IProduct>({
+    resolver: zodResolver(formDataSchema),
+    mode: "onChange"
+  });
+
+  const {
     data: products,
     isLoading: isLoadingProducts,
     refetch
@@ -54,17 +65,6 @@ export default function StockManager() {
       refetch();
       showMessage("Produto removido com sucesso!");
     }
-  });
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    trigger,
-    formState: { errors, isValid }
-  } = useForm<IProduct>({
-    resolver: zodResolver(formDataSchema),
-    mode: "onChange"
   });
 
   const editProduct = (id: string) => {

@@ -15,6 +15,7 @@ export default function Produto() {
   const dipatch = useDispatch();
 
   const [quantity, setQuantity] = useState(1);
+  const isOutOfStock = product?.quantidade === 0;
 
   function sendAddToBasket() {
     dipatch(addToBasket({ product, quantity }));
@@ -46,7 +47,7 @@ export default function Produto() {
         <p
           className={product?.quantidade !== 0 ? "text-success" : "text-error"}
         >
-          {product?.quantidade !== 0 ? "Em estoque" : "Esgotado"}
+          {isOutOfStock ? "Esgotado" : "Em estoque"}
         </p>
         <div className="bg-slate-300 text-xl rounded-box text-black w-fit h-fit px-2 py-2 flex flex-row gap-2">
           <button
@@ -68,13 +69,17 @@ export default function Produto() {
         <div className="flex flex-col gap-5 mt-5 mb-10">
           <button
             onClick={sendAddToBasket}
-            className="bg-base-100 text-xl text-white btn btn-primary rounded-btn"
+            className={`bg-base-100 text-xl text-white btn btn-primary rounded-btn ${
+              isOutOfStock && "btn-disabled"
+            }`}
           >
             Adicionar à cesta
           </button>
           <button
             onClick={sendBuyProduct}
-            className="bg-base-100 text-xl text-white btn btn-secondary rounded-btn"
+            className={`bg-base-100 text-xl text-white btn btn-secondary rounded-btn ${
+              isOutOfStock && "btn-disabled"
+            }`}
           >
             Comprar
           </button>
