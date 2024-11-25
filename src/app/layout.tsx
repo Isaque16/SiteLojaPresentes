@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "../styles/global.css";
 import Link from "next/link";
 import BasketSvg from "@/svg_components/BasketSvg";
-import SearchSgv from "@/svg_components/SearchSvg";
+import SearchSgv from "@/components/SearchBar";
 import StoreProvider from "@/store/StoreProvider";
 import UserAvatarSvg from "@/svg_components/UserAvatarSvg";
 import TRPCProvider from "@/trpc/client/TRPCProvider";
@@ -45,20 +45,7 @@ export default function RootLayout({
                     </Link>
                   </div>
                   <div className="flex flex-row justify-start">
-                    <label
-                      htmlFor="search"
-                      className="btn btn-ghost btn-circle"
-                    >
-                      <SearchSgv />
-                    </label>
-                    <div className="form-control">
-                      <input
-                        type="text"
-                        name="search"
-                        placeholder="Pesquisa..."
-                        className="input input-bordered w-24 md:w-auto"
-                      />
-                    </div>
+                    <SearchSgv />
                   </div>
                 </div>
                 <ul
