@@ -8,6 +8,7 @@ export default interface IOrder {
   readonly _id?: string;
   cliente: Omit<ICustomer, "senha">;
   cesta: IProduct[];
+  quantidades: number[];
   subTotal: number;
   valorFrete?: number;
   valorTotal: number;

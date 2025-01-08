@@ -14,8 +14,8 @@ export default function Produto() {
   const router = useRouter();
   const dipatch = useDispatch();
 
-  const [quantity, setQuantity] = useState(1);
   const isOutOfStock = product?.quantidade === 0;
+  const [quantity, setQuantity] = useState(isOutOfStock ? 0 : 1);
 
   function sendAddToBasket() {
     dipatch(addToBasket({ product, quantity }));

@@ -9,6 +9,7 @@ export default z.object({
   _id: z.string().optional(),
   cliente: customerSchema.omit({ senha: true }),
   cesta: z.array(productSchema),
+  quantidades: z.array(z.number()),
   subTotal: z.number(),
   valorFrete: z.number().optional(),
   valorTotal: z.number(),

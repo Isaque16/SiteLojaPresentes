@@ -62,6 +62,7 @@ export default function Compra() {
     const customersOrder: IOrder = {
       cliente: data as ICustomer,
       cesta: cesta.items,
+      quantidades: cesta.quantities,
       subTotal: cesta.totalValue,
       valorFrete: 10,
       valorTotal: cesta.totalValue + 10,

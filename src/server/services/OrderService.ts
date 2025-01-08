@@ -4,6 +4,7 @@ import IOrder from "../../interfaces/IOrder";
 import EStatus from "@/interfaces/EStatus";
 import Customer from "../models/CustomerModel";
 import Product from "../models/ProductModel";
+import IProduct from "@/interfaces/IProduct";
 
 export async function getAllOrders(): Promise<IOrder[]> {
   try {
@@ -29,28 +30,48 @@ export async function findOrderById(id: string): Promise<IOrder | null> {
   }
 }
 
+// Funções para criar um pedido
+async function saveOrder(order: IOrder): Promise<IOrder> {
+  return await Order.create(order);
+}
+
+async function updateCustomerHistory(
+  customerId: string,
+  order: IOrder
+): Promise<void> {
+  await Customer.findByIdAndUpdate(
+    customerId,
+    { $push: { historicoDeCompras: order } },
+    { new: true }
+  );
+}
+
+async function updateProductInventory(
+  products: IProduct[],
+  quantities: number[]
+): Promise<void> {
+  const updatePromises = products.map((prod, index) =>
+    Product.findByIdAndUpdate(prod._id, {
+      $inc: { quantidade: -quantities[index] }
+    })
+  );
+  await Promise.all(updatePromises);
+}
+
+async function getOrderDetails(orderId: string): Promise<IOrder | null> {
+  return await findOrderById(orderId);
+}
+
 export async function createOrder(order: IOrder) {
   try {
-    // Create the order
-    const createdOrder: IOrder = await Order.create(order);
+    const createdOrder = await saveOrder(order);
 
-    // Regist the order in the customer history
-    await Customer.findByIdAndUpdate(
-      order.cliente._id,
-      { $push: { historicoDeCompras: createdOrder } },
-      { new: true }
-    );
+    await Promise.all([
+      updateCustomerHistory(order.cliente._id!, createdOrder),
+      updateProductInventory(order.cesta, order.quantidades)
+    ]);
 
-    // Subtract the quantity of products of the DB
-    order.cesta.forEach(async (prod) => {
-      await Product.findByIdAndUpdate(prod._id, {
-        $inc: { quantidade: -order.cesta.length }
-      });
-    });
-
-    // Fetch the order and send as a response
-    const foundOrder = await findOrderById(createdOrder._id!);
-    return foundOrder;
+    return await getOrderDetails(createdOrder._id!);
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
     throw error;

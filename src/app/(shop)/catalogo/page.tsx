@@ -27,9 +27,11 @@ export default function Catalogo() {
         <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
       </div>
       <p className="text-left text-xl py-5">
-        {searchParam && (foundProducts?.length ?? 0) > 0
-          ? `${foundProducts?.length} Resultados para ${searchParam}`
-          : "Nenhum produto encontrado"}
+        {searchParam
+          ? (foundProducts?.length ?? 0) > 0
+            ? `${foundProducts?.length} Resultados para ${searchParam}`
+            : "Nenhum produto encontrado"
+          : ""}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {foundProducts?.map((product) => (
