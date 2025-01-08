@@ -1,9 +1,9 @@
 "use server";
 import Order from "../models/OrderModel";
-import IOrder from "../../interfaces/IOrder";
-import EStatus from "@/interfaces/EStatus";
 import Customer from "../models/CustomerModel";
 import Product from "../models/ProductModel";
+import IOrder from "@/interfaces/IOrder";
+import EStatus from "@/interfaces/EStatus";
 import IProduct from "@/interfaces/IProduct";
 
 export async function getAllOrders(): Promise<IOrder[]> {
@@ -30,11 +30,6 @@ export async function findOrderById(id: string): Promise<IOrder | null> {
   }
 }
 
-// Funções para criar um pedido
-async function saveOrder(order: IOrder): Promise<IOrder> {
-  return await Order.create(order);
-}
-
 async function updateCustomerHistory(
   customerId: string,
   order: IOrder
@@ -58,36 +53,25 @@ async function updateProductInventory(
   await Promise.all(updatePromises);
 }
 
-async function getOrderDetails(orderId: string): Promise<IOrder | null> {
-  return await findOrderById(orderId);
-}
-
-export async function createOrder(order: IOrder) {
+export async function createOrder(order: IOrder): Promise<IOrder | null> {
   try {
-    const createdOrder = await saveOrder(order);
+    const createdOrder: IOrder = await Order.create(order);
 
     await Promise.all([
       updateCustomerHistory(order.cliente._id!, createdOrder),
       updateProductInventory(order.cesta, order.quantidades)
     ]);
-
-    return await getOrderDetails(createdOrder._id!);
+    return await findOrderById(createdOrder._id!);
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
     throw error;
   }
 }
 
-// Criar uma função para criar um novo CUPOM
-
-export async function updateOrderStatus(
+async function updateOrderStatusInDatabase(
   orderId: string,
   updatedStatus: EStatus
 ): Promise<IOrder | null> {
-  if (updatedStatus == EStatus.ENTREGUE) {
-    await removeOrderById(orderId);
-    return null;
-  }
   try {
     const foundUpdatedStatus: IOrder | null = await Order.findByIdAndUpdate(
       orderId,
@@ -99,6 +83,17 @@ export async function updateOrderStatus(
     console.error("Erro ao atualizar status do pedido:", error);
     throw error;
   }
+}
+
+export async function updateOrderStatus(
+  orderId: string,
+  updatedStatus: EStatus
+): Promise<IOrder | null> {
+  if (updatedStatus == EStatus.ENTREGUE) {
+    await removeOrderById(orderId);
+    return null;
+  }
+  return await updateOrderStatusInDatabase(orderId, updatedStatus);
 }
 
 export async function removeOrderById(orderId: string): Promise<boolean> {
