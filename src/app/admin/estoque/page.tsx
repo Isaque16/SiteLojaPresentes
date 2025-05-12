@@ -3,30 +3,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputComponent from "@/components/InputComponent";
-import ProductCard from "@/components/ProductCard";
-import IProduct from "@/interfaces/IProduct";
+import { ProductCard } from "@/components";
+import { IProduct } from "@/interfaces";
 import LoadingProducts from "./loading";
-import { z } from "zod";
 import trpc from "@/trpc/client/trpc";
-
-const formDataSchema = z.object({
-  _id: z.string().optional().readonly(),
-  nome: z.string().min(3, "O nome precisa ter pelo menos 3 caracteres"),
-  categoria: z
-    .string()
-    .min(3, "A categoria precisa ter pelo menos 3 caracteres"),
-  preco: z
-    .string()
-    .transform((val) => Number(val))
-    .or(z.number().min(1, "O preço deve ser maior que 0")),
-  quantidade: z
-    .string()
-    .transform((val) => Number(val))
-    .or(z.number().min(1, "Deve haver ao menos 1 produto")),
-  descricao: z.string(),
-  imagem: z.string().url("URL da imagem inválida"),
-  nomeImagem: z.string()
-});
+import { productSchema } from "@/trpc/schemas";
 
 export default function StockManager() {
   const {
@@ -36,7 +17,7 @@ export default function StockManager() {
     trigger,
     formState: { errors, isValid }
   } = useForm<IProduct>({
-    resolver: zodResolver(formDataSchema),
+    resolver: zodResolver(productSchema),
     mode: "onChange"
   });
 

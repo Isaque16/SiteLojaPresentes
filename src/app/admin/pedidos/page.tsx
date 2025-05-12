@@ -2,7 +2,7 @@
 import EStatus, { nextStatus } from "@/interfaces/EStatus";
 import LoadingOrders from "./loading";
 import trpc from "@/trpc/client/trpc";
-import OrderCard from "@/components/OrderCard";
+import { OrderCard } from "@/components";
 
 export default function OrdersManage() {
   const { data: orders, refetch, isLoading } = trpc.orders.getAll.useQuery();

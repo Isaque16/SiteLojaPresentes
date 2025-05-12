@@ -1,6 +1,13 @@
-// import Image from "next/image";
-
 import Link from "next/link";
+
+type ProductCardProps = {
+  id: string;
+  imagePath: string;
+  imageAlt: string;
+  productTitle: string;
+  productDescription: string;
+  productPrice: string;
+};
 
 export default function ProductCard({
   id,
@@ -9,14 +16,7 @@ export default function ProductCard({
   productTitle,
   productDescription,
   productPrice
-}: {
-  id: string;
-  imagePath: string;
-  imageAlt: string;
-  productTitle: string;
-  productDescription: string;
-  productPrice: string;
-}) {
+}: ProductCardProps) {
   return (
     <Link href={`/catalogo/${id}`}>
       <div className="card w-80 md:w-96 max-h-screen bg-base-100 hover:ring-1 hover:ring-white shadow-xl p-2 cursor-pointer">

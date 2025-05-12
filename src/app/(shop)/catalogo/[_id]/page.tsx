@@ -1,10 +1,9 @@
 "use client";
+import { useBasketStore } from "@/store";
+import trpc from "@/trpc/client/trpc";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingProduct from "./loading";
-import { useDispatch } from "react-redux";
-import { addToBasket } from "@/store/slices/basketSlice";
-import trpc from "@/trpc/client/trpc";
 
 export default function Produto() {
   const { _id: productId }: { _id: string } = useParams();
@@ -12,18 +11,18 @@ export default function Produto() {
     trpc.products.getById.useQuery(productId);
 
   const router = useRouter();
-  const dipatch = useDispatch();
+  const { addToBasket } = useBasketStore();
 
   const isOutOfStock = product?.quantidade === 0;
   const [quantity, setQuantity] = useState(isOutOfStock ? 0 : 1);
 
   function sendAddToBasket() {
-    dipatch(addToBasket({ product, quantity }));
+    addToBasket(product!, quantity);
     router.replace("/cesta");
   }
 
   function sendBuyProduct() {
-    dipatch(addToBasket({ product, quantity }));
+    addToBasket(product!, quantity);
     router.replace("/cesta/compra");
   }
 

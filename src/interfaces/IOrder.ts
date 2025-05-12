@@ -1,6 +1,6 @@
-import EFormaPagamento from "./EFormaPagamento";
+import EPaymentMethod from "./EPaymentMethod";
 import EStatus from "./EStatus";
-import IAddress from "./IAdress";
+import IAddress from "./IAddress";
 import ICustomer from "./ICustomer";
 import IProduct from "./IProduct";
 
@@ -12,7 +12,7 @@ export default interface IOrder {
   subTotal: number;
   valorFrete?: number;
   valorTotal: number;
-  formaPagamento: EFormaPagamento;
+  formaPagamento: EPaymentMethod;
   status: EStatus;
   desconto?: number;
   metodoEnvio?: string;

@@ -1,13 +1,12 @@
 "use client";
 import InputComponent from "@/components/InputComponent";
-import { setUserData } from "@/store/slices/userSlice";
+import { useUserStore } from "@/store";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { z } from "zod";
 
 const formDataSchema = z.object({
@@ -21,7 +20,7 @@ type LoginType = { nomeUsuario: string; senha: string };
 
 export default function Cadastro() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const { setUserData } = useUserStore();
 
   const {
     register,
@@ -53,7 +52,7 @@ export default function Cadastro() {
         return;
       }
 
-      dispatch(setUserData({ nomeUsuario: data.nomeUsuario }));
+      setUserData({ _id: data._id, nomeUsuario: data.nomeUsuario });
       setCookie("id", data._id);
       router.replace("/catalogo");
     } catch (error) {

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function UserAvatarSvg() {
+export default function UserAvatar() {
   const router = useRouter();
   const userId = getCookie("id");
   const { data } = userId

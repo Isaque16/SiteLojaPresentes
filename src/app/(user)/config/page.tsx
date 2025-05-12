@@ -1,5 +1,5 @@
 "use client";
-import IAddress from "@/interfaces/IAdress";
+import IAddress from "@/interfaces/IAddress";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie, getCookie } from "cookies-next/client";

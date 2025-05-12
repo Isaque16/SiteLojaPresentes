@@ -1,15 +1,17 @@
 import IProduct from "@/interfaces/IProduct";
-import { RootState } from "@/store/store";
-import { useSelector } from "react-redux";
+import { useBasketStore } from "@/store";
+
+type ProductCardBasketProps = {
+  item: IProduct;
+  index: number;
+};
 
 export default function ProductCardBasket({
   item,
   index
-}: {
-  item: IProduct;
-  index: number;
-}) {
-  const basket = useSelector((state: RootState) => state.basket);
+}: ProductCardBasketProps) {
+  const { quantities } = useBasketStore();
+
   return (
     <div
       key={index}
@@ -30,7 +32,7 @@ export default function ProductCardBasket({
       </div>
       <div className="flex flex-row md:flex-col gap-5">
         <div className="bg-base-200 text-xl font-bold rounded-box text-white w-fit h-fit px-3 py-2 card-actions">
-          {basket.quantities[index]}
+          {quantities[index]}
         </div>
       </div>
     </div>

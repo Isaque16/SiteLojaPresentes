@@ -1,13 +1,14 @@
 "use client";
 import InputComponent from "@/components/InputComponent";
-import ProductCardBasket from "@/components/ProductCardBasket";
-import EFormaPagamento from "@/interfaces/EFormaPagamento";
-import EStatus from "@/interfaces/EStatus";
-import IAddress from "@/interfaces/IAdress";
-import ICustomer from "@/interfaces/ICustomer";
-import IOrder from "@/interfaces/IOrder";
-import { clearBasket } from "@/store/slices/basketSlice";
-import { RootState } from "@/store/store";
+import { ProductCardBasket } from "@/components";
+import {
+  IOrder,
+  ICustomer,
+  IAddress,
+  EStatus,
+  EPaymentMethod
+} from "@/interfaces";
+import { useBasketStore, useOrderStore } from "@/store";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getCookie } from "cookies-next";
@@ -15,7 +16,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
 
 const formDataSchema = z.object({
@@ -34,12 +34,12 @@ export default function Compra() {
   const userId = getCookie("id");
   const { data } = trpc.customers.getById.useQuery(userId as string);
 
-  const cesta = useSelector((state: RootState) => state.basket);
-  const dispatch = useDispatch();
+  const { items, quantities, totalValue, clearBasket } = useBasketStore();
+  const { setOrder } = useOrderStore();
 
   const { mutate: saveOrder } = trpc.orders.save.useMutation({
     onSuccess: (data) => {
-      dispatch(clearBasket());
+      clearBasket();
       router.push(`/cesta/compra/comprado/${data?._id}`);
     }
   });
@@ -61,14 +61,13 @@ export default function Compra() {
   async function sendCreatOrder() {
     const customersOrder: IOrder = {
       cliente: data as ICustomer,
-      cesta: cesta.items,
-      quantidades: cesta.quantities,
-      subTotal: cesta.totalValue,
+      cesta: items,
+      quantidades: quantities,
+      subTotal: totalValue,
       valorFrete: 10,
-      valorTotal: cesta.totalValue + 10,
+      valorTotal: totalValue + 10,
       status: EStatus.PENDENTE,
-      formaPagamento:
-        EFormaPagamento[pagamento as keyof typeof EFormaPagamento],
+      formaPagamento: EPaymentMethod[pagamento as keyof typeof EPaymentMethod],
       dataPedido: new Date(),
       metodoEnvio: entrega,
       enderecoEntrega: entrega == "entrega" ? getValues() : undefined
@@ -81,17 +80,16 @@ export default function Compra() {
       });
 
     // Checkout com Stripe
-
+    setOrder(customersOrder);
     saveOrder(customersOrder);
   }
 
   function cancelOrder() {
-    dispatch(clearBasket());
+    clearBasket();
     router.replace("/catalogo");
   }
 
-  const basket = useSelector((state: RootState) => state.basket);
-  return basket.items.length == 0 ? (
+  return items.length == 0 ? (
     <div className="flex flex-col justify-center items-center h-screen px-5">
       <p className="text-2xl text-center">
         Tudo limpo por aqui,{" "}
@@ -205,21 +203,21 @@ export default function Compra() {
       </div>
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Resumo do pedido</h1>
-        {basket.items.map((item, index) => (
+        {items.map((item, index) => (
           <ProductCardBasket key={item._id} item={item} index={index} />
         ))}
       </div>
       <div>
         <div>
           <p className="text-xl">
-            {basket.quantities.reduce((acc, cur) => acc + cur, 0)} Itens
+            {quantities.reduce((acc, cur) => acc + cur, 0)} Itens
           </p>
           <p className="text-xl">
             Frete e manuseio: <span className="text-sm">R$</span>10
           </p>
           <p className="text-xl">
             Total do pedido: <span className="text-sm">R$</span>
-            {basket.totalValue}
+            {totalValue}
           </p>
         </div>
         <div className="flex flex-row gap-5 py-5">

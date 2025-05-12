@@ -1,14 +1,13 @@
 "use client";
 import InputComponent from "@/components/InputComponent";
-import ICustomer from "@/interfaces/ICustomer";
-import { setUserData } from "@/store/slices/userSlice";
+import { ICustomer } from "@/interfaces";
+import { useUserStore } from "@/store";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { z } from "zod";
 
 const formDataSchema = z.object({
@@ -24,7 +23,7 @@ const formDataSchema = z.object({
 
 export default function Cadastro() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const { setUserData } = useUserStore();
 
   const {
     register,
@@ -41,9 +40,13 @@ export default function Cadastro() {
     getValues().nomeUsuario,
     { enabled: false }
   );
+
   const { mutateAsync: saveCustomer } = trpc.customers.save.useMutation({
     onSuccess(data) {
-      dispatch(setUserData({ nomeUsuario: data?.nomeUsuario }));
+      setUserData({
+        _id: data?._id || "",
+        nomeUsuario: data?.nomeUsuario || ""
+      });
       setCookie("id", data?._id);
       router.replace("/");
     },

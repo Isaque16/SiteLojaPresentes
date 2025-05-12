@@ -1,17 +1,13 @@
 import IProduct from "@/interfaces/IProduct";
-import { removeFromBasket, updateQuantity } from "@/store/slices/basketSlice";
-import { RootState } from "@/store/store";
-import { useDispatch, useSelector } from "react-redux";
+import { useBasketStore } from "@/store";
 
-export default function BasketItem({
-  item,
-  index
-}: {
+type BasketItemProps = {
   item: IProduct;
   index: number;
-}) {
-  const dispatch = useDispatch();
-  const basket = useSelector((state: RootState) => state.basket);
+};
+
+export default function BasketItem({ item, index }: BasketItemProps) {
+  const { updateQuantity, removeFromBasket, quantities } = useBasketStore();
 
   return (
     <div
@@ -39,28 +35,18 @@ export default function BasketItem({
           <button
             className="px-2 text-xl"
             onClick={() =>
-              dispatch(
-                updateQuantity({
-                  index,
-                  quantity: Math.max(1, basket.quantities[index] - 1)
-                })
-              )
+              updateQuantity(index, Math.max(1, quantities[index] - 1))
             }
           >
             -
           </button>
-          {basket.quantities[index]}
+          {quantities[index]}
           <button
             className="px-2 text-xl"
             onClick={() =>
-              dispatch(
-                updateQuantity({
-                  index,
-                  quantity: Math.min(
-                    item.quantidade,
-                    basket.quantities[index] + 1
-                  )
-                })
+              updateQuantity(
+                index,
+                Math.min(item.quantidade, quantities[index] + 1)
               )
             }
           >
@@ -69,7 +55,7 @@ export default function BasketItem({
         </div>
         <button
           className="btn btn-error text-white"
-          onClick={() => dispatch(removeFromBasket(item._id))}
+          onClick={() => removeFromBasket(item._id!)}
         >
           Remover
         </button>

@@ -1,10 +1,9 @@
 "use client";
-import { RootState } from "@/store/store";
+import { useBasketStore } from "@/store";
 import Link from "next/link";
-import { useSelector } from "react-redux";
 
-export default function BasketSvg() {
-  const items = useSelector((state: RootState) => state.basket);
+export default function Cart() {
+  const { quantities, totalValue } = useBasketStore();
 
   return (
     <div className="flex-none">
@@ -26,7 +25,7 @@ export default function BasketSvg() {
               />
             </svg>
             <span className="badge badge-sm indicator-item">
-              {items.quantities.reduce((acc, cur) => acc + cur, 0)}
+              {quantities.reduce((acc, cur) => acc + cur, 0)}
             </span>
           </div>
         </div>
@@ -36,10 +35,10 @@ export default function BasketSvg() {
         >
           <div className="card-body">
             <span className="text-lg font-bold">
-              {items.quantities.reduce((acc, cur) => acc + cur, 0)} Items
+              {quantities.reduce((acc, cur) => acc + cur, 0)} Items
             </span>
             <span className="text-info">
-              Subtotal: R${items.totalValue.toFixed(2)}
+              Subtotal: R${totalValue.toFixed(2)}
             </span>
             <div className="card-actions">
               <Link href={"/cesta/"} className="btn btn-primary btn-block">

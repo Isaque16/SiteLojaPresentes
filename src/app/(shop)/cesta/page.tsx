@@ -1,15 +1,12 @@
 "use client";
 import BasketItem from "@/components/BasketItem";
-import { clearBasket } from "@/store/slices/basketSlice";
-import { RootState } from "@/store/store";
+import { useBasketStore } from "@/store";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
 
 export default function Cesta() {
-  const dispatch = useDispatch();
-  const basket = useSelector((state: RootState) => state.basket);
+  const { items, quantities, totalValue, clearBasket } = useBasketStore();
 
-  return basket.items.length == 0 ? (
+  return items.length == 0 ? (
     <div className="flex flex-col justify-center items-center h-screen px-5">
       <p className="text-2xl text-center">
         Tudo limpo por aqui,{" "}
@@ -30,16 +27,16 @@ export default function Cesta() {
             <div className="border-2 border-white w-1/2 mb-5"></div>
           </div>
           <div className="flex flex-col justify-between border-base-300 border-2 rounded-box">
-            {basket.items.map((item, index) => (
+            {items.map((item, index) => (
               <BasketItem key={item._id} item={item} index={index} />
             ))}
             <div className="bg-base-200 py-2 px-5">
               <p className="text-xl font-bold">
-                {basket.quantities.reduce((acc, cur) => acc + cur, 0)} itens
+                {quantities.reduce((acc, cur) => acc + cur, 0)} itens
               </p>
               <p className="text-xl font-bold">
                 Sub-total: <span className="text-sm">R$</span>
-                {basket.totalValue}
+                {totalValue}
               </p>
             </div>
             <div>
@@ -56,7 +53,7 @@ export default function Cesta() {
                 Finalizar compra
               </Link>
               <button
-                onClick={() => dispatch(clearBasket())}
+                onClick={() => clearBasket()}
                 className="btn btn-error w-fit m-5 text-xl text-white"
               >
                 Limpar Lista
@@ -65,7 +62,6 @@ export default function Cesta() {
           </div>
         </div>
       </main>
-      )
     </>
   );
 }

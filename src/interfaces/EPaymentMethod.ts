@@ -1,4 +1,4 @@
-enum EFormaPagamento {
+enum EPaymentMethod {
   "pix" = "PIX",
   "dinheiro" = "DINHEIRO",
   "credito" = "CARTAO_CREDITO",
@@ -6,4 +6,4 @@ enum EFormaPagamento {
   "boleto" = "BOLETO_BANCARIO"
 }
 
-export default EFormaPagamento;
+export default EPaymentMethod;
