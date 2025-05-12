@@ -1,10 +1,10 @@
-import EFormaPagamento from "@/interfaces/EFormaPagamento";
+import EPaymentMethod from "@/interfaces/EPaymentMethod";
 import { z } from "zod";
 
 export default z.enum([
-  EFormaPagamento.pix,
-  EFormaPagamento.dinheiro,
-  EFormaPagamento.credito,
-  EFormaPagamento.debito,
-  EFormaPagamento.boleto
+  EPaymentMethod.pix,
+  EPaymentMethod.dinheiro,
+  EPaymentMethod.credito,
+  EPaymentMethod.debito,
+  EPaymentMethod.boleto
 ]);

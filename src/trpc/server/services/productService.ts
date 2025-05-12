@@ -1,6 +1,6 @@
 "use server";
 import IProduct from "@/interfaces/IProduct";
-import Product from "@/trpc/server/models/productModel";
+import { productModel as Product } from "@/trpc/server/models";
 
 /**
  * Retrieves all products from the database.

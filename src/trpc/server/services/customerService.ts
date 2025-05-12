@@ -1,7 +1,7 @@
 "use server";
-import IAddress from "@/interfaces/IAdress";
+import IAddress from "@/interfaces/IAddress";
 import ICustomer from "@/interfaces/ICustomer";
-import Customer from "@/trpc/server/models/customerModel";
+import { customerModel as Customer } from "@/trpc/server/models";
 
 /**
  * Retrieves all customers from the database.

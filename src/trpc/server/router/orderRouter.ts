@@ -4,12 +4,11 @@ import {
   getAllOrders,
   removeOrderById,
   updateOrderStatus
-} from "@/trpc/server/services/orderService";
+} from "@/trpc/server/services";
 import { router, procedure } from "../trpc";
-import { z } from "zod";
-import orderSchema from "@/trpc/schemas/orderSchema";
-import statusEnum from "@/trpc/schemas/statusEnum";
+import { statusSchema, orderSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
 /**
  * Order Router - Handles all order-related API endpoints
@@ -81,7 +80,7 @@ export const orderRouter = router({
    * @throws {TRPCError} With code 'BAD_REQUEST' if status update fails
    */
   updateStatus: procedure
-    .input(z.object({ orderId: z.string(), updatedStatus: statusEnum }))
+    .input(z.object({ orderId: z.string(), updatedStatus: statusSchema }))
     .mutation(async ({ input }) => {
       try {
         await updateOrderStatus(input.orderId, input.updatedStatus);

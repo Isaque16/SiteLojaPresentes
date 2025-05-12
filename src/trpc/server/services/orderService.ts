@@ -1,7 +1,9 @@
 "use server";
-import Order from "@/trpc/server/models/orderModel";
-import Customer from "@/trpc/server/models/customerModel";
-import Product from "@/trpc/server/models/productModel";
+import {
+  orderModel as Order,
+  productModel as Product,
+  customerModel as Customer
+} from "../models";
 import IOrder from "@/interfaces/IOrder";
 import EStatus from "@/interfaces/EStatus";
 import IProduct from "@/interfaces/IProduct";

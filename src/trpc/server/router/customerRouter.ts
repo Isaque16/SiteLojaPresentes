@@ -5,11 +5,10 @@ import {
   removeCustomerByUserName,
   saveCustomer,
   saveCustomerAdress
-} from "@/trpc/server/services/customerService";
+} from "@/trpc/server/services";
 import { procedure, router } from "../trpc";
 import { z } from "zod";
-import addressSchema from "@/trpc/schemas/addressSchema";
-import customerSchema from "@/trpc/schemas/customerSchema";
+import { customerSchema, addressSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
 
 /**

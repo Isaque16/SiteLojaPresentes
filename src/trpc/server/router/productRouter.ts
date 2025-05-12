@@ -3,10 +3,10 @@ import {
   getAllProducts,
   removeProductById,
   saveProduct
-} from "@/trpc/server/services/productService";
+} from "@/trpc/server/services";
 import { router, procedure } from "../trpc";
 import { z } from "zod";
-import productSchema from "@/trpc/schemas/productSchema";
+import { productSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
 
 /**

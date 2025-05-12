@@ -1,6 +1,6 @@
 import IOrder from "@/interfaces/IOrder";
 import { Schema, model, models } from "mongoose";
-import EFormaPagamento from "@/interfaces/EFormaPagamento";
+import EPaymentMethod from "@/interfaces/EPaymentMethod";
 import EStatus from "@/interfaces/EStatus";
 
 const orderSchema = new Schema<IOrder>({
@@ -35,7 +35,7 @@ const orderSchema = new Schema<IOrder>({
     type: String,
     trim: true,
     required: true,
-    default: EFormaPagamento.pix
+    default: EPaymentMethod.pix
   },
   status: {
     type: String,
