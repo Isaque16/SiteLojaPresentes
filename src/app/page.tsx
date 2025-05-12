@@ -1,11 +1,11 @@
 export default function Home() {
   return (
     <main>
-      <div>
+      <header>
         <h1 className="text-2xl text-center py-10">
           Sobre a <span className="text-4xl font-bold">Crer Presentes</span>
         </h1>
-      </div>
+      </header>
 
       <section>
         <div>

@@ -1,21 +1,13 @@
 "use client";
-import BasketItem from "@/components/BasketItem";
-import { useBasketStore } from "@/store";
 import Link from "next/link";
+import { useBasketStore } from "@/store";
+import { EmptyContentMessage, BasketItem } from "@/components";
 
 export default function Cesta() {
   const { items, quantities, totalValue, clearBasket } = useBasketStore();
 
   return items.length == 0 ? (
-    <div className="flex flex-col justify-center items-center h-screen px-5">
-      <p className="text-2xl text-center">
-        Tudo limpo por aqui,{" "}
-        <Link href="/catalogo" className="link-hover text-info">
-          adicione
-        </Link>{" "}
-        um novo produto à cesta.
-      </p>
-    </div>
+    <EmptyContentMessage />
   ) : (
     <>
       <main className="flex flex-col items-center justify-center h-full">

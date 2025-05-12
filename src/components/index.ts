@@ -1,3 +1,4 @@
+export { default as EmptyContentMessage } from "./EmptyCartMessage";
 export { default as BasketItem } from "./BasketItem";
 export { default as Cart } from "./Cart";
 export { default as OrderCard } from "./OrderCard";

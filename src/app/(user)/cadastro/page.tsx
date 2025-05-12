@@ -88,12 +88,9 @@ export default function Cadastro() {
               {errors.root.message}
             </p>
           )}
-          <form
-            className="form-control gap-5"
-            onSubmit={handleSubmit(createUser)}
-          >
+          <form onSubmit={handleSubmit(createUser)}>
             {fields.map(({ name, label, type }) => (
-              <div key={name}>
+              <div key={name} className="mb-2">
                 <InputComponent
                   label={label}
                   name={name}
@@ -101,18 +98,18 @@ export default function Cadastro() {
                   placeholder={`Digite seu ${label}`}
                   register={register}
                 />
-                {errors[name as keyof ICustomer] && (
-                  <p className="text-error py-2 w-full max-w-xs">
-                    {errors[name as keyof ICustomer]?.message}
-                  </p>
-                )}
+                <div className="min-h-6">
+                  {errors[name as keyof ICustomer] && (
+                    <p className="text-error py-2 w-full max-w-xs">
+                      {errors[name as keyof ICustomer]?.message}
+                    </p>
+                  )}
+                </div>
               </div>
             ))}
             <button
               type="submit"
-              className={`text-xl btn ${
-                !isValid || isSubmitting ? "btn-disabled" : ""
-              }`}
+              className="text-xl btn"
               disabled={!isValid || isSubmitting}
             >
               {isSubmitting ? (
@@ -122,7 +119,7 @@ export default function Cadastro() {
               )}
             </button>
           </form>
-          <Link href="/login" className="btn btn-link mt-2">
+          <Link href="/login" className="btn btn-link px-0 mt-2">
             Já tenho uma conta
           </Link>
         </div>

@@ -16,6 +16,23 @@ type BasketStore = BasketDataType & {
   clearBasket: () => void;
 };
 
+/**
+ * A Zustand store for managing a basket in a shopping application.
+ *
+ * This store includes the state and many utility functions for managing shopping basket data,
+ * such as items, quantities, and total value. The data is persisted using a storage mechanism.
+ *
+ * State:
+ * - `items`: Represents the list of products in the basket.
+ * - `quantities`: Contains the corresponding quantities for products in the basket.
+ * - `totalValue`: The total monetary value of all items in the basket.
+ *
+ * Methods:
+ * - `addToBasket(product, quantity)`: Adds a product to the basket or updates the quantity of an existing product.
+ * - `updateQuantity(index, quantity)`: Updates the quantity of a product in the basket by its index.
+ * - `removeFromBasket(productId)`: Removes a product from the basket by its unique identifier.
+ * - `clearBasket()`: Clears the basket, resetting all state to initial values.
+ */
 const useBasketStore = create<BasketStore>()(
   persist(
     (set) => ({

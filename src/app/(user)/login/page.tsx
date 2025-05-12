@@ -79,7 +79,7 @@ export default function Cadastro() {
             onSubmit={handleSubmit(loginUser)}
           >
             {fields.map(({ name, label, type }) => (
-              <div key={name}>
+              <div key={name} className="mb-4">
                 <InputComponent
                   label={label}
                   name={name}
@@ -106,7 +106,7 @@ export default function Cadastro() {
               )}
             </button>
           </form>
-          <Link href="/cadastro" className="btn btn-link mt-2">
+          <Link href="/cadastro" className="btn btn-link px-0 mt-2">
             Não tenho uma conta
           </Link>
         </div>

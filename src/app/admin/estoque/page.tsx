@@ -38,6 +38,9 @@ export default function StockManager() {
       reset();
       refetch();
       showMessage("Estoque atualizado com sucesso!");
+    },
+    onError(error) {
+      showMessage(error.message);
     }
   });
 
@@ -45,6 +48,9 @@ export default function StockManager() {
     onSuccess() {
       refetch();
       showMessage("Produto removido com sucesso!");
+    },
+    onError(error) {
+      showMessage(error.message);
     }
   });
 

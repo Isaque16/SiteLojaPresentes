@@ -21,10 +21,10 @@ export default function OrdersManage() {
   return (
     <main>
       <div className="flex flex-col items-center justify-center">
-        <div className="flex flex-col items-center justify-center">
+        <header className="flex flex-col items-center justify-center">
           <h1 className="text-3xl font-bold text-center pt-10 pb-2">Pedidos</h1>
           <div className="border-2 border-white md:w-1/12 w-1/2 mb-5"></div>
-        </div>
+        </header>
         <div
           id="orders_container"
           className="grid grid-col-1 gap-5 justify-center md:justify-normal md:w-96 w-full overflow-y-scroll overflow-x-hidden min-w-80 md:min-w-fit max-h-screen border-2 border-white rounded-lg p-10"

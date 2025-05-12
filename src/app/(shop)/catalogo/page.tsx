@@ -7,8 +7,8 @@ import { useSearchParams } from "next/navigation";
 export default function Catalogo() {
   const searchParam =
     useSearchParams().get("search")?.toLocaleLowerCase() || "";
-  const { data: products, isLoading: isLoadingProducts } =
-    trpc.products.getAll.useQuery();
+
+  const { data: products, isLoading } = trpc.products.getAll.useQuery();
 
   const foundProducts = !searchParam
     ? products
@@ -19,9 +19,10 @@ export default function Catalogo() {
           product.categoria.toLowerCase().includes(searchParam)
       );
 
-  if (isLoadingProducts) return <LoadingCatalog />;
-  return (
-    <div className="flex flex-col items-center justify-center">
+  return isLoading ? (
+    <LoadingCatalog />
+  ) : (
+    <main className="flex flex-col items-center justify-center">
       <div className="flex flex-col items-center">
         <h1 className="text-4xl font-bold text-center pt-10 pb-2">CATÁLOGO</h1>
         <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
@@ -46,6 +47,6 @@ export default function Catalogo() {
           />
         ))}
       </div>
-    </div>
+    </main>
   );
 }

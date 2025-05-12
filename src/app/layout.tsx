@@ -1,9 +1,8 @@
 import "../globals.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Link from "next/link";
-import { SearchBar, Cart, UserAvatar } from "@/components";
 import TRPCProvider from "@/trpc/client/TRPCProvider";
+import { NavBar, Footer } from "@/layout/";
 
 const geistSans = localFont({
   src: "/fonts/GeistVF.woff",
@@ -29,54 +28,12 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-base-100 text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TRPCProvider>
-          <header className="menu menu-horizontal sticky w-full flex flex-row justify-between px-4 items-center shadow-md z-50">
-            <div className="flex flex-row md:flex-row navbar justify-between">
-              <div className="flex flex-row">
-                <div className="flex-1">
-                  <Link href="/" className="btn btn-ghost text-xl">
-                    Crer Presentes
-                  </Link>
-                </div>
-                <div className="flex flex-row justify-start">
-                  <SearchBar />
-                </div>
-              </div>
-              <ul
-                tabIndex={0}
-                className="hidden md:flex menu menu-vertical md:menu-horizontal rounded-box text-xl"
-              >
-                <li>
-                  <Link href="/">Sobre nós</Link>
-                </li>
-                <li>
-                  <Link href="/catalogo">Produtos</Link>
-                </li>
-                <li>
-                  <Link href="/catalogo">Cestas</Link>
-                </li>
-              </ul>
-              <div className="hidden md:flex flex-row justify-center items-center gap-5">
-                <Cart />
-                <UserAvatar />
-              </div>
-            </div>
-          </header>
+          <NavBar />
           {children}
-          <div className="md:hidden bg-base-100 menu menu-horizontal fixed w-full h-16 flex flex-row justify-around px-4 items-center shadow-md bottom-0 rounded-tl-box rounded-tr-box">
-            <Cart />
-            <UserAvatar />
-          </div>
-          <footer className="footer p-5 bg-base-100 border-t-2 border-white mt-5">
-            <address>
-              <p>Tel. </p>
-              <p>Email. </p>
-              <p>Endereço. </p>
-              <p>CNPJ. </p>
-            </address>
-          </footer>
+          <Footer />
         </TRPCProvider>
       </body>
     </html>

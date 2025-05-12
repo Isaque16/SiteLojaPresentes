@@ -21,7 +21,7 @@ export default function UserAvatar() {
   const renderAvatar = () => {
     const initial = data?.nomeUsuario?.charAt(0) ?? "C";
     return (
-      <div className="bg-neutral text-neutral-content w-12 rounded-full py-5">
+      <div className="w-12 py-3 flex justify-center bg-neutral text-neutral-content rounded-full">
         <span>{initial}</span>
       </div>
     );
@@ -38,14 +38,14 @@ export default function UserAvatar() {
   ) : (
     <div className="flex-none">
       <div className="dropdown dropdown-end">
-        <label
+        <div
           role="button"
           tabIndex={0}
-          className="avatar placeholder cursor-pointer"
+          className="avatar avatar-placeholder cursor-pointer"
           aria-haspopup="true"
         >
           {renderAvatar()}
-        </label>
+        </div>
         <ul
           tabIndex={0}
           className="card card-compact dropdown-content bg-base-100 z-10 mt-3 w-52 shadow-sm"

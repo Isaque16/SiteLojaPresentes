@@ -1,6 +1,6 @@
 "use client";
 import InputComponent from "@/components/InputComponent";
-import { ProductCardBasket } from "@/components";
+import { EmptyContentMessage, ProductCardBasket } from "@/components";
 import {
   IOrder,
   ICustomer,
@@ -12,7 +12,6 @@ import { useBasketStore, useOrderStore } from "@/store";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getCookie } from "cookies-next";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -90,15 +89,7 @@ export default function Compra() {
   }
 
   return items.length == 0 ? (
-    <div className="flex flex-col justify-center items-center h-screen px-5">
-      <p className="text-2xl text-center">
-        Tudo limpo por aqui,{" "}
-        <Link href="/catalogo" className="link-hover text-info">
-          adicione
-        </Link>{" "}
-        um novo produto à cesta.
-      </p>
-    </div>
+    <EmptyContentMessage />
   ) : (
     <main className="card card-body p-5">
       <div>

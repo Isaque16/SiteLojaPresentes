@@ -1,5 +1,5 @@
 "use client";
-import ProductCardBasket from "@/components/ProductCardBasket";
+import { EmptyContentMessage, ProductCardBasket } from "@/components";
 import trpc from "@/trpc/client/trpc";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -9,11 +9,14 @@ export default function Comprado() {
   const { _id } = useParams();
   const { data } = trpc.orders.getById.useQuery(_id as string);
   const [order, setOrder] = useState<typeof data>(undefined);
+
   useEffect(() => {
     setOrder(data);
   }, [data]);
 
-  return (
+  return order?._id ? (
+    <EmptyContentMessage />
+  ) : (
     <main className="card card-body p-5">
       <div>
         <h1 className="text-center text-3xl font-bold pt-20">
