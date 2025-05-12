@@ -1,48 +1,77 @@
 import IOrder from "@/interfaces/IOrder";
+import formatCurrency from "@/utils/formatCurrency";
 
 export default function OrderCard({ order }: { order: IOrder }) {
   return (
-    <div
-      key={order._id}
-      className="bg-base-300 py-2 rounded-box flex flex-col items-center justify-center gap-2"
-    >
+    <article className="bg-base-300 py-2 rounded-box">
       <div className="card card-body card-bordered shadow-md">
+        <h3 className="text-lg font-semibold mb-2">
+          Pedido #{order._id!.substring(0, 8)}
+        </h3>
+
         <p>
-          Pedido feito por{" "}
+          Cliente:{" "}
           <span className="font-bold">{order.cliente.nomeCompleto}</span>
         </p>
+
+        <div className="divider my-1"></div>
+
         <p>
-          Produtos da cesta: <br />
+          Produtos: <br />
           <span className="font-bold">
             {order.cesta.map((produto) => produto.nome).join(", ")}
           </span>
         </p>
-        <p>
-          Subtotal da compra:{" "}
-          <span className="font-bold">R${order.subTotal}</span>
-        </p>
-        <p>
-          Valor total da compra:{" "}
-          <span className="font-bold">R${order.valorTotal}</span>
-        </p>
+
+        <div className="mt-2">
+          <p>
+            Subtotal:{" "}
+            <span className="font-bold">{formatCurrency(order.subTotal)}</span>
+          </p>
+          <p>
+            Valor total:{" "}
+            <span className="font-bold">
+              {formatCurrency(order.valorTotal)}
+            </span>
+          </p>
+        </div>
+
+        <div className="divider my-1"></div>
+
         <p>
           Forma de pagamento:{" "}
           <span className="font-bold">{order.formaPagamento}</span>
         </p>
         <p>
-          Status atual: <span className="font-bold">{order.status}</span>
+          Status: <span className="font-bold">{order.status}</span>
         </p>
         <p>
-          Metodo de envio:{" "}
+          Método de envio:{" "}
           <span className="font-bold">{order.metodoEnvio}</span>
         </p>
-        {order.metodoEnvio === "entrega" && (
-          <p>
-            Endereço:{" "}
-            <span className="font-bold">{order.enderecoEntrega?.CEP}</span>
-          </p>
+
+        {order.metodoEnvio === "entrega" && order.enderecoEntrega && (
+          <div className="mt-2 bg-base-200 p-2 rounded-md">
+            <p>
+              Endereço de entrega: <br />
+              <span className="font-bold">
+                CEP: {order.enderecoEntrega.CEP}
+                {order.enderecoEntrega.bairro ? (
+                  <>
+                    <br />
+                    {order.enderecoEntrega.bairro}
+                  </>
+                ) : (
+                  ""
+                )}
+                {order.enderecoEntrega.numero
+                  ? `, ${order.enderecoEntrega.numero}`
+                  : ""}
+              </span>
+            </p>
+          </div>
         )}
       </div>
-    </div>
+    </article>
   );
 }

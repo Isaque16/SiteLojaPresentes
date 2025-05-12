@@ -1,4 +1,5 @@
 import Link from "next/link";
+import formatCurrency from "@/utils/formatCurrency";
 
 type ProductCardProps = {
   id: string;
@@ -18,20 +19,29 @@ export default function ProductCard({
   productPrice
 }: ProductCardProps) {
   return (
-    <Link href={`/catalogo/${id}`}>
-      <div className="card w-80 md:w-96 max-h-screen bg-base-100 hover:ring-1 hover:ring-white shadow-xl p-2 cursor-pointer">
+    <article className="h-full">
+      <Link
+        href={`/catalogo/${id}`}
+        className="card w-80 md:w-96 bg-base-100 hover:ring-1 hover:ring-white shadow-xl p-2 flex flex-col h-full"
+        aria-label={`Ver detalhes de ${productTitle}`}
+      >
         <figure className="image-full">
-          <img src={imagePath} alt={imageAlt} width={400} height={225} />
+          <img
+            src={imagePath}
+            alt={imageAlt}
+            width={400}
+            height={225}
+            loading="lazy"
+            className="max-h-48 object-contain w-full"
+          />
         </figure>
-        <div className="card-body">
+        <div className="card-body flex-grow">
           <h2 className="card-title">{productTitle}</h2>
-          <p>{productDescription}</p>
-          <p className="text-sm font-bold">
-            R$<span className="text-2xl">{productPrice}</span>
-          </p>
+          <p className="line-clamp-2">{productDescription}</p>
+          <p className="font-bold mt-auto">{formatCurrency(productPrice)}</p>
         </div>
-        <p className="opacity-30 px-8">ID: {id}</p>
-      </div>
-    </Link>
+        <p className="opacity-30 px-8 text-xs">ID: {id}</p>
+      </Link>
+    </article>
   );
 }
