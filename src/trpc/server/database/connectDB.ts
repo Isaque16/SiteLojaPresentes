@@ -4,6 +4,10 @@ import mongoose from "mongoose";
 dotenv.config();
 
 let isConnected = false;
+
+/**
+ * Connects to the MongoDB database using Mongoose.
+ **/
 export default async function connectToDatabase() {
   if (isConnected) {
     console.log("Database connection already established");

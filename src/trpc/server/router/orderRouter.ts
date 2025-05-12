@@ -4,14 +4,23 @@ import {
   getAllOrders,
   removeOrderById,
   updateOrderStatus
-} from "@/server/services/OrderService";
+} from "@/trpc/server/services/orderService";
 import { router, procedure } from "../trpc";
 import { z } from "zod";
 import orderSchema from "@/trpc/schemas/orderSchema";
 import statusEnum from "@/trpc/schemas/statusEnum";
 import { TRPCError } from "@trpc/server";
 
+/**
+ * Order Router - Handles all order-related API endpoints
+ */
 export const orderRouter = router({
+  /**
+   * Retrieves all orders from the database
+   *
+   * @returns {Promise<IOrder[]>} Array of all orders
+   * @throws {TRPCError} With code 'INTERNAL_SERVER_ERROR' if fetching fails
+   */
   getAll: procedure.query(async () => {
     try {
       return await getAllOrders();
@@ -24,6 +33,13 @@ export const orderRouter = router({
     }
   }),
 
+  /**
+   * Finds an order by its ID
+   *
+   * @param {string} input - The order ID to search for
+   * @returns {Promise<IOrder>} The found order object
+   * @throws {TRPCError} With code 'NOT_FOUND' if order doesn't exist
+   */
   getById: procedure.input(z.string()).query(async ({ input }) => {
     try {
       return await findOrderById(input);
@@ -36,6 +52,13 @@ export const orderRouter = router({
     }
   }),
 
+  /**
+   * Creates a new order in the database
+   *
+   * @param {object} input - The order data validated by orderSchema
+   * @returns {Promise<IOrder>} The created order object
+   * @throws {TRPCError} With code 'BAD_REQUEST' if creation fails
+   */
   save: procedure.input(orderSchema).mutation(async ({ input }) => {
     try {
       return await createOrder(input);
@@ -48,6 +71,15 @@ export const orderRouter = router({
     }
   }),
 
+  /**
+   * Updates the status of an existing order
+   *
+   * @param {object} input - Object containing order ID and new status
+   * @param {string} input.orderId - The order ID to update
+   * @param {string} input.updatedStatus - The new status from statusEnum
+   * @returns {Promise<{message: string}>} Success confirmation message
+   * @throws {TRPCError} With code 'BAD_REQUEST' if status update fails
+   */
   updateStatus: procedure
     .input(z.object({ orderId: z.string(), updatedStatus: statusEnum }))
     .mutation(async ({ input }) => {
@@ -63,6 +95,13 @@ export const orderRouter = router({
       }
     }),
 
+  /**
+   * Removes an order from the database by its ID
+   *
+   * @param {string} input - The order ID to delete
+   * @returns {Promise<{message: string}>} Success confirmation message
+   * @throws {TRPCError} With code 'BAD_REQUEST' if deletion fails
+   */
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await removeOrderById(input);

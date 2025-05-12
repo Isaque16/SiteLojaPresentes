@@ -2,7 +2,7 @@ import { z } from "zod";
 import customerSchema from "./customerSchema";
 import productSchema from "./productSchema";
 import addressSchema from "./addressSchema";
-import formaPagamentoEnum from "./formaPagamentoEnum";
+import formaPagamentoEnum from "./paymentMethodEnum";
 import statusEnum from "./statusEnum";
 
 export default z.object({
