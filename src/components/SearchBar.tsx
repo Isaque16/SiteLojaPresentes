@@ -32,7 +32,7 @@ export default function SearchSgv() {
           </svg>
         </span>
       </label>
-      <div className="form-control">
+      <div>
         <input
           ref={inputSearch}
           type="text"

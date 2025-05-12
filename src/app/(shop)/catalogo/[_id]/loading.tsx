@@ -6,17 +6,17 @@ export default function LoadingProduct() {
 
       {/* Detalhes do produto em estado de carregamento */}
       <div className="flex flex-col gap-4 w-full md:w-1/2 px-10">
-        <div className="h-10 w-3/4 bg-gray-200 rounded skeleton"></div>{" "}
+        <div className="h-10 w-3/4 bg-gray-200 rounded-sm skeleton"></div>{" "}
         {/* Título */}
-        <div className="h-5 w-full bg-gray-200 rounded skeleton"></div>{" "}
+        <div className="h-5 w-full bg-gray-200 rounded-sm skeleton"></div>{" "}
         {/* Descrição */}
-        <div className="h-5 w-1/2 bg-gray-200 rounded skeleton"></div>{" "}
+        <div className="h-5 w-1/2 bg-gray-200 rounded-sm skeleton"></div>{" "}
         {/* Preço */}
-        <div className="h-5 w-1/4 bg-gray-200 rounded skeleton"></div>{" "}
+        <div className="h-5 w-1/4 bg-gray-200 rounded-sm skeleton"></div>{" "}
         {/* Categoria */}
         {/* Quantidade e botões */}
         <div className="flex items-center gap-4 mt-4">
-          <div className="h-12 w-20 bg-gray-200 rounded skeleton"></div>{" "}
+          <div className="h-12 w-20 bg-gray-200 rounded-sm skeleton"></div>{" "}
           {/* Quantidade */}
           <div className="h-12 w-32 bg-primary text-white btn skeleton"></div>{" "}
           {/* Botão adicionar */}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "../styles/global.css";
+import "../styles/globals.css";
 import Link from "next/link";
 import BasketSvg from "@/svg_components/BasketSvg";
 import SearchSgv from "@/components/SearchBar";
@@ -32,12 +32,12 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-base-100 text-white`}
       >
         <StoreProvider>
           <TRPCProvider>
-            <header className="bg-base-100 menu menu-horizontal sticky w-full flex flex-row justify-between px-4 items-center shadow-md z-50">
-              <div className="flex flex-row md:flex-row navbar justify-between bg-base-100">
+            <header className="menu menu-horizontal sticky w-full flex flex-row justify-between px-4 items-center shadow-md z-50">
+              <div className="flex flex-row md:flex-row navbar justify-between">
                 <div className="flex flex-row">
                   <div className="flex-1">
                     <Link href="/" className="btn btn-ghost text-xl">
