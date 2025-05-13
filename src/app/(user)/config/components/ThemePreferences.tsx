@@ -1,17 +1,10 @@
 import { useState, useEffect } from "react";
 import { getCookie, setCookie } from "cookies-next/client";
-import FeedbackMessage, { FeedbackProps } from "./FeedbackMessage";
+import { useToast } from "@/components";
 
-interface ThemePreferencesProps {
-  onFeedback: (feedback: FeedbackProps) => void;
-  feedback: FeedbackProps;
-}
-
-export default function ThemePreferences({
-  onFeedback,
-  feedback
-}: ThemePreferencesProps) {
+export default function ThemePreferences() {
   const [theme, setTheme] = useState("escuro");
+  const { showToast } = useToast();
 
   useEffect(() => {
     const savedTheme = getCookie("theme") as string;
@@ -27,7 +20,7 @@ export default function ThemePreferences({
 
   const saveTheme = () => {
     setCookie("theme", theme);
-    onFeedback({ message: "Tema salvo com sucesso!", type: "success" });
+    showToast("Tema salvo com sucesso!", "success");
   };
 
   return (
@@ -68,7 +61,6 @@ export default function ThemePreferences({
         <button onClick={saveTheme} className="btn btn-primary mt-2">
           Salvar preferências
         </button>
-        <FeedbackMessage {...feedback} />
       </div>
     </section>
   );

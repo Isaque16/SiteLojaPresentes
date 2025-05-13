@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import FeedbackMessage, { FeedbackProps } from "./FeedbackMessage";
 
 interface PersonalDataProps {
   userData: {
@@ -7,13 +6,11 @@ interface PersonalDataProps {
     email: string;
   };
   onSave: (userData: { username: string; email: string }) => Promise<void>;
-  feedback: FeedbackProps;
 }
 
 export default function PersonalDataForm({
   userData,
-  onSave,
-  feedback
+  onSave
 }: PersonalDataProps) {
   const [formData, setFormData] = useState(userData);
 
@@ -63,8 +60,6 @@ export default function PersonalDataForm({
         >
           Salvar Alterações
         </button>
-
-        <FeedbackMessage {...feedback} />
       </div>
     </section>
   );

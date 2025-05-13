@@ -3,10 +3,19 @@ import trpc from "@/trpc/client/trpc";
 import { deleteCookie, getCookie } from "cookies-next/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function UserAvatar() {
   const router = useRouter();
-  const userId = getCookie("id");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Verifica se o componente está sendo renderizado no cliente
+  useEffect(() => {
+    setIsClient(true);
+    const id = getCookie("id");
+    setUserId(id ? String(id) : null);
+  }, []);
 
   const { data, isLoading } = trpc.customers.getById.useQuery(
     userId as string,
@@ -27,7 +36,7 @@ export default function UserAvatar() {
     );
   };
 
-  return isLoading ? (
+  return !isClient || isLoading ? (
     <div className="flex-none">
       <div className="avatar placeholder">
         <div className="bg-neutral-300 w-12 rounded-full animate-pulse py-5">

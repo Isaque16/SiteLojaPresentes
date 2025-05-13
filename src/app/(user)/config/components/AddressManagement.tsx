@@ -2,20 +2,17 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IAddress } from "@/interfaces";
-import FeedbackMessage, { FeedbackProps } from "./FeedbackMessage";
 import { ZodSchema } from "zod";
 
 interface AddressManagementProps {
   address?: IAddress;
   onSave: (address: IAddress) => Promise<boolean>;
-  feedback: FeedbackProps;
   schema: ZodSchema;
 }
 
 export default function AddressManagement({
   address,
   onSave,
-  feedback,
   schema
 }: AddressManagementProps) {
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -78,8 +75,6 @@ export default function AddressManagement({
         >
           {hasAddress ? "Editar Endereço" : "Adicionar Endereço"}
         </button>
-
-        <FeedbackMessage {...feedback} />
       </div>
 
       {showAddressForm && (

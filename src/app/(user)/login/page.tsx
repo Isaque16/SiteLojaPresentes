@@ -1,5 +1,4 @@
 "use client";
-import InputComponent from "@/components/InputComponent";
 import { useUserStore } from "@/store";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { InputComponent, useToast } from "@/components";
 
 const formDataSchema = z.object({
   nomeUsuario: z
@@ -21,6 +21,7 @@ type LoginType = { nomeUsuario: string; senha: string };
 export default function Cadastro() {
   const router = useRouter();
   const { setUserData } = useUserStore();
+  const { showToast } = useToast();
 
   const {
     register,
@@ -28,7 +29,7 @@ export default function Cadastro() {
     getValues,
     reset,
     setError,
-    formState: { errors, isValid, isSubmitting }
+    formState: { isValid, isSubmitting }
   } = useForm<LoginType>({
     resolver: zodResolver(formDataSchema),
     mode: "onChange"
@@ -54,10 +55,11 @@ export default function Cadastro() {
 
       setUserData({ _id: data._id, nomeUsuario: data.nomeUsuario });
       setCookie("id", data._id);
+
+      showToast("Bem vindo de volta!", "success");
       router.replace("/catalogo");
-    } catch (error) {
-      console.error("Erro ao logar o usuário:", error);
-      setError("root", { message: "Erro ao logar usuário, tente novamente." });
+    } catch {
+      showToast("Erro ao logar usuário, tente novamente.", "error");
     }
   }
 
@@ -89,9 +91,6 @@ export default function Cadastro() {
                 />
               </div>
             ))}
-            <p className="text-white alert alert-error text-xl empty:hidden">
-              {errors.root?.message}
-            </p>
             <button
               type="submit"
               className={`text-xl btn ${

@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import { z } from "zod";
 import { getCookie } from "cookies-next/client";
 import trpc from "@/trpc/client/trpc";
@@ -10,7 +9,7 @@ import {
   PasswordChangeForm,
   AddressManagement
 } from "./components";
-import { FeedbackProps } from "./components/FeedbackMessage";
+import { useToast } from "@/components";
 
 const addressSchema = z.object({
   CEP: z.string().min(1, "CEP é obrigatório"),
@@ -27,26 +26,7 @@ export default function UserConfiguration() {
   const { data, refetch } = trpc.customers.getById.useQuery(userId as string, {
     enabled: !!userId
   });
-
-  // Estado para mensagens de feedback
-  const [feedback, setFeedback] = useState({
-    personal: { message: "", type: "" },
-    password: { message: "", type: "" },
-    address: { message: "", type: "" }
-  });
-
-  // Limpar feedback após um tempo
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setFeedback({
-        personal: { message: "", type: "" },
-        password: { message: "", type: "" },
-        address: { message: "", type: "" }
-      });
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [feedback]);
+  const { showToast } = useToast();
 
   const { mutateAsync: saveUserData } = trpc.customers.save.useMutation({
     onSuccess: () => refetch()
@@ -63,15 +43,9 @@ export default function UserConfiguration() {
         email: userData.email
       });
 
-      setFeedback((prev) => ({
-        ...prev,
-        personal: { message: "Dados atualizados com sucesso", type: "success" }
-      }));
+      showToast("Dados atualizados com sucesso!", "success");
     } catch {
-      setFeedback((prev) => ({
-        ...prev,
-        personal: { message: "Erro ao atualizar dados", type: "error" }
-      }));
+      showToast("Erro ao atualizar dados", "error");
     }
   };
 
@@ -88,26 +62,14 @@ export default function UserConfiguration() {
     if (isPasswordValid) {
       try {
         await saveUserData({ ...data!, senha: passwords.new });
-        setFeedback((prev) => ({
-          ...prev,
-          password: {
-            message: "Senha atualizada com sucesso!",
-            type: "success"
-          }
-        }));
+        showToast("Senha atualizada com sucesso!", "success");
         return true;
       } catch {
-        setFeedback((prev) => ({
-          ...prev,
-          password: { message: "Erro ao atualizar senha", type: "error" }
-        }));
+        showToast("Erro ao atualizar senha", "error");
         return false;
       }
     } else {
-      setFeedback((prev) => ({
-        ...prev,
-        password: { message: "Senhas não conferem ou inválidas", type: "error" }
-      }));
+      showToast("Senhas não conferem ou inválidas", "error");
       return false;
     }
   };
@@ -115,27 +77,12 @@ export default function UserConfiguration() {
   const saveAddress = async (address: IAddress) => {
     try {
       await saveUserData({ ...data!, endereco: address });
-      setFeedback((prev) => ({
-        ...prev,
-        address: {
-          message: "Endereço atualizado com sucesso!",
-          type: "success"
-        }
-      }));
+      showToast("Endereço atualizado com sucesso!", "success");
       return true;
     } catch {
-      setFeedback((prev) => ({
-        ...prev,
-        address: { message: "Erro ao atualizar endereço", type: "error" }
-      }));
+      showToast("Erro ao atualizar endereço", "error");
       return false;
     }
-  };
-
-  const setFeedbackFor = (type: "personal" | "password" | "address") => {
-    return (feedbackProps: FeedbackProps) => {
-      setFeedback((prev) => ({ ...prev, [type]: feedbackProps }));
-    };
   };
 
   return (
@@ -147,10 +94,7 @@ export default function UserConfiguration() {
         <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
       </header>
 
-      <ThemePreferences
-        onFeedback={setFeedbackFor("personal")}
-        feedback={feedback.personal}
-      />
+      <ThemePreferences />
 
       <PersonalDataForm
         userData={{
@@ -158,19 +102,16 @@ export default function UserConfiguration() {
           email: data?.email || ""
         }}
         onSave={updatePersonalData}
-        feedback={feedback.personal}
       />
 
       <PasswordChangeForm
         currentPassword={data?.senha || ""}
         onSave={updatePassword}
-        feedback={feedback.password}
       />
 
       <AddressManagement
         address={data?.endereco}
         onSave={saveAddress}
-        feedback={feedback.address}
         schema={addressSchema}
       />
     </main>

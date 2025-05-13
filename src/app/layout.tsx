@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import TRPCProvider from "@/trpc/client/TRPCProvider";
 import { NavBar, Footer } from "@/layout/";
+import { ToastProvider } from "@/components";
 
 const geistSans = localFont({
   src: "/fonts/GeistVF.woff",
@@ -31,9 +32,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TRPCProvider>
-          <NavBar />
-          {children}
-          <Footer />
+          <ToastProvider>
+            <NavBar />
+            {children}
+            <Footer />
+          </ToastProvider>
         </TRPCProvider>
       </body>
     </html>

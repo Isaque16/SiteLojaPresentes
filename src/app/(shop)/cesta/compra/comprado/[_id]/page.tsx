@@ -14,7 +14,7 @@ export default function Comprado() {
     setOrder(data);
   }, [data]);
 
-  return order?._id ? (
+  return !order?._id ? (
     <EmptyContentMessage />
   ) : (
     <main className="card card-body p-5">

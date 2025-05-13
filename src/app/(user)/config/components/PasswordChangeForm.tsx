@@ -1,5 +1,4 @@
 import { useState } from "react";
-import FeedbackMessage, { FeedbackProps } from "./FeedbackMessage";
 
 interface PasswordChangeProps {
   currentPassword: string;
@@ -8,20 +7,18 @@ interface PasswordChangeProps {
     new: string;
     confirm: string;
   }) => Promise<boolean>;
-  feedback: FeedbackProps;
 }
 
 export default function PasswordChangeForm({
   currentPassword,
-  onSave,
-  feedback
+  onSave
 }: PasswordChangeProps) {
   const [passwords, setPasswords] = useState({
     current: currentPassword,
     new: "",
     confirm: ""
   });
-  const [showPassword, setShowPassword] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleSave = async () => {
     const success = await onSave(passwords);
@@ -41,7 +38,7 @@ export default function PasswordChangeForm({
           <div className="flex flex-row justify-between input input-bordered">
             <input
               id="current-password"
-              type={showPassword ? "text" : "password"}
+              type={isPasswordVisible ? "text" : "password"}
               value={passwords.current}
               readOnly
               className="input-disabled border-none w-full focus:outline-none"
@@ -49,10 +46,10 @@ export default function PasswordChangeForm({
             <button
               type="button"
               className="cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              aria-label={isPasswordVisible ? "Ocultar senha" : "Mostrar senha"}
             >
-              {showPassword ? "Ocultar" : "Mostrar"}
+              {isPasswordVisible ? "Ocultar" : "Mostrar"}
             </button>
           </div>
         </div>
@@ -96,8 +93,6 @@ export default function PasswordChangeForm({
         <button onClick={handleSave} className="btn btn-primary mt-2">
           Alterar Senha
         </button>
-
-        <FeedbackMessage {...feedback} />
       </div>
     </section>
   );

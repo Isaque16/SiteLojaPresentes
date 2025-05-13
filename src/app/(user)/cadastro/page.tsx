@@ -1,5 +1,5 @@
 "use client";
-import InputComponent from "@/components/InputComponent";
+import { InputComponent, useToast } from "@/components";
 import { ICustomer } from "@/interfaces";
 import { useUserStore } from "@/store";
 import trpc from "@/trpc/client/trpc";
@@ -24,6 +24,7 @@ const formDataSchema = z.object({
 export default function Cadastro() {
   const router = useRouter();
   const { setUserData } = useUserStore();
+  const { showToast } = useToast();
 
   const {
     register,
@@ -48,10 +49,11 @@ export default function Cadastro() {
         nomeUsuario: data?.nomeUsuario || ""
       });
       setCookie("id", data?._id);
+      showToast("Usuário criado com sucesso!", "success");
       router.replace("/");
     },
     onError(error) {
-      console.error("Erro ao criar o usuário:", error);
+      showToast(error.message, "error");
     }
   });
 
@@ -83,11 +85,6 @@ export default function Cadastro() {
           <div className="border-2 border-white w-1/6 mb-5"></div>
         </div>
         <div className="bg-base-100 p-10 w-full h-full rounded-bl-box rounded-br-box md:rounded-br-box md:rounded-tr-box md:rounded-bl-none">
-          {errors.root?.message && (
-            <p className="text-white alert alert-error font-medium mb-4">
-              {errors.root.message}
-            </p>
-          )}
           <form onSubmit={handleSubmit(createUser)}>
             {fields.map(({ name, label, type }) => (
               <div key={name} className="mb-2">
