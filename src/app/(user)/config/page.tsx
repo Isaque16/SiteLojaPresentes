@@ -1,5 +1,4 @@
 "use client";
-import { z } from "zod";
 import { getCookie } from "cookies-next/client";
 import trpc from "@/trpc/client/trpc";
 import { IAddress } from "@/interfaces";
@@ -9,17 +8,7 @@ import {
   PasswordChangeForm,
   AddressManagement
 } from "./components";
-import { useToast } from "@/components";
-
-const addressSchema = z.object({
-  CEP: z.string().min(1, "CEP é obrigatório"),
-  estado: z.string().min(2, "Estado precisa ter pelo menos 2 caracteres"),
-  cidade: z.string().min(3, "Cidade precisa ter pelo menos 3 caracteres"),
-  bairro: z.string().min(3, "Bairro precisa ter pelo menos 3 caracteres"),
-  rua: z.string().min(3, "Rua precisa ter pelo menos 3 caracteres"),
-  numero: z.string().min(1, "Número é obrigatório"),
-  complemento: z.string().optional()
-});
+import { useToast } from "@/contexts";
 
 export default function UserConfiguration() {
   const userId = getCookie("id");
@@ -109,11 +98,7 @@ export default function UserConfiguration() {
         onSave={updatePassword}
       />
 
-      <AddressManagement
-        address={data?.endereco}
-        onSave={saveAddress}
-        schema={addressSchema}
-      />
+      <AddressManagement address={data?.endereco} onSave={saveAddress} />
     </main>
   );
 }

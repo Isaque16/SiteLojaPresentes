@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { InputComponent, useToast } from "@/components";
+import { InputComponent } from "@/components";
+import { useToast } from "@/contexts";
 
 const formDataSchema = z.object({
   nomeUsuario: z

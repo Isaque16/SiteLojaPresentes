@@ -2,7 +2,7 @@
 import trpc from "@/trpc/client/trpc";
 import LoadingOrders from "./loading";
 import { getCookie } from "cookies-next/client";
-import { EmptyContentMessage, OrderCard } from "@/components";
+import { EmptyCartMessage, OrderCard } from "@/components";
 
 export default function HistoricoPedidos() {
   const userId = getCookie("id");
@@ -10,7 +10,7 @@ export default function HistoricoPedidos() {
   const userHistory = data?.historicoDeCompras;
 
   return userHistory?.length == 0 ? (
-    <EmptyContentMessage />
+    <EmptyCartMessage />
   ) : (
     <main>
       <div className="flex flex-col items-center justify-center">

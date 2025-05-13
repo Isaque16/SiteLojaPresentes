@@ -1,5 +1,5 @@
 "use client";
-import { EmptyContentMessage, ProductCardBasket } from "@/components";
+import { EmptyCartMessage, ProductCardBasket } from "@/components";
 import trpc from "@/trpc/client/trpc";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -15,7 +15,7 @@ export default function Comprado() {
   }, [data]);
 
   return !order?._id ? (
-    <EmptyContentMessage />
+    <EmptyCartMessage />
   ) : (
     <main className="card card-body p-5">
       <div>

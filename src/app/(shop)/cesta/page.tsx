@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useBasketStore } from "@/store";
-import { EmptyContentMessage, BasketItem } from "@/components";
+import { EmptyCartMessage, BasketItem } from "@/components";
 
 export default function Cesta() {
   const { items, quantities, totalValue, clearBasket } = useBasketStore();
 
   return items.length == 0 ? (
-    <EmptyContentMessage />
+    <EmptyCartMessage />
   ) : (
     <>
       <main className="flex flex-col items-center justify-center h-full">

@@ -1,6 +1,6 @@
 "use client";
 import InputComponent from "@/components/InputComponent";
-import { EmptyContentMessage, ProductCardBasket } from "@/components";
+import { EmptyCartMessage, ProductCardBasket } from "@/components";
 import {
   IOrder,
   ICustomer,
@@ -89,7 +89,7 @@ export default function Compra() {
   }
 
   return items.length == 0 ? (
-    <EmptyContentMessage />
+    <EmptyCartMessage />
   ) : (
     <main className="card card-body p-5">
       <div>

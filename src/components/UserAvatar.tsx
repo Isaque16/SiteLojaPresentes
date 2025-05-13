@@ -8,22 +8,20 @@ import { useState, useEffect } from "react";
 export default function UserAvatar() {
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
 
-  // Verifica se o componente está sendo renderizado no cliente
   useEffect(() => {
-    setIsClient(true);
     const id = getCookie("id");
     setUserId(id ? String(id) : null);
   }, []);
 
-  const { data, isLoading } = trpc.customers.getById.useQuery(
+  const { data, refetch, isLoading } = trpc.customers.getById.useQuery(
     userId as string,
     { enabled: !!userId }
   );
 
   const logOut = () => {
     deleteCookie("id");
+    refetch();
     router.replace("/login");
   };
 
@@ -36,7 +34,7 @@ export default function UserAvatar() {
     );
   };
 
-  return !isClient || isLoading ? (
+  return isLoading ? (
     <div className="flex-none">
       <div className="avatar placeholder">
         <div className="bg-neutral-300 w-12 rounded-full animate-pulse py-5">
@@ -64,33 +62,39 @@ export default function UserAvatar() {
             <span className="text-lg font-medium">
               {data?.nomeUsuario || "Convidado"}
             </span>
-            <ul className="space-y-1 mt-2">
-              <li>
-                <Link
-                  href="/config"
-                  className="link-primary block py-1 hover:underline"
-                >
-                  Configurações
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/historico"
-                  className="link-primary block py-1 hover:underline"
-                >
-                  Histórico de Compras
-                </Link>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={logOut}
-                  className="link-primary w-full text-left py-1 hover:underline"
-                >
-                  Log out
-                </button>
-              </li>
-            </ul>
+            {!data ? (
+              <Link href="/login" className="btn btn-ghost text-xl">
+                Entrar
+              </Link>
+            ) : (
+              <ul className="space-y-1 mt-2">
+                <li>
+                  <Link
+                    href="/config"
+                    className="link-primary block py-1 hover:underline"
+                  >
+                    Configurações
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/historico"
+                    className="link-primary block py-1 hover:underline"
+                  >
+                    Histórico de Compras
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={logOut}
+                    className="link-primary w-full text-left py-1 hover:underline"
+                  >
+                    Log out
+                  </button>
+                </li>
+              </ul>
+            )}
           </li>
         </ul>
       </div>

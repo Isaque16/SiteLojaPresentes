@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { getCookie, setCookie } from "cookies-next/client";
-import { useToast } from "@/components";
+import { useToast } from "@/contexts";
 
 export default function ThemePreferences() {
-  const [theme, setTheme] = useState("escuro");
+  const [theme, setTheme] = useState("dark");
   const { showToast } = useToast();
 
   useEffect(() => {
     const savedTheme = getCookie("theme") as string;
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setTheme(savedTheme || (mediaQuery.matches ? "escuro" : "claro"));
+    setTheme(savedTheme || (mediaQuery.matches ? "dark" : "light"));
 
-    const handleChange = (e: MediaQueryListEvent) =>
-      setTheme(e.matches ? "escuro" : "claro");
+    const handleChange = (e: MediaQueryListEvent) => {
+      setTheme(e.matches ? "dark" : "light");
+    };
 
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
@@ -32,28 +33,28 @@ export default function ThemePreferences() {
           <div className="flex flex-row gap-2 items-center">
             <input
               type="radio"
-              name="tema"
-              id="claro"
-              checked={theme === "claro"}
-              value="claro"
+              name="theme"
+              id="light"
+              checked={theme === "light"}
+              value="light"
               onChange={(e) => setTheme(e.target.value)}
               className="radio radio-sm"
             />
-            <label htmlFor="claro" className="label cursor-pointer">
+            <label htmlFor="light" className="label cursor-pointer">
               Claro
             </label>
           </div>
           <div className="flex flex-row gap-2 items-center">
             <input
               type="radio"
-              name="tema"
-              id="escuro"
-              checked={theme === "escuro"}
-              value="escuro"
+              name="theme"
+              id="dark"
+              checked={theme === "dark"}
+              value="dark"
               onChange={(e) => setTheme(e.target.value)}
               className="radio radio-sm"
             />
-            <label htmlFor="escuro" className="label cursor-pointer">
+            <label htmlFor="dark" className="label cursor-pointer">
               Escuro
             </label>
           </div>

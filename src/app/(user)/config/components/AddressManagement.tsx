@@ -2,18 +2,26 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IAddress } from "@/interfaces";
-import { ZodSchema } from "zod";
+import { z } from "zod";
 
 interface AddressManagementProps {
   address?: IAddress;
   onSave: (address: IAddress) => Promise<boolean>;
-  schema: ZodSchema;
 }
+
+const addressSchema = z.object({
+  CEP: z.string().min(1, "CEP é obrigatório"),
+  estado: z.string().min(2, "Estado precisa ter pelo menos 2 caracteres"),
+  cidade: z.string().min(3, "Cidade precisa ter pelo menos 3 caracteres"),
+  bairro: z.string().min(3, "Bairro precisa ter pelo menos 3 caracteres"),
+  rua: z.string().min(3, "Rua precisa ter pelo menos 3 caracteres"),
+  numero: z.string().min(1, "Número é obrigatório"),
+  complemento: z.string().optional()
+});
 
 export default function AddressManagement({
   address,
-  onSave,
-  schema
+  onSave
 }: AddressManagementProps) {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const hasAddress = !!address?.rua;
@@ -24,7 +32,7 @@ export default function AddressManagement({
     reset,
     formState: { errors }
   } = useForm<IAddress>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(addressSchema),
     defaultValues: address || {
       CEP: "",
       estado: "",
