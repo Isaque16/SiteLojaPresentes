@@ -3,7 +3,6 @@ import { getCookie } from "cookies-next/client";
 import trpc from "@/trpc/client/trpc";
 import { IAddress } from "@/interfaces";
 import {
-  ThemePreferences,
   PersonalDataForm,
   PasswordChangeForm,
   AddressManagement
@@ -82,8 +81,6 @@ export default function UserConfiguration() {
         </h1>
         <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
       </header>
-
-      <ThemePreferences />
 
       <PersonalDataForm
         userData={{
