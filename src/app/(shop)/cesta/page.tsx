@@ -1,7 +1,7 @@
-"use client";
-import Link from "next/link";
-import { useBasketStore } from "@/store";
-import { EmptyCartMessage, BasketItem } from "@/components";
+'use client';
+import Link from 'next/link';
+import { useBasketStore } from '@/store';
+import { EmptyCartMessage, BasketItem } from '@/components';
 
 export default function Cesta() {
   const { items, quantities, totalValue, clearBasket } = useBasketStore();

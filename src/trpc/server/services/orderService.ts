@@ -1,12 +1,12 @@
-"use server";
+'use server';
 import {
   orderModel as Order,
   productModel as Product,
   customerModel as Customer
-} from "../models";
-import IOrder from "@/interfaces/IOrder";
-import EStatus from "@/interfaces/EStatus";
-import IProduct from "@/interfaces/IProduct";
+} from '../models';
+import IOrder from '@/interfaces/IOrder';
+import EStatus from '@/interfaces/EStatus';
+import IProduct from '@/interfaces/IProduct';
 
 /**
  * Retrieves all orders from the database with populated client and cart information.
@@ -17,10 +17,10 @@ import IProduct from "@/interfaces/IProduct";
 export async function getAllOrders(): Promise<IOrder[]> {
   try {
     return await Order.find()
-      .populate("cliente", "nomeCompleto")
-      .populate("cesta");
+      .populate('cliente', 'nomeCompleto')
+      .populate('cesta');
   } catch (error) {
-    console.error("Erro ao listar pedidos:", error);
+    console.error('Erro ao listar pedidos:', error);
     throw error;
   }
 }
@@ -35,10 +35,10 @@ export async function getAllOrders(): Promise<IOrder[]> {
 export async function findOrderById(id: string): Promise<IOrder | null> {
   try {
     return await Order.findById(id)
-      .populate("cliente", "nomeCompleto")
-      .populate("cesta");
+      .populate('cliente', 'nomeCompleto')
+      .populate('cesta');
   } catch (error) {
-    console.error("Erro ao buscar pedido:", error);
+    console.error('Erro ao buscar pedido:', error);
     throw error;
   }
 }
@@ -99,7 +99,7 @@ export async function createOrder(order: IOrder): Promise<IOrder | null> {
     ]);
     return await findOrderById(createdOrder._id!);
   } catch (error) {
-    console.error("Erro ao criar pedido:", error);
+    console.error('Erro ao criar pedido:', error);
     throw error;
   }
 }
@@ -123,7 +123,7 @@ async function updateOrderStatusInDatabase(
       { new: true }
     );
   } catch (error) {
-    console.error("Erro ao atualizar status do pedido:", error);
+    console.error('Erro ao atualizar status do pedido:', error);
     throw error;
   }
 }
@@ -160,7 +160,7 @@ export async function removeOrderById(orderId: string): Promise<boolean> {
     const removedOrder: IOrder | null = await Order.findByIdAndDelete(orderId);
     return removedOrder !== null;
   } catch (error) {
-    console.error("Erro ao deletar pedido:", error);
+    console.error('Erro ao deletar pedido:', error);
     throw error;
   }
 }

@@ -1,22 +1,22 @@
-"use client";
+'use client';
 import {
   createContext,
   ReactNode,
   useCallback,
   useContext,
   useReducer
-} from "react";
-import Toast from "@/components/Toast";
+} from 'react';
+import Toast from '@/components/Toast';
 
-export type ToastType = "success" | "error" | "warning" | "info";
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 export type ToastPosition =
-  | "top-right"
-  | "top-left"
-  | "bottom-right"
-  | "bottom-left"
-  | "top-center"
-  | "bottom-center";
+  | 'top-right'
+  | 'top-left'
+  | 'bottom-right'
+  | 'bottom-left'
+  | 'top-center'
+  | 'bottom-center';
 
 export interface ToastProps {
   id: string;
@@ -32,27 +32,27 @@ export interface ToastState {
 
 export const initialState: ToastState = {
   toasts: [],
-  position: "top-right"
+  position: 'top-right'
 };
 
 export type ToastAction =
-  | { type: "ADD_TOAST"; payload: ToastProps }
-  | { type: "REMOVE_TOAST"; payload: { id: string } }
-  | { type: "SET_POSITION"; payload: { position: ToastPosition } };
+  | { type: 'ADD_TOAST'; payload: ToastProps }
+  | { type: 'REMOVE_TOAST'; payload: { id: string } }
+  | { type: 'SET_POSITION'; payload: { position: ToastPosition } };
 
 export const toastReducer = (
   state: ToastState,
   action: ToastAction
 ): ToastState => {
   switch (action.type) {
-    case "ADD_TOAST":
+    case 'ADD_TOAST':
       return { ...state, toasts: [...state.toasts, action.payload] };
-    case "REMOVE_TOAST":
+    case 'REMOVE_TOAST':
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.payload.id)
       };
-    case "SET_POSITION":
+    case 'SET_POSITION':
       return { ...state, position: action.payload.position };
     default:
       return state;
@@ -73,7 +73,7 @@ interface ToastProviderProps {
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({
   children,
-  position = "top-right"
+  position = 'top-right'
 }) => {
   const [state, dispatch] = useReducer(toastReducer, {
     ...initialState,
@@ -85,28 +85,28 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
       const id = Math.random().toString(36).substring(2, 9);
 
       dispatch({
-        type: "ADD_TOAST",
+        type: 'ADD_TOAST',
         payload: { id, message, type, duration }
       });
 
       setTimeout(() => {
-        dispatch({ type: "REMOVE_TOAST", payload: { id } });
+        dispatch({ type: 'REMOVE_TOAST', payload: { id } });
       }, duration);
     },
     []
   );
 
   const hideToast = useCallback((id: string) => {
-    dispatch({ type: "REMOVE_TOAST", payload: { id } });
+    dispatch({ type: 'REMOVE_TOAST', payload: { id } });
   }, []);
 
   const positionClasses = {
-    "top-right": "top-4 right-4",
-    "top-left": "top-4 left-4",
-    "bottom-right": "bottom-4 right-4",
-    "bottom-left": "bottom-4 left-4",
-    "top-center": "top-4 left-1/2 transform -translate-x-1/2",
-    "bottom-center": "bottom-4 left-1/2 transform -translate-x-1/2"
+    'top-right': 'top-4 right-4',
+    'top-left': 'top-4 left-4',
+    'bottom-right': 'bottom-4 right-4',
+    'bottom-left': 'bottom-4 left-4',
+    'top-center': 'top-4 left-1/2 transform -translate-x-1/2',
+    'bottom-center': 'bottom-4 left-1/2 transform -translate-x-1/2'
   }[state.position];
 
   return (
@@ -114,7 +114,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
       {children}
       <div
         className={`fixed z-50 flex flex-col gap-2 max-w-xs ${positionClasses}`}
-        style={{ maxHeight: "100vh", overflow: "hidden" }}
+        style={{ maxHeight: '100vh', overflow: 'hidden' }}
       >
         {state.toasts.map((toast) => (
           <Toast
@@ -131,7 +131,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast deve ser usado dentro de um ToastProvider");
+    throw new Error('useToast deve ser usado dentro de um ToastProvider');
   }
   return context;
 };

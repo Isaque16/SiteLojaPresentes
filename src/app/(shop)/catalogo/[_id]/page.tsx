@@ -1,9 +1,9 @@
-"use client";
-import { useBasketStore } from "@/store";
-import trpc from "@/trpc/client/trpc";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import LoadingProduct from "./loading";
+'use client';
+import { useBasketStore } from '@/store';
+import trpc from '@/trpc/client/trpc';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import LoadingProduct from './loading';
 
 export default function Produto() {
   const { _id: productId }: { _id: string } = useParams();
@@ -18,12 +18,12 @@ export default function Produto() {
 
   function sendAddToBasket() {
     addToBasket(product!, quantity);
-    router.replace("/cesta");
+    router.replace('/cesta');
   }
 
   function sendBuyProduct() {
     addToBasket(product!, quantity);
-    router.replace("/cesta/compra");
+    router.replace('/cesta/compra');
   }
 
   if (isLoadingProduct) return <LoadingProduct />;
@@ -44,9 +44,9 @@ export default function Produto() {
         </p>
         <p>Categoria: {product?.categoria}</p>
         <p
-          className={product?.quantidade !== 0 ? "text-success" : "text-error"}
+          className={product?.quantidade !== 0 ? 'text-success' : 'text-error'}
         >
-          {isOutOfStock ? "Esgotado" : "Em estoque"}
+          {isOutOfStock ? 'Esgotado' : 'Em estoque'}
         </p>
         <div className="bg-slate-300 text-xl rounded-box text-black w-fit h-fit px-2 py-2 flex flex-row gap-2">
           <button
@@ -69,7 +69,7 @@ export default function Produto() {
           <button
             onClick={sendAddToBasket}
             className={`bg-base-100 text-xl text-white btn btn-primary rounded-btn ${
-              isOutOfStock && "btn-disabled"
+              isOutOfStock && 'btn-disabled'
             }`}
           >
             Adicionar à cesta
@@ -77,7 +77,7 @@ export default function Produto() {
           <button
             onClick={sendBuyProduct}
             className={`bg-base-100 text-xl text-white btn btn-secondary rounded-btn ${
-              isOutOfStock && "btn-disabled"
+              isOutOfStock && 'btn-disabled'
             }`}
           >
             Comprar

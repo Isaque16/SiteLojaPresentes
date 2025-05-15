@@ -1,11 +1,11 @@
-"use client";
-import trpc from "@/trpc/client/trpc";
-import LoadingOrders from "./loading";
-import { getCookie } from "cookies-next/client";
-import { EmptyCartMessage, OrderCard } from "@/components";
+'use client';
+import trpc from '@/trpc/client/trpc';
+import LoadingOrders from './loading';
+import { getCookie } from 'cookies-next/client';
+import { EmptyCartMessage, OrderCard } from '@/components';
 
 export default function HistoricoPedidos() {
-  const userId = getCookie("id");
+  const userId = getCookie('id');
   const { data, isLoading } = trpc.customers.getById.useQuery(userId as string);
   const userHistory = data?.historicoDeCompras;
 

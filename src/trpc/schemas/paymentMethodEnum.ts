@@ -1,5 +1,5 @@
-import EPaymentMethod from "@/interfaces/EPaymentMethod";
-import { z } from "zod";
+import EPaymentMethod from '@/interfaces/EPaymentMethod';
+import { z } from 'zod';
 
 export default z.enum([
   EPaymentMethod.pix,

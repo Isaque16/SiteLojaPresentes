@@ -1,5 +1,5 @@
-import ICustomer from "@/interfaces/ICustomer";
-import { Schema, model, models } from "mongoose";
+import ICustomer from '@/interfaces/ICustomer';
+import { Schema, model, models } from 'mongoose';
 
 const customerSchema = new Schema<ICustomer>({
   nomeCompleto: {
@@ -35,10 +35,10 @@ const customerSchema = new Schema<ICustomer>({
   historicoDeCompras: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Pedido",
+      ref: 'Pedido',
       required: false
     }
   ]
 });
 
-export default models.Cliente || model<ICustomer>("Cliente", customerSchema);
+export default models.Cliente || model<ICustomer>('Cliente', customerSchema);

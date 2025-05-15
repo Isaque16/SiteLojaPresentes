@@ -1,5 +1,5 @@
-import EStatus from "@/interfaces/EStatus";
-import { z } from "zod";
+import EStatus from '@/interfaces/EStatus';
+import { z } from 'zod';
 
 export default z.enum([
   EStatus.PENDENTE,

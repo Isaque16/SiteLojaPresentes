@@ -1,7 +1,7 @@
-"use client";
-import { useBasketStore } from "@/store";
-import Link from "next/link";
-import formatCurrency from "@/utils/formatCurrency";
+'use client';
+import { useBasketStore } from '@/store';
+import Link from 'next/link';
+import formatCurrency from '@/utils/formatCurrency';
 
 export default function Cart() {
   const { quantities, totalValue } = useBasketStore();
@@ -42,7 +42,7 @@ export default function Cart() {
         <div className="card card-compact dropdown-content bg-base-100 z-10 mt-3 w-52 shadow-md">
           <div className="card-body">
             <span className="text-lg font-bold">
-              {totalItems} {totalItems === 1 ? "Item" : "Itens"}
+              {totalItems} {totalItems === 1 ? 'Item' : 'Itens'}
             </span>
             <span className="text-info">
               Subtotal: {formatCurrency(totalValue)}

@@ -1,5 +1,5 @@
-import { z } from "zod";
-import addressSchema from "./addressSchema";
+import { z } from 'zod';
+import addressSchema from './addressSchema';
 
 export default z.object({
   _id: z.string().optional(),

@@ -1,5 +1,5 @@
-import { initTRPC } from "@trpc/server";
-import { Context } from "./context";
+import { initTRPC } from '@trpc/server';
+import { Context } from './context';
 
 // Initialize tRPC with a context
 const t = initTRPC.context<Context>().create();

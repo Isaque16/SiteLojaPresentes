@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { IAddress } from "@/interfaces";
-import { z } from "zod";
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { IAddress } from '@/interfaces';
+import { z } from 'zod';
 
 interface AddressManagementProps {
   address?: IAddress;
@@ -10,12 +10,12 @@ interface AddressManagementProps {
 }
 
 const addressSchema = z.object({
-  CEP: z.string().min(1, "CEP é obrigatório"),
-  estado: z.string().min(2, "Estado precisa ter pelo menos 2 caracteres"),
-  cidade: z.string().min(3, "Cidade precisa ter pelo menos 3 caracteres"),
-  bairro: z.string().min(3, "Bairro precisa ter pelo menos 3 caracteres"),
-  rua: z.string().min(3, "Rua precisa ter pelo menos 3 caracteres"),
-  numero: z.string().min(1, "Número é obrigatório"),
+  CEP: z.string().min(1, 'CEP é obrigatório'),
+  estado: z.string().min(2, 'Estado precisa ter pelo menos 2 caracteres'),
+  cidade: z.string().min(3, 'Cidade precisa ter pelo menos 3 caracteres'),
+  bairro: z.string().min(3, 'Bairro precisa ter pelo menos 3 caracteres'),
+  rua: z.string().min(3, 'Rua precisa ter pelo menos 3 caracteres'),
+  numero: z.string().min(1, 'Número é obrigatório'),
   complemento: z.string().optional()
 });
 
@@ -34,13 +34,13 @@ export default function AddressManagement({
   } = useForm<IAddress>({
     resolver: zodResolver(addressSchema),
     defaultValues: address || {
-      CEP: "",
-      estado: "",
-      cidade: "",
-      bairro: "",
-      rua: "",
-      numero: "",
-      complemento: ""
+      CEP: '',
+      estado: '',
+      cidade: '',
+      bairro: '',
+      rua: '',
+      numero: '',
+      complemento: ''
     }
   });
 
@@ -77,11 +77,11 @@ export default function AddressManagement({
 
         <button
           onClick={() => setShowAddressForm(!showAddressForm)}
-          className={`btn ${hasAddress ? "btn-natural" : "btn-secondary"} mt-2`}
+          className={`btn ${hasAddress ? 'btn-natural' : 'btn-secondary'} mt-2`}
           aria-expanded={showAddressForm}
           aria-controls="address-form"
         >
-          {hasAddress ? "Editar Endereço" : "Adicionar Endereço"}
+          {hasAddress ? 'Editar Endereço' : 'Adicionar Endereço'}
         </button>
       </div>
 
@@ -92,13 +92,13 @@ export default function AddressManagement({
           className="mt-4 border-t pt-4"
         >
           {[
-            { name: "CEP", label: "CEP" },
-            { name: "estado", label: "Estado" },
-            { name: "cidade", label: "Cidade" },
-            { name: "bairro", label: "Bairro" },
-            { name: "rua", label: "Rua" },
-            { name: "numero", label: "Número" },
-            { name: "complemento", label: "Complemento" }
+            { name: 'CEP', label: 'CEP' },
+            { name: 'estado', label: 'Estado' },
+            { name: 'cidade', label: 'Cidade' },
+            { name: 'bairro', label: 'Bairro' },
+            { name: 'rua', label: 'Rua' },
+            { name: 'numero', label: 'Número' },
+            { name: 'complemento', label: 'Complemento' }
           ].map((field) => (
             <div key={field.name} className="flex flex-col gap-2 mb-2">
               <label htmlFor={field.name} className="label">
@@ -106,7 +106,7 @@ export default function AddressManagement({
               </label>
               <input
                 id={field.name}
-                type={field.name === "numero" ? "number" : "text"}
+                type={field.name === 'numero' ? 'number' : 'text'}
                 placeholder={`Digite ${field.label.toLowerCase()}`}
                 className="input input-bordered focus-within:ring-white focus-within:ring-2 w-full"
                 {...register(field.name as keyof IAddress)}

@@ -11,13 +11,13 @@ export default function LoadingCatalog() {
             key={index}
             className="bg-base-100 w-80 md:w-96 max-h-screen p-2 rounded-lg shadow-md skeleton"
           >
-            <div className="w-full h-48 bg-gray-200 rounded-sm skeleton mb-4"></div>{" "}
+            <div className="w-full h-48 bg-gray-200 rounded-sm skeleton mb-4"></div>{' '}
             {/* Imagem */}
-            <div className="h-6 w-3/4 bg-gray-200 rounded-sm skeleton mb-2"></div>{" "}
+            <div className="h-6 w-3/4 bg-gray-200 rounded-sm skeleton mb-2"></div>{' '}
             {/* Nome */}
-            <div className="h-4 w-5/6 bg-gray-200 rounded-sm skeleton mb-2"></div>{" "}
+            <div className="h-4 w-5/6 bg-gray-200 rounded-sm skeleton mb-2"></div>{' '}
             {/* Descrição */}
-            <div className="h-6 w-1/2 bg-gray-200 rounded-sm skeleton"></div>{" "}
+            <div className="h-6 w-1/2 bg-gray-200 rounded-sm skeleton"></div>{' '}
             {/* Preço */}
           </div>
         ))}

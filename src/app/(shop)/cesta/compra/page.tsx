@@ -1,36 +1,36 @@
-"use client";
-import InputComponent from "@/components/InputComponent";
-import { EmptyCartMessage, ProductCardBasket } from "@/components";
+'use client';
+import InputComponent from '@/components/InputComponent';
+import { EmptyCartMessage, ProductCardBasket } from '@/components';
 import {
   IOrder,
   ICustomer,
   IAddress,
   EStatus,
   EPaymentMethod
-} from "@/interfaces";
-import { useBasketStore, useOrderStore } from "@/store";
-import trpc from "@/trpc/client/trpc";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from '@/interfaces';
+import { useBasketStore, useOrderStore } from '@/store';
+import trpc from '@/trpc/client/trpc';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { getCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formDataSchema = z.object({
   CEP: z.string(),
-  estado: z.string().min(3, "Precisa ter pelo menos 3 caracteres"),
-  cidade: z.string().min(3, "Precisa ter pelo menos 3 caracteres"),
-  bairro: z.string().min(6, "Precisa ter pelo menos 6 caracteres"),
-  rua: z.string().min(3, "Precisa ter pelo menos 3 caracteres"),
-  numero: z.string().min(1, "Deve ter pelo menos 11 dígitos"),
+  estado: z.string().min(3, 'Precisa ter pelo menos 3 caracteres'),
+  cidade: z.string().min(3, 'Precisa ter pelo menos 3 caracteres'),
+  bairro: z.string().min(6, 'Precisa ter pelo menos 6 caracteres'),
+  rua: z.string().min(3, 'Precisa ter pelo menos 3 caracteres'),
+  numero: z.string().min(1, 'Deve ter pelo menos 11 dígitos'),
   complemento: z.string().optional()
 });
 
 export default function Compra() {
   const router = useRouter();
 
-  const userId = getCookie("id");
+  const userId = getCookie('id');
   const { data } = trpc.customers.getById.useQuery(userId as string);
 
   const { items, quantities, totalValue, clearBasket } = useBasketStore();
@@ -50,12 +50,12 @@ export default function Compra() {
     formState: { errors }
   } = useForm<IAddress>({
     resolver: zodResolver(formDataSchema),
-    mode: "onChange"
+    mode: 'onChange'
   });
 
-  const [entrega, setEntrega] = useState<string>("sem_entrega");
+  const [entrega, setEntrega] = useState<string>('sem_entrega');
   const [isSaved, setIsSaved] = useState<boolean>(false);
-  const [pagamento, setPagamento] = useState<string>("pix");
+  const [pagamento, setPagamento] = useState<string>('pix');
 
   async function sendCreatOrder() {
     const customersOrder: IOrder = {
@@ -69,10 +69,10 @@ export default function Compra() {
       formaPagamento: EPaymentMethod[pagamento as keyof typeof EPaymentMethod],
       dataPedido: new Date(),
       metodoEnvio: entrega,
-      enderecoEntrega: entrega == "entrega" ? getValues() : undefined
+      enderecoEntrega: entrega == 'entrega' ? getValues() : undefined
     };
 
-    if (entrega == "entrega" && isSaved)
+    if (entrega == 'entrega' && isSaved)
       await saveCustomerAdress({
         ...data!,
         endereco: customersOrder.enderecoEntrega
@@ -85,7 +85,7 @@ export default function Compra() {
 
   function cancelOrder() {
     clearBasket();
-    router.replace("/catalogo");
+    router.replace('/catalogo');
   }
 
   return items.length == 0 ? (
@@ -113,7 +113,7 @@ export default function Compra() {
                 name="entrega"
                 id="sem_entrega"
                 value="sem_entrega"
-                checked={entrega === "sem_entrega"}
+                checked={entrega === 'sem_entrega'}
                 onChange={(e) => setEntrega(e.target.value)}
               />
             </div>
@@ -127,27 +127,27 @@ export default function Compra() {
                 name="entrega"
                 id="entrega"
                 value="entrega"
-                checked={entrega === "entrega"}
+                checked={entrega === 'entrega'}
                 onChange={(e) => setEntrega(e.target.value)}
               />
             </div>
           </div>
-          {entrega === "entrega" ? (
+          {entrega === 'entrega' ? (
             <form>
               {[
-                "CEP",
-                "estado",
-                "cidade",
-                "bairro",
-                "rua",
-                "numero",
-                "complemento"
+                'CEP',
+                'estado',
+                'cidade',
+                'bairro',
+                'rua',
+                'numero',
+                'complemento'
               ].map((field) => (
                 <div key={field}>
                   <InputComponent
                     label={field.charAt(0).toUpperCase() + field.slice(1)}
                     name={field}
-                    type={field === "numero" ? "number" : "text"}
+                    type={field === 'numero' ? 'number' : 'text'}
                     placeholder={`Digite seu ${field}`}
                     register={register}
                   />
@@ -171,7 +171,7 @@ export default function Compra() {
               </div>
             </form>
           ) : (
-            "Endereço da loja"
+            'Endereço da loja'
           )}
         </div>
       </div>

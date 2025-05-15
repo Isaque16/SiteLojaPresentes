@@ -1,9 +1,9 @@
-"use client";
-import { EmptyCartMessage, ProductCardBasket } from "@/components";
-import trpc from "@/trpc/client/trpc";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+'use client';
+import { EmptyCartMessage, ProductCardBasket } from '@/components';
+import trpc from '@/trpc/client/trpc';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Comprado() {
   const { _id } = useParams();
@@ -26,7 +26,7 @@ export default function Comprado() {
       <div className="card card-body card-bordered shadow-md">
         <h1 className="card-title text-2xl">Detalhes do pedido</h1>
         <div className="grid grid-cols-1 md:grid-cols-3">
-          {order?.metodoEnvio == "entrega" && (
+          {order?.metodoEnvio == 'entrega' && (
             <div>
               <h1 className="text-xl">Endereço de envio</h1>
               <ul>
@@ -36,7 +36,7 @@ export default function Comprado() {
                 </li>
                 <li>{order.enderecoEntrega?.bairro}</li>
                 <li>
-                  {order.enderecoEntrega?.cidade},{" "}
+                  {order.enderecoEntrega?.cidade},{' '}
                   {order.enderecoEntrega?.estado}, {order.enderecoEntrega?.CEP}
                 </li>
               </ul>

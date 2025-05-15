@@ -4,11 +4,11 @@ import {
   getAllOrders,
   removeOrderById,
   updateOrderStatus
-} from "../services";
-import { router, procedure } from "../trpc";
-import { statusSchema, orderSchema } from "@/trpc/schemas";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+} from '../services';
+import { router, procedure } from '../trpc';
+import { statusSchema, orderSchema } from '@/trpc/schemas';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 
 /**
  * Order Router - Handles all order-related API endpoints
@@ -25,8 +25,8 @@ export default router({
       return await getAllOrders();
     } catch (error) {
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Erro ao buscar pedidos",
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Erro ao buscar pedidos',
         cause: error
       });
     }
@@ -44,8 +44,8 @@ export default router({
       return await findOrderById(input);
     } catch (error) {
       throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Falha ao buscar o pedido",
+        code: 'NOT_FOUND',
+        message: 'Falha ao buscar o pedido',
         cause: error
       });
     }
@@ -63,8 +63,8 @@ export default router({
       return await createOrder(input);
     } catch (error) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Erro ao criar pedido",
+        code: 'BAD_REQUEST',
+        message: 'Erro ao criar pedido',
         cause: error
       });
     }
@@ -84,11 +84,11 @@ export default router({
     .mutation(async ({ input }) => {
       try {
         await updateOrderStatus(input.orderId, input.updatedStatus);
-        return { message: "Status atualizado com sucesso!" };
+        return { message: 'Status atualizado com sucesso!' };
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Erro ao atualizar o status do pedido",
+          code: 'BAD_REQUEST',
+          message: 'Erro ao atualizar o status do pedido',
           cause: error
         });
       }
@@ -104,11 +104,11 @@ export default router({
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await removeOrderById(input);
-      return { message: "Pedido removido com sucesso!" };
+      return { message: 'Pedido removido com sucesso!' };
     } catch (error) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Erro ao remover pedido",
+        code: 'BAD_REQUEST',
+        message: 'Erro ao remover pedido',
         cause: error
       });
     }

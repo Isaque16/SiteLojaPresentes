@@ -1,5 +1,5 @@
-import Link from "next/link";
-import formatCurrency from "@/utils/formatCurrency";
+import Link from 'next/link';
+import formatCurrency from '@/utils/formatCurrency';
 
 type ProductCardProps = {
   id: string;

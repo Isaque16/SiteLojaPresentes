@@ -5,11 +5,11 @@ import {
   removeCustomerByUserName,
   saveCustomer,
   saveCustomerAdress
-} from "../services";
-import { procedure, router } from "../trpc";
-import { z } from "zod";
-import { customerSchema, addressSchema } from "@/trpc/schemas";
-import { TRPCError } from "@trpc/server";
+} from '../services';
+import { procedure, router } from '../trpc';
+import { z } from 'zod';
+import { customerSchema, addressSchema } from '@/trpc/schemas';
+import { TRPCError } from '@trpc/server';
 
 /**
  * Customer Router - Handles all customer-related API endpoints
@@ -26,8 +26,8 @@ export default router({
       return await getAllCustomers();
     } catch (error) {
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Erro ao buscar clientes",
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Erro ao buscar clientes',
         cause: error
       });
     }
@@ -45,8 +45,8 @@ export default router({
       return await findCustomerByUserName(input);
     } catch (error) {
       throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Falha ao buscar o cliente pelo userName",
+        code: 'NOT_FOUND',
+        message: 'Falha ao buscar o cliente pelo userName',
         cause: error
       });
     }
@@ -64,8 +64,8 @@ export default router({
       return await findCustomerById(input);
     } catch (error) {
       throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Falha ao buscar o cliente pelo ID",
+        code: 'NOT_FOUND',
+        message: 'Falha ao buscar o cliente pelo ID',
         cause: error
       });
     }
@@ -83,8 +83,8 @@ export default router({
       return await saveCustomer(input);
     } catch (error) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Erro ao criar cliente",
+        code: 'BAD_REQUEST',
+        message: 'Erro ao criar cliente',
         cause: error
       });
     }
@@ -104,11 +104,11 @@ export default router({
     .mutation(async ({ input }) => {
       try {
         await saveCustomerAdress(input._id, input.endereco);
-        return { message: "Endereço salvo com sucesso!" };
+        return { message: 'Endereço salvo com sucesso!' };
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Erro ao salvar endereço",
+          code: 'BAD_REQUEST',
+          message: 'Erro ao salvar endereço',
           cause: error
         });
       }
@@ -124,11 +124,11 @@ export default router({
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await removeCustomerByUserName(input);
-      return { message: "Cliente removido com sucesso!" };
+      return { message: 'Cliente removido com sucesso!' };
     } catch (error) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Erro ao remover cliente",
+        code: 'BAD_REQUEST',
+        message: 'Erro ao remover cliente',
         cause: error
       });
     }

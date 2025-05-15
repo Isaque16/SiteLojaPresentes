@@ -1,6 +1,6 @@
-import IProduct from "@/interfaces/IProduct";
-import { useBasketStore } from "@/store";
-import formatCurrency from "@/utils/formatCurrency";
+import IProduct from '@/interfaces/IProduct';
+import { useBasketStore } from '@/store';
+import formatCurrency from '@/utils/formatCurrency';
 
 type BasketItemProps = {
   item: IProduct;

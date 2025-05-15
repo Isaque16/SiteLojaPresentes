@@ -1,8 +1,8 @@
 enum EStatus {
-  "PENDENTE" = "Pendente",
-  "PREPARANDO" = "Preparando",
-  "A_CAMINHO" = "A caminho",
-  "ENTREGUE" = "Entregue"
+  'PENDENTE' = 'Pendente',
+  'PREPARANDO' = 'Preparando',
+  'A_CAMINHO' = 'A caminho',
+  'ENTREGUE' = 'Entregue'
 }
 
 function nextStatus(currentStatus: EStatus): EStatus {

@@ -1,11 +1,11 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+'use client';
+import { useRouter } from 'next/navigation';
+import { FormEvent, KeyboardEvent, useRef, useState } from 'react';
 
 export default function SearchBar() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -16,7 +16,7 @@ export default function SearchBar() {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       handleSearch();
     }

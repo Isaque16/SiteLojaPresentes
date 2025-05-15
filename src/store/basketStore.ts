@@ -1,7 +1,7 @@
-"use client";
-import IProduct from "@/interfaces/IProduct";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+'use client';
+import IProduct from '@/interfaces/IProduct';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 type BasketDataType = {
   items: IProduct[];
@@ -111,7 +111,7 @@ const useBasketStore = create<BasketStore>()(
 
       clearBasket: () => set({ items: [], quantities: [], totalValue: 0 })
     }),
-    { name: "basket-storage" }
+    { name: 'basket-storage' }
   )
 );
 

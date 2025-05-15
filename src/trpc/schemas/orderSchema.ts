@@ -1,9 +1,9 @@
-import { z } from "zod";
-import customerSchema from "./customerSchema";
-import productSchema from "./productSchema";
-import addressSchema from "./addressSchema";
-import formaPagamentoEnum from "./paymentMethodEnum";
-import statusEnum from "./statusEnum";
+import { z } from 'zod';
+import customerSchema from './customerSchema';
+import productSchema from './productSchema';
+import addressSchema from './addressSchema';
+import formaPagamentoEnum from './paymentMethodEnum';
+import statusEnum from './statusEnum';
 
 export default z.object({
   _id: z.string().optional(),
@@ -20,9 +20,9 @@ export default z.object({
   enderecoEntrega: addressSchema.optional(),
   dataPedido: z
     .union([z.date(), z.string()])
-    .transform((val) => (typeof val === "string" ? new Date(val) : val)),
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
   dataEntrega: z
     .union([z.date(), z.string()])
-    .transform((val) => (typeof val === "string" ? new Date(val) : val))
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
     .optional()
 });

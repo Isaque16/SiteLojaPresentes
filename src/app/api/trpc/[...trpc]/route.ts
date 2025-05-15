@@ -1,8 +1,8 @@
-import { createContext } from "@/trpc/server/context";
-import { appRouter } from "@/trpc/server/router/appRouter";
-import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { createContext } from '@/trpc/server/context';
+import { appRouter } from '@/trpc/server/router/appRouter';
+import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';
 
 /**
  * Handles incoming HTTP requests and routes them to the appropriate tRPC endpoint.
@@ -12,7 +12,7 @@ export const runtime = "nodejs";
  */
 export async function handler(req: Request) {
   return fetchRequestHandler({
-    endpoint: "/api/trpc",
+    endpoint: '/api/trpc',
     req,
     router: appRouter,
     createContext: createContext

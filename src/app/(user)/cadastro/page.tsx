@@ -1,24 +1,24 @@
-"use client";
-import { InputComponent } from "@/components";
-import { ICustomer } from "@/interfaces";
-import trpc from "@/trpc/client/trpc";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { setCookie } from "cookies-next/client";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useToast } from "@/contexts";
+'use client';
+import { InputComponent } from '@/components';
+import { ICustomer } from '@/interfaces';
+import trpc from '@/trpc/client/trpc';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { setCookie } from 'cookies-next/client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useToast } from '@/contexts';
 
 const formDataSchema = z.object({
   _id: z.string().optional(),
-  nomeCompleto: z.string().min(3, "O nome precisa ter pelo menos 3 caracteres"),
+  nomeCompleto: z.string().min(3, 'O nome precisa ter pelo menos 3 caracteres'),
   nomeUsuario: z
     .string()
-    .min(3, "O nome de usuário precisa ter pelo menos 3 caracteres"),
-  senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres"),
-  email: z.string().email("Email inválido"),
-  telefone: z.string().min(11, "O telefone deve ter pelo menos 11 dígitos")
+    .min(3, 'O nome de usuário precisa ter pelo menos 3 caracteres'),
+  senha: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres'),
+  email: z.string().email('Email inválido'),
+  telefone: z.string().min(11, 'O telefone deve ter pelo menos 11 dígitos')
 });
 
 export default function Cadastro() {
@@ -33,7 +33,7 @@ export default function Cadastro() {
     formState: { errors, isValid, isSubmitting }
   } = useForm<ICustomer>({
     resolver: zodResolver(formDataSchema),
-    mode: "onChange"
+    mode: 'onChange'
   });
 
   const { refetch } = trpc.customers.getByUserName.useQuery(
@@ -43,19 +43,19 @@ export default function Cadastro() {
 
   const { mutateAsync: saveCustomer } = trpc.customers.save.useMutation({
     onSuccess(data) {
-      setCookie("id", data?._id);
-      showToast("Usuário criado com sucesso!", "success");
-      router.replace("/catalogo");
+      setCookie('id', data?._id);
+      showToast('Usuário criado com sucesso!', 'success');
+      router.replace('/catalogo');
     },
     onError(error) {
-      showToast(error.message, "error");
+      showToast(error.message, 'error');
     }
   });
 
   async function createUser(customerData: ICustomer) {
     const { data } = await refetch();
     if (data?.nomeUsuario === customerData.nomeUsuario) {
-      setError("nomeUsuario", { message: "Este nome já está em uso" });
+      setError('nomeUsuario', { message: 'Este nome já está em uso' });
       return;
     }
 
@@ -63,11 +63,11 @@ export default function Cadastro() {
   }
 
   const fields = [
-    { name: "nomeCompleto", label: "Nome Completo", type: "text" },
-    { name: "nomeUsuario", label: "Usuario", type: "text" },
-    { name: "senha", label: "Senha", type: "password" },
-    { name: "email", label: "Email", type: "text" },
-    { name: "telefone", label: "Telefone", type: "text" }
+    { name: 'nomeCompleto', label: 'Nome Completo', type: 'text' },
+    { name: 'nomeUsuario', label: 'Usuario', type: 'text' },
+    { name: 'senha', label: 'Senha', type: 'password' },
+    { name: 'email', label: 'Email', type: 'text' },
+    { name: 'telefone', label: 'Telefone', type: 'text' }
   ];
 
   return (
@@ -107,7 +107,7 @@ export default function Cadastro() {
               {isSubmitting ? (
                 <div className="loading loading-dots loading-lg"></div>
               ) : (
-                "Registrar"
+                'Registrar'
               )}
             </button>
           </form>

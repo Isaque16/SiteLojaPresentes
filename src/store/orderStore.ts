@@ -1,7 +1,7 @@
-import IOrder from "@/interfaces/IOrder";
-import { create } from "zustand";
-import EStatus from "@/interfaces/EStatus";
-import EPaymentMethod from "@/interfaces/EPaymentMethod";
+import IOrder from '@/interfaces/IOrder';
+import { create } from 'zustand';
+import EStatus from '@/interfaces/EStatus';
+import EPaymentMethod from '@/interfaces/EPaymentMethod';
 
 type OrderStore = IOrder & {
   setOrder: (order: IOrder) => void;
@@ -29,11 +29,11 @@ type OrderStore = IOrder & {
  */
 const useOrderStore = create<OrderStore>((set) => ({
   cliente: {
-    nomeCompleto: "",
-    nomeUsuario: "",
-    email: "",
-    telefone: "",
-    CEP: ""
+    nomeCompleto: '',
+    nomeUsuario: '',
+    email: '',
+    telefone: '',
+    CEP: ''
   },
   cesta: [],
   quantidades: [],

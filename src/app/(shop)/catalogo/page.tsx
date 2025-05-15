@@ -1,12 +1,12 @@
-"use client";
-import ProductCard from "@/components/ProductCard";
-import LoadingCatalog from "./loading";
-import trpc from "@/trpc/client/trpc";
-import { useSearchParams } from "next/navigation";
+'use client';
+import ProductCard from '@/components/ProductCard';
+import LoadingCatalog from './loading';
+import trpc from '@/trpc/client/trpc';
+import { useSearchParams } from 'next/navigation';
 
 export default function Catalogo() {
   const searchParam =
-    useSearchParams().get("search")?.toLocaleLowerCase() || "";
+    useSearchParams().get('search')?.toLocaleLowerCase() || '';
 
   const { data: products, isLoading } = trpc.products.getAll.useQuery();
 
@@ -31,8 +31,8 @@ export default function Catalogo() {
         {searchParam
           ? (foundProducts?.length ?? 0) > 0
             ? `${foundProducts?.length} Resultados para ${searchParam}`
-            : "Nenhum produto encontrado"
-          : ""}
+            : 'Nenhum produto encontrado'
+          : ''}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {foundProducts?.map((product) => (

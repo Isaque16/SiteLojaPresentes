@@ -1,4 +1,4 @@
-import connectToDatabase from "./database/connectDB";
+import connectToDatabase from './database/connectDB';
 
 export async function createContext() {
   const db = await connectToDatabase();

@@ -1,4 +1,4 @@
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister } from 'react-hook-form';
 
 interface InputProps {
   label: string;
@@ -28,7 +28,7 @@ export default function InputComponent({
         placeholder={placeholder}
         value={value}
         className={
-          "input input-bordered focus-within:ring-white focus-within:ring-2 w-full max-w-xs"
+          'input input-bordered focus-within:ring-white focus-within:ring-2 w-full max-w-xs'
         }
         {...register(name)}
       />

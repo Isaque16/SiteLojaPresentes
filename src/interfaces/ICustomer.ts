@@ -1,5 +1,5 @@
-import IAddress from "./IAddress";
-import IOrder from "./IOrder";
+import IAddress from './IAddress';
+import IOrder from './IOrder';
 
 export default interface ICustomer {
   readonly _id?: string;

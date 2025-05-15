@@ -1,2 +1,2 @@
-export { default as useBasketStore } from "./basketStore";
-export { default as useOrderStore } from "./orderStore";
+export { default as useBasketStore } from './basketStore';
+export { default as useOrderStore } from './orderStore';

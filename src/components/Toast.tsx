@@ -1,4 +1,4 @@
-import { ToastProps } from "@/contexts/ToastContext";
+import { ToastProps } from '@/contexts/ToastContext';
 
 const Toast: React.FC<ToastProps & { onClose: () => void }> = ({
   message,
@@ -6,18 +6,18 @@ const Toast: React.FC<ToastProps & { onClose: () => void }> = ({
   onClose
 }) => {
   const alertClass = `alert ${
-    type === "success"
-      ? "alert-success"
-      : type === "error"
-        ? "alert-error"
-        : type === "warning"
-          ? "alert-warning"
-          : "alert-info"
+    type === 'success'
+      ? 'alert-success'
+      : type === 'error'
+        ? 'alert-error'
+        : type === 'warning'
+          ? 'alert-warning'
+          : 'alert-info'
   }`;
 
   const getIcon = () => {
     switch (type) {
-      case "success":
+      case 'success':
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@ const Toast: React.FC<ToastProps & { onClose: () => void }> = ({
             />
           </svg>
         );
-      case "error":
+      case 'error':
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +49,7 @@ const Toast: React.FC<ToastProps & { onClose: () => void }> = ({
             />
           </svg>
         );
-      case "warning":
+      case 'warning':
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"

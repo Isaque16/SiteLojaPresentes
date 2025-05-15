@@ -1,5 +1,5 @@
-import IOrder from "@/interfaces/IOrder";
-import formatCurrency from "@/utils/formatCurrency";
+import IOrder from '@/interfaces/IOrder';
+import formatCurrency from '@/utils/formatCurrency';
 
 export default function OrderCard({ order }: { order: IOrder }) {
   return (
@@ -10,7 +10,7 @@ export default function OrderCard({ order }: { order: IOrder }) {
         </h3>
 
         <p>
-          Cliente:{" "}
+          Cliente:{' '}
           <span className="font-bold">{order.cliente.nomeCompleto}</span>
         </p>
 
@@ -19,17 +19,17 @@ export default function OrderCard({ order }: { order: IOrder }) {
         <p>
           Produtos: <br />
           <span className="font-bold">
-            {order.cesta.map((produto) => produto.nome).join(", ")}
+            {order.cesta.map((produto) => produto.nome).join(', ')}
           </span>
         </p>
 
         <div className="mt-2">
           <p>
-            Subtotal:{" "}
+            Subtotal:{' '}
             <span className="font-bold">{formatCurrency(order.subTotal)}</span>
           </p>
           <p>
-            Valor total:{" "}
+            Valor total:{' '}
             <span className="font-bold">
               {formatCurrency(order.valorTotal)}
             </span>
@@ -39,18 +39,18 @@ export default function OrderCard({ order }: { order: IOrder }) {
         <div className="divider my-1"></div>
 
         <p>
-          Forma de pagamento:{" "}
+          Forma de pagamento:{' '}
           <span className="font-bold">{order.formaPagamento}</span>
         </p>
         <p>
           Status: <span className="font-bold">{order.status}</span>
         </p>
         <p>
-          Método de envio:{" "}
+          Método de envio:{' '}
           <span className="font-bold">{order.metodoEnvio}</span>
         </p>
 
-        {order.metodoEnvio === "entrega" && order.enderecoEntrega && (
+        {order.metodoEnvio === 'entrega' && order.enderecoEntrega && (
           <div className="mt-2 bg-base-200 p-2 rounded-md">
             <p>
               Endereço de entrega: <br />
@@ -62,11 +62,11 @@ export default function OrderCard({ order }: { order: IOrder }) {
                     {order.enderecoEntrega.bairro}
                   </>
                 ) : (
-                  ""
+                  ''
                 )}
                 {order.enderecoEntrega.numero
                   ? `, ${order.enderecoEntrega.numero}`
-                  : ""}
+                  : ''}
               </span>
             </p>
           </div>

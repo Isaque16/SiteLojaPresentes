@@ -3,11 +3,11 @@ import {
   getAllProducts,
   removeProductById,
   saveProduct
-} from "../services";
-import { router, procedure } from "../trpc";
-import { z } from "zod";
-import { productSchema } from "@/trpc/schemas";
-import { TRPCError } from "@trpc/server";
+} from '../services';
+import { router, procedure } from '../trpc';
+import { z } from 'zod';
+import { productSchema } from '@/trpc/schemas';
+import { TRPCError } from '@trpc/server';
 
 /**
  * Product Router - Handles all product-related API endpoints
@@ -24,8 +24,8 @@ export default router({
       return await getAllProducts();
     } catch (error) {
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch products",
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch products',
         cause: error
       });
     }
@@ -44,8 +44,8 @@ export default router({
       return await findProductById(input);
     } catch (error) {
       throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Product not found",
+        code: 'NOT_FOUND',
+        message: 'Product not found',
         cause: error
       });
     }
@@ -61,11 +61,11 @@ export default router({
   save: procedure.input(productSchema).mutation(async ({ input }) => {
     try {
       await saveProduct(input);
-      return { message: "Estoque atualizado com sucesso!" };
+      return { message: 'Estoque atualizado com sucesso!' };
     } catch (error) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Erro ao salvar produto",
+        code: 'BAD_REQUEST',
+        message: 'Erro ao salvar produto',
         cause: error
       });
     }
@@ -81,11 +81,11 @@ export default router({
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await removeProductById(input);
-      return { message: "Produto removido com sucesso!" };
+      return { message: 'Produto removido com sucesso!' };
     } catch (error) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Erro ao remover produto",
+        code: 'BAD_REQUEST',
+        message: 'Erro ao remover produto',
         cause: error
       });
     }
