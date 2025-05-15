@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 interface PersonalDataProps {
   userData: {
     username: string;
     email: string;
+    telefone: string;
   };
   onSave: (userData: { username: string; email: string }) => Promise<void>;
 }
@@ -19,10 +20,16 @@ export default function PersonalDataForm({
   }, [userData]);
 
   return (
-    <section className="card card-body card-bordered shadow-md mb-5 w-full md:w-1/2">
-      <h2 className="card-title">Dados Pessoais</h2>
+    <section
+      id="personal-data-form-section"
+      className="card card-body card-bordered shadow-md mb-5 w-full md:w-1/2"
+      aria-labelledby="personal-data-form-heading"
+    >
+      <h2 id="personal-data-form-heading" className="card-title">
+        Dados Pessoais
+      </h2>
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2">
+        <fieldset className="flex flex-col gap-2">
           <label htmlFor="username" className="label">
             Nome de Usuário
           </label>
@@ -36,9 +43,9 @@ export default function PersonalDataForm({
               setFormData({ ...formData, username: e.target.value })
             }
           />
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col gap-2">
+        <fieldset className="flex flex-col gap-2">
           <label htmlFor="email" className="label">
             E-mail
           </label>
@@ -52,7 +59,23 @@ export default function PersonalDataForm({
               setFormData({ ...formData, email: e.target.value })
             }
           />
-        </div>
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-2">
+          <label htmlFor="telefone" className="label">
+            Telefone
+          </label>
+          <input
+            type="telefone"
+            id="telefone"
+            className="input input-bordered"
+            placeholder="Seu telefone"
+            value={formData.telefone}
+            onChange={(e) =>
+              setFormData({ ...formData, telefone: e.target.value })
+            }
+          />
+        </fieldset>
 
         <button
           onClick={() => onSave(formData)}

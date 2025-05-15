@@ -2,11 +2,7 @@
 import { getCookie } from 'cookies-next/client';
 import trpc from '@/trpc/client/trpc';
 import { IAddress } from '@/interfaces';
-import {
-  PersonalDataForm,
-  PasswordChangeForm,
-  AddressManagement
-} from './components';
+import { PersonalDataForm, AddressManagement } from './components';
 import { useToast } from '@/contexts';
 
 export default function UserConfiguration() {
@@ -37,31 +33,6 @@ export default function UserConfiguration() {
     }
   };
 
-  const updatePassword = async (passwords: {
-    current: string;
-    new: string;
-    confirm: string;
-  }) => {
-    const isPasswordValid =
-      passwords.new &&
-      passwords.new !== passwords.current &&
-      passwords.new === passwords.confirm;
-
-    if (isPasswordValid) {
-      try {
-        await saveUserData({ ...data!, senha: passwords.new });
-        showToast('Senha atualizada com sucesso!', 'success');
-        return true;
-      } catch {
-        showToast('Erro ao atualizar senha', 'error');
-        return false;
-      }
-    } else {
-      showToast('Senhas não conferem ou inválidas', 'error');
-      return false;
-    }
-  };
-
   const saveAddress = async (address: IAddress) => {
     try {
       await saveUserData({ ...data!, endereco: address });
@@ -85,14 +56,10 @@ export default function UserConfiguration() {
       <PersonalDataForm
         userData={{
           username: data?.nomeUsuario || '',
-          email: data?.email || ''
+          email: data?.email || '',
+          telefone: data?.telefone || ''
         }}
         onSave={updatePersonalData}
-      />
-
-      <PasswordChangeForm
-        currentPassword={data?.senha || ''}
-        onSave={updatePassword}
       />
 
       <AddressManagement address={data?.endereco} onSave={saveAddress} />
