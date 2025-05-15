@@ -1,13 +1,14 @@
-"use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import InputComponent from "@/components/InputComponent";
-import { ProductCard } from "@/components";
-import { IProduct } from "@/interfaces";
-import LoadingProducts from "./loading";
-import trpc from "@/trpc/client/trpc";
-import { productSchema } from "@/trpc/schemas";
+'use client';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import InputComponent from '@/components/InputComponent';
+import { ProductCard, ImageUploader } from '@/components';
+import { IProduct } from '@/interfaces';
+import LoadingProducts from './loading';
+import trpc from '@/trpc/client/trpc';
+import { productSchema } from '@/trpc/schemas';
+import { useToast } from '@/contexts';
 
 export default function StockManager() {
   const {
@@ -15,11 +16,17 @@ export default function StockManager() {
     handleSubmit,
     reset,
     trigger,
+    setValue,
+    watch,
     formState: { errors, isValid }
   } = useForm<IProduct>({
     resolver: zodResolver(productSchema),
-    mode: "onChange"
+    mode: 'onChange'
   });
+
+  const { showToast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
+  const imageUrl = watch('imagem');
 
   const {
     data: products,
@@ -27,30 +34,63 @@ export default function StockManager() {
     refetch
   } = trpc.products.getAll.useQuery();
 
-  const [responseMessage, setResponseMessage] = useState("");
-  const showMessage = (message: string) => {
-    setResponseMessage(message);
-    setTimeout(() => setResponseMessage(""), 5000);
+  const { mutateAsync: uploadImage } = trpc.upload.uploadImage.useMutation({
+    onSuccess: (data) => {
+      setValue('imagem', data.fileUrl);
+      setValue('nomeImagem', data.fileName);
+      trigger(['imagem', 'nomeImagem']);
+      setIsUploading(false);
+      showToast('Imagem carregada com sucesso!', 'success');
+    },
+    onError: (error) => {
+      showToast(error.message, 'error');
+      setIsUploading(false);
+    }
+  });
+
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileSelect = async (file: File) => {
+    try {
+      setIsUploading(true);
+      const base64Data = await convertFileToBase64(file);
+      await uploadImage({
+        base64Data,
+        fileName: file.name
+      });
+    } catch {
+      setIsUploading(false);
+      showToast('Erro ao processar imagem', 'error');
+    }
   };
 
   const { mutateAsync: saveProduct } = trpc.products.save.useMutation({
     onSuccess() {
       reset();
+      setValue('imagem', '');
+      setValue('nomeImagem', '');
       refetch();
-      showMessage("Estoque atualizado com sucesso!");
+      showToast('Estoque atualizado com sucesso!', 'success');
     },
     onError(error) {
-      showMessage(error.message);
+      showToast(error.message, 'error');
     }
   });
 
   const { mutate: deleteProduct } = trpc.products.delete.useMutation({
     onSuccess() {
       refetch();
-      showMessage("Produto removido com sucesso!");
+      showToast('Produto removido com sucesso!', 'success');
     },
     onError(error) {
-      showMessage(error.message);
+      showToast(error.message, 'error');
     }
   });
 
@@ -63,13 +103,11 @@ export default function StockManager() {
   };
 
   const fields = [
-    { name: "nome", label: "Nome", type: "text" },
-    { name: "categoria", label: "Categoria", type: "text" },
-    { name: "preco", label: "Preço", type: "number" },
-    { name: "quantidade", label: "Quantidade", type: "number" },
-    { name: "descricao", label: "Descrição", type: "text" },
-    { name: "imagem", label: "Imagem", type: "text" },
-    { name: "nomeImagem", label: "Nome da Imagem", type: "text" }
+    { name: 'nome', label: 'Nome', type: 'text' },
+    { name: 'categoria', label: 'Categoria', type: 'text' },
+    { name: 'preco', label: 'Preço', type: 'number' },
+    { name: 'quantidade', label: 'Quantidade', type: 'number' },
+    { name: 'descricao', label: 'Descrição', type: 'text' }
   ];
 
   return (
@@ -83,8 +121,27 @@ export default function StockManager() {
       <div className="flex min-h-screen flex-col md:flex-row items-center justify-around">
         <form onSubmit={handleSubmit((data) => saveProduct(data))}>
           <div className="flex flex-col items-start p-5 gap-5">
+            <div className="w-full">
+              <label className="label">
+                <span className="label-text text-xl">Imagem do Produto</span>
+              </label>
+              <ImageUploader
+                onFileSelect={handleFileSelect}
+                previewUrl={imageUrl}
+                className="mb-4"
+              />
+              {(errors.imagem || errors.nomeImagem) && (
+                <p className="text-error py-2">
+                  {errors.imagem?.message || errors.nomeImagem?.message}
+                </p>
+              )}
+            </div>
+
+            <input type="hidden" {...register('imagem')} />
+            <input type="hidden" {...register('nomeImagem')} />
+
             {fields.map(({ name, label, type }) => (
-              <div key={name}>
+              <div key={name} className="w-full">
                 <InputComponent
                   label={label}
                   name={name}
@@ -99,16 +156,14 @@ export default function StockManager() {
                 )}
               </div>
             ))}
+
             <button
               type="submit"
-              className={`text-xl btn ${!isValid && "btn-disabled"}`}
-              disabled={!isValid}
+              className={`text-xl btn ${(!isValid || isUploading) && 'btn-disabled'}`}
+              disabled={!isValid || isUploading}
             >
-              Registrar
+              {isUploading ? 'Enviando imagem...' : 'Registrar'}
             </button>
-            <p className="text-white alert alert-info font-bold empty:hidden">
-              {responseMessage}
-            </p>
           </div>
         </form>
 

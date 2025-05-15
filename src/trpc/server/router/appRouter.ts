@@ -1,8 +1,9 @@
-import { router } from "../trpc";
-import customerRouter from "./customerRouter";
-import orderRouter from "./orderRouter";
-import productRouter from "./productRouter";
-import authRouter from "./authRouter";
+import { router } from '../trpc';
+import customerRouter from './customerRouter';
+import orderRouter from './orderRouter';
+import productRouter from './productRouter';
+import authRouter from './authRouter';
+import uploadRouter from './uploadRouter';
 
 /**
  * This is the primary router for your server.
@@ -15,6 +16,7 @@ export const appRouter = router({
   customers: customerRouter,
   orders: orderRouter,
   auth: authRouter,
+  upload: uploadRouter
 });
 
 export type AppRouter = typeof appRouter;
