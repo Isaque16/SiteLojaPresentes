@@ -1,4 +1,5 @@
-import { Cart, UserAvatar } from "@/components";
+'use client';
+import { Cart, UserAvatar } from '@/components';
 
 export default function Footer() {
   return (

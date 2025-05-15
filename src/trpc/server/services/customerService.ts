@@ -1,7 +1,8 @@
-"use server";
-import IAddress from "@/interfaces/IAddress";
-import ICustomer from "@/interfaces/ICustomer";
-import { customerModel as Customer } from "@/trpc/server/models";
+'use server';
+import IAddress from '@/interfaces/IAddress';
+import ICustomer from '@/interfaces/ICustomer';
+import { customerModel as Customer } from '@/trpc/server/models';
+import bcrypt from 'bcrypt';
 
 /**
  * Retrieves all customers from the database.
@@ -29,7 +30,7 @@ export async function findCustomerByUserName(
 ): Promise<ICustomer | null> {
   try {
     return await Customer.findOne({
-      nomeUsuario: { $regex: nomeUsuario, $options: "i" }
+      nomeUsuario: { $regex: nomeUsuario, $options: 'i' }
     });
   } catch (error) {
     throw new Error(`Erro ao encontrar cliente pelo nome: ${error}`);
@@ -45,7 +46,7 @@ export async function findCustomerByUserName(
  */
 export async function findCustomerById(id: string): Promise<ICustomer | null> {
   try {
-    return await Customer.findById(id).populate("historicoDeCompras");
+    return await Customer.findById(id).populate('historicoDeCompras');
   } catch (error) {
     throw new Error(`Erro ao encontrar cliente pelo ID: ${error}`);
   }
@@ -64,13 +65,20 @@ export async function saveCustomer(
 ): Promise<ICustomer | null> {
   let savedCustomer: ICustomer | null;
   try {
-    if (customerData._id)
+    const hashedPassword = await bcrypt.hash(customerData.senha, 10);
+    const customerDataWithHashedPassword = {
+      ...customerData,
+      senha: hashedPassword
+    };
+    if (customerData._id) {
       savedCustomer = await Customer.findByIdAndUpdate(
         customerData._id,
-        customerData,
+        customerDataWithHashedPassword,
         { new: true }
       );
-    else savedCustomer = await Customer.create(customerData);
+    } else {
+      savedCustomer = await Customer.create(customerDataWithHashedPassword);
+    }
     return savedCustomer;
   } catch (error) {
     throw new Error(`Erro ao salvar ou atualizar o cliente: ${error}`);

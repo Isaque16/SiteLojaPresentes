@@ -1,11 +1,11 @@
-import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
+import { MiddlewareConfig, NextRequest, NextResponse } from 'next/server';
 
 export default function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
-  const isUserToken = req.cookies.has("id");
+  const isUserToken = req.cookies.has('user_session');
 
   if (!isUserToken) {
-    url.pathname = "/cadastro";
+    url.pathname = '/cadastro';
     return NextResponse.redirect(url);
   }
 
@@ -14,9 +14,9 @@ export default function middleware(req: NextRequest) {
 
 export const config: MiddlewareConfig = {
   matcher: [
-    "/cesta/:path*",
-    "/config/:path*",
-    "/historico/:path*",
-    "/admin/:path*"
+    '/cesta/:path*',
+    '/config/:path*',
+    '/historico/:path*',
+    '/admin/:path*'
   ]
 };

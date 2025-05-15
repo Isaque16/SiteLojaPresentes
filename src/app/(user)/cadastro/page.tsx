@@ -1,7 +1,6 @@
 "use client";
 import { InputComponent } from "@/components";
 import { ICustomer } from "@/interfaces";
-import { useUserStore } from "@/store";
 import trpc from "@/trpc/client/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next/client";
@@ -24,7 +23,6 @@ const formDataSchema = z.object({
 
 export default function Cadastro() {
   const router = useRouter();
-  const { setUserData } = useUserStore();
   const { showToast } = useToast();
 
   const {
@@ -38,20 +36,16 @@ export default function Cadastro() {
     mode: "onChange"
   });
 
-  const { refetch } = trpc.customers.getByName.useQuery(
+  const { refetch } = trpc.customers.getByUserName.useQuery(
     getValues().nomeUsuario,
     { enabled: false }
   );
 
   const { mutateAsync: saveCustomer } = trpc.customers.save.useMutation({
     onSuccess(data) {
-      setUserData({
-        _id: data?._id || "",
-        nomeUsuario: data?.nomeUsuario || ""
-      });
       setCookie("id", data?._id);
       showToast("Usuário criado com sucesso!", "success");
-      router.replace("/");
+      router.replace("/catalogo");
     },
     onError(error) {
       showToast(error.message, "error");

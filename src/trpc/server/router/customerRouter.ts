@@ -5,7 +5,7 @@ import {
   removeCustomerByUserName,
   saveCustomer,
   saveCustomerAdress
-} from "@/trpc/server/services";
+} from "../services";
 import { procedure, router } from "../trpc";
 import { z } from "zod";
 import { customerSchema, addressSchema } from "@/trpc/schemas";
@@ -14,7 +14,7 @@ import { TRPCError } from "@trpc/server";
 /**
  * Customer Router - Handles all customer-related API endpoints
  */
-export const customerRouter = router({
+export default router({
   /**
    * Retrieves all customers from the database
    *
@@ -40,7 +40,7 @@ export const customerRouter = router({
    * @returns {Promise<ICustomer>} The found customer object
    * @throws {TRPCError} With code 'NOT_FOUND' if customer doesn't exist
    */
-  getByName: procedure.input(z.string()).query(async ({ input }) => {
+  getByUserName: procedure.input(z.string()).query(async ({ input }) => {
     try {
       return await findCustomerByUserName(input);
     } catch (error) {

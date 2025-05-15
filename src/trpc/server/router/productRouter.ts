@@ -3,7 +3,7 @@ import {
   getAllProducts,
   removeProductById,
   saveProduct
-} from "@/trpc/server/services";
+} from "../services";
 import { router, procedure } from "../trpc";
 import { z } from "zod";
 import { productSchema } from "@/trpc/schemas";
@@ -12,7 +12,7 @@ import { TRPCError } from "@trpc/server";
 /**
  * Product Router - Handles all product-related API endpoints
  */
-export const productRouter = router({
+export default router({
   /**
    * Retrieves all products from the database
    *

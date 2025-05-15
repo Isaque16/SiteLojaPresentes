@@ -1,5 +1,6 @@
-import Link from "next/link";
-import { Cart, SearchBar, UserAvatar } from "@/components";
+'use client';
+import Link from 'next/link';
+import { Cart, SearchBar, UserAvatar } from '@/components';
 
 export default function NavBar() {
   return (

@@ -1,11 +1,9 @@
-import connectToDatabase from "@/trpc/server/database/connectDB";
+import connectToDatabase from "./database/connectDB";
 
 export async function createContext() {
   const db = await connectToDatabase();
 
-  return {
-    db
-  };
+  return { db };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

@@ -1,16 +1,16 @@
-"use client";
-import { getCookie } from "cookies-next/client";
-import trpc from "@/trpc/client/trpc";
-import { IAddress } from "@/interfaces";
+'use client';
+import { getCookie } from 'cookies-next/client';
+import trpc from '@/trpc/client/trpc';
+import { IAddress } from '@/interfaces';
 import {
   PersonalDataForm,
   PasswordChangeForm,
   AddressManagement
-} from "./components";
-import { useToast } from "@/contexts";
+} from './components';
+import { useToast } from '@/contexts';
 
 export default function UserConfiguration() {
-  const userId = getCookie("id");
+  const userId = getCookie('user_session');
   const { data, refetch } = trpc.customers.getById.useQuery(userId as string, {
     enabled: !!userId
   });
@@ -31,9 +31,9 @@ export default function UserConfiguration() {
         email: userData.email
       });
 
-      showToast("Dados atualizados com sucesso!", "success");
+      showToast('Dados atualizados com sucesso!', 'success');
     } catch {
-      showToast("Erro ao atualizar dados", "error");
+      showToast('Erro ao atualizar dados', 'error');
     }
   };
 
@@ -50,14 +50,14 @@ export default function UserConfiguration() {
     if (isPasswordValid) {
       try {
         await saveUserData({ ...data!, senha: passwords.new });
-        showToast("Senha atualizada com sucesso!", "success");
+        showToast('Senha atualizada com sucesso!', 'success');
         return true;
       } catch {
-        showToast("Erro ao atualizar senha", "error");
+        showToast('Erro ao atualizar senha', 'error');
         return false;
       }
     } else {
-      showToast("Senhas não conferem ou inválidas", "error");
+      showToast('Senhas não conferem ou inválidas', 'error');
       return false;
     }
   };
@@ -65,10 +65,10 @@ export default function UserConfiguration() {
   const saveAddress = async (address: IAddress) => {
     try {
       await saveUserData({ ...data!, endereco: address });
-      showToast("Endereço atualizado com sucesso!", "success");
+      showToast('Endereço atualizado com sucesso!', 'success');
       return true;
     } catch {
-      showToast("Erro ao atualizar endereço", "error");
+      showToast('Erro ao atualizar endereço', 'error');
       return false;
     }
   };
@@ -84,14 +84,14 @@ export default function UserConfiguration() {
 
       <PersonalDataForm
         userData={{
-          username: data?.nomeUsuario || "",
-          email: data?.email || ""
+          username: data?.nomeUsuario || '',
+          email: data?.email || ''
         }}
         onSave={updatePersonalData}
       />
 
       <PasswordChangeForm
-        currentPassword={data?.senha || ""}
+        currentPassword={data?.senha || ''}
         onSave={updatePassword}
       />
 

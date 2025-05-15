@@ -1,72 +1,60 @@
-"use client";
-import { useUserStore } from "@/store";
-import trpc from "@/trpc/client/trpc";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { setCookie } from "cookies-next/client";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { InputComponent } from "@/components";
-import { useToast } from "@/contexts";
+'use client';
+import trpc from '@/trpc/client/trpc';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { InputComponent } from '@/components';
+import { useToast } from '@/contexts';
 
 const formDataSchema = z.object({
   nomeUsuario: z
     .string()
-    .min(3, "O nome de usuário precisa ter pelo menos 3 caracteres"),
-  senha: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres")
+    .min(3, 'O nome de usuário precisa ter pelo menos 3 caracteres'),
+  senha: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres')
 });
 
 type LoginType = { nomeUsuario: string; senha: string };
 
 export default function Cadastro() {
   const router = useRouter();
-  const { setUserData } = useUserStore();
   const { showToast } = useToast();
 
   const {
     register,
     handleSubmit,
-    getValues,
     reset,
     setError,
     formState: { isValid, isSubmitting }
   } = useForm<LoginType>({
     resolver: zodResolver(formDataSchema),
-    mode: "onChange"
+    mode: 'onChange'
   });
 
-  const { refetch } = trpc.customers.getByName.useQuery(
-    getValues().nomeUsuario,
-    { enabled: false }
-  );
-
-  async function loginUser({ nomeUsuario, senha }: LoginType) {
-    try {
-      const { data } = await refetch();
-
-      const doesUserExist =
-        data?.nomeUsuario === nomeUsuario && data?.senha === senha;
-
-      if (!doesUserExist) {
+  const { mutateAsync: loginMutation } = trpc.auth.login.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        showToast('Bem vindo de volta!', 'success');
+        router.replace('/catalogo');
+      } else {
         reset();
-        setError("root", { message: "Usuário ou senha incorreto" });
-        return;
+        setError('root', { message: data.message || 'Falha na autenticação' });
+        showToast(data.message || 'Falha na autenticação', 'error');
       }
-
-      setUserData({ _id: data._id, nomeUsuario: data.nomeUsuario });
-      setCookie("id", data._id);
-
-      showToast("Bem vindo de volta!", "success");
-      router.replace("/catalogo");
-    } catch {
-      showToast("Erro ao logar usuário, tente novamente.", "error");
+    },
+    onError: () => {
+      showToast('Erro ao logar usuário, tente novamente.', 'error');
     }
+  });
+
+  async function loginUser(credentials: LoginType) {
+    await loginMutation(credentials);
   }
 
   const fields = [
-    { name: "nomeUsuario", label: "Usuario", type: "text" },
-    { name: "senha", label: "Senha", type: "password" }
+    { name: 'nomeUsuario', label: 'Usuario', type: 'text' },
+    { name: 'senha', label: 'Senha', type: 'password' }
   ];
 
   return (
@@ -95,14 +83,14 @@ export default function Cadastro() {
             <button
               type="submit"
               className={`text-xl btn ${
-                !isValid || isSubmitting ? "btn-disabled" : ""
+                !isValid || isSubmitting ? 'btn-disabled' : ''
               }`}
               disabled={!isValid || isSubmitting}
             >
               {isSubmitting ? (
                 <div className="loading loading-dots loading-lg"></div>
               ) : (
-                "Entrar"
+                'Entrar'
               )}
             </button>
           </form>

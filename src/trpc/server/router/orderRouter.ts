@@ -4,7 +4,7 @@ import {
   getAllOrders,
   removeOrderById,
   updateOrderStatus
-} from "@/trpc/server/services";
+} from "../services";
 import { router, procedure } from "../trpc";
 import { statusSchema, orderSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
@@ -13,7 +13,7 @@ import { z } from "zod";
 /**
  * Order Router - Handles all order-related API endpoints
  */
-export const orderRouter = router({
+export default router({
   /**
    * Retrieves all orders from the database
    *

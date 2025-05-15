@@ -1,58 +1,51 @@
-"use client";
-import trpc from "@/trpc/client/trpc";
-import { deleteCookie, getCookie } from "cookies-next/client";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { themeChange } from "theme-change";
+'use client';
+import trpc from '@/trpc/client/trpc';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 function useIdCookie() {
   const [userId, setUserId] = useState<string | null>(null);
+  const { data } = trpc.auth.checkSession.useQuery();
 
   useEffect(() => {
     const checkCookie = () => {
-      const id = getCookie("id");
-      const idValue = id ? String(id) : null;
-
-      setUserId((prev) => {
-        return prev !== idValue ? idValue : prev;
-      });
+      setUserId((prev) =>
+        prev !== data?.userId ? (data?.userId ?? null) : prev
+      );
     };
-
     checkCookie();
 
     const interval = setInterval(checkCookie, 2000);
-    window.addEventListener("focus", checkCookie);
+    window.addEventListener('focus', checkCookie);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener("focus", checkCookie);
+      window.removeEventListener('focus', checkCookie);
     };
-  }, []);
+  }, [data?.userId]);
 
   return userId;
 }
 
 export default function UserAvatar() {
   const router = useRouter();
-  const userId = useIdCookie();
+  const userId: string | null = useIdCookie();
 
   const { data, isLoading } = trpc.customers.getById.useQuery(
     userId as string,
     { enabled: !!userId }
   );
 
-  const logOut = () => {
-    deleteCookie("id");
-    router.replace("/login");
+  const { mutateAsync: logoutMutation } = trpc.auth.logout.useMutation();
+
+  const logOut = async () => {
+    await logoutMutation();
+    router.replace('/login');
   };
 
-  useEffect(() => {
-    themeChange(false);
-  }, []);
-
   const renderAvatar = () => {
-    const initial = data?.nomeUsuario?.charAt(0) ?? "C";
+    const initial = data?.nomeUsuario?.charAt(0) ?? 'C';
     return (
       <div className="w-12 py-3 flex justify-center bg-neutral text-neutral-content rounded-full">
         <span>{initial}</span>
@@ -86,7 +79,7 @@ export default function UserAvatar() {
         >
           <div className="card-body">
             <span className="text-lg font-medium">
-              {data?.nomeUsuario || "Convidado"}
+              {data?.nomeUsuario || 'Convidado'}
             </span>
             <span className="text-lg font-medium flex items-center gap-2">
               Tema:
@@ -121,16 +114,50 @@ export default function UserAvatar() {
                 <li>
                   <Link
                     href="/config"
-                    className="link-primary block py-1 hover:underline"
+                    className="link-primary flex items-center gap-2 py-1 hover:underline"
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
                     Configurações
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/historico"
-                    className="link-primary block py-1 hover:underline"
+                    className="link-primary flex items-center gap-2 py-1 hover:underline"
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
                     Histórico de Compras
                   </Link>
                 </li>
@@ -138,8 +165,22 @@ export default function UserAvatar() {
                   <button
                     type="button"
                     onClick={logOut}
-                    className="link-primary w-full text-left py-1 hover:underline"
+                    className="link-primary flex items-center gap-2 w-full text-left py-1 hover:underline"
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
                     Log out
                   </button>
                 </li>
