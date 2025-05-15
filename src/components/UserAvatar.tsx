@@ -1,29 +1,21 @@
 'use client';
 import trpc from '@/trpc/client/trpc';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 function useIdCookie() {
   const [userId, setUserId] = useState<string | null>(null);
-  const { data } = trpc.auth.checkSession.useQuery();
+  const pathname = usePathname();
+  const { data, refetch } = trpc.auth.checkSession.useQuery();
 
   useEffect(() => {
-    const checkCookie = () => {
-      setUserId((prev) =>
-        prev !== data?.userId ? (data?.userId ?? null) : prev
-      );
-    };
-    checkCookie();
+    setUserId((prev) =>
+      prev !== data?.userId ? (data?.userId ?? null) : prev
+    );
 
-    const interval = setInterval(checkCookie, 2000);
-    window.addEventListener('focus', checkCookie);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', checkCookie);
-    };
-  }, [data?.userId]);
+    refetch();
+  }, [data, pathname, refetch]);
 
   return userId;
 }
@@ -45,7 +37,7 @@ export default function UserAvatar() {
   };
 
   const renderAvatar = () => {
-    const initial = data?.nomeUsuario?.charAt(0) ?? 'C';
+    const initial = data?.nomeUsuario?.charAt(0).toUpperCase() ?? 'C';
     return (
       <div className="w-12 py-3 flex justify-center bg-neutral text-neutral-content rounded-full">
         <span>{initial}</span>
