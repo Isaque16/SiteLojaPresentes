@@ -1,10 +1,4 @@
-import {
-  createOrder,
-  findOrderById,
-  getAllOrders,
-  removeOrderById,
-  updateOrderStatus
-} from '../services';
+import { orderService } from '../services';
 import { router, procedure } from '../trpc';
 import { statusSchema, orderSchema } from '@/trpc/schemas';
 import { TRPCError } from '@trpc/server';
@@ -22,7 +16,7 @@ export default router({
    */
   getAll: procedure.query(async () => {
     try {
-      return await getAllOrders();
+      return await orderService.getAllOrders();
     } catch (error) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -41,7 +35,7 @@ export default router({
    */
   getById: procedure.input(z.string()).query(async ({ input }) => {
     try {
-      return await findOrderById(input);
+      return await orderService.findOrderById(input);
     } catch (error) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -60,7 +54,7 @@ export default router({
    */
   save: procedure.input(orderSchema).mutation(async ({ input }) => {
     try {
-      return await createOrder(input);
+      return await orderService.createOrder(input);
     } catch (error) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
@@ -83,7 +77,10 @@ export default router({
     .input(z.object({ orderId: z.string(), updatedStatus: statusSchema }))
     .mutation(async ({ input }) => {
       try {
-        await updateOrderStatus(input.orderId, input.updatedStatus);
+        await orderService.updateOrderStatus(
+          input.orderId,
+          input.updatedStatus
+        );
         return { message: 'Status atualizado com sucesso!' };
       } catch (error) {
         throw new TRPCError({
@@ -103,7 +100,7 @@ export default router({
    */
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
-      await removeOrderById(input);
+      await orderService.removeOrderById(input);
       return { message: 'Pedido removido com sucesso!' };
     } catch (error) {
       throw new TRPCError({

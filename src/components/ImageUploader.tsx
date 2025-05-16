@@ -1,34 +1,38 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useToast } from '@/contexts';
 
 interface ImageUploaderProps {
   onFileSelect: (file: File) => void;
   onSuccess?: (fileUrl: string) => void;
   onError?: (message: string) => void;
-  previewUrl?: string;
+  previewUrls?: string[];
   className?: string;
+  onRemoveImage?: (index: number) => void;
 }
 
 export default function ImageUploader({
   onFileSelect,
   onError,
-  previewUrl: initialPreviewUrl,
-  className = ''
+  previewUrls: initialPreviewUrls,
+  className = '',
+  onRemoveImage
 }: ImageUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    initialPreviewUrl || null
+  const [previewUrls, setPreviewUrls] = useState<string[]>(
+    initialPreviewUrls || []
   );
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
-  const createPreview = useCallback((file: File): void => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+  useEffect(() => {
+    if (initialPreviewUrls) {
+      setPreviewUrls(initialPreviewUrls);
+    }
+  }, [initialPreviewUrls]);
+
+  const createPreview = useCallback((file: File): string => {
+    return URL.createObjectURL(file);
   }, []);
 
   const handleUpload = useCallback(
@@ -50,7 +54,8 @@ export default function ImageUploader({
 
   const processFile = useCallback(
     (file: File): void => {
-      createPreview(file);
+      const previewUrl = createPreview(file);
+      setPreviewUrls((prevUrls) => [...prevUrls, previewUrl]);
       handleUpload(file);
     },
     [createPreview, handleUpload]
@@ -75,7 +80,9 @@ export default function ImageUploader({
       setIsDragging(false);
 
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        processFile(e.dataTransfer.files[0]);
+        Array.from(e.dataTransfer.files).forEach((file) => {
+          processFile(file);
+        });
       }
     },
     [processFile]
@@ -84,19 +91,26 @@ export default function ImageUploader({
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        processFile(e.target.files[0]);
+        Array.from(e.target.files).forEach((file) => {
+          processFile(file);
+        });
       }
     },
     [processFile]
   );
 
-  const handleRemoveImage = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setPreviewUrl(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }, []);
+  const handleRemoveImage = useCallback(
+    (e: React.MouseEvent, index: number) => {
+      e.stopPropagation();
+
+      setPreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+
+      if (onRemoveImage) {
+        onRemoveImage(index);
+      }
+    },
+    [onRemoveImage]
+  );
 
   return (
     <div className={`w-full ${className}`}>
@@ -117,23 +131,33 @@ export default function ImageUploader({
           accept="image/jpeg,image/png,image/webp"
           ref={fileInputRef}
           onChange={handleFileChange}
+          multiple
         />
 
-        {previewUrl ? (
-          <div className="relative group">
-            <img
-              src={previewUrl}
-              alt="Preview da imagem"
-              className="mx-auto max-h-60 rounded-md object-contain"
-            />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/50 transition-opacity rounded-md">
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="btn btn-error btn-sm"
-              >
-                Remover imagem
-              </button>
+        {previewUrls.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {previewUrls.map((url, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={url}
+                  alt={`Imagem ${index + 1}`}
+                  className="mx-auto max-h-48 rounded-md object-contain"
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/50 transition-opacity rounded-md">
+                  <button
+                    type="button"
+                    onClick={(e) => handleRemoveImage(e, index)}
+                    className="btn btn-error btn-sm"
+                  >
+                    Remover
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center justify-center border-2 border-dashed border-base-content/30 rounded-md min-h-32">
+              <div className="text-center p-4">
+                <p className="text-primary">Adicionar mais imagens</p>
+              </div>
             </div>
           </div>
         ) : (
@@ -154,7 +178,7 @@ export default function ImageUploader({
               </svg>
             </div>
             <p className="mt-4 text-base font-medium text-base-content">
-              Arraste e solte uma imagem aqui ou
+              Arraste e solte uma ou várias imagens aqui ou
             </p>
             <p className="mt-1">
               <span className="text-primary font-semibold">
@@ -162,7 +186,7 @@ export default function ImageUploader({
               </span>
             </p>
             <p className="mt-2 text-xs text-base-content/60">
-              JPG, PNG ou WEBP (máx. 5MB)
+              JPG, PNG ou WEBP (máx. 5MB por arquivo)
             </p>
           </div>
         )}

@@ -1,9 +1,4 @@
-import {
-  findProductById,
-  getAllProducts,
-  removeProductById,
-  saveProduct
-} from '../services';
+import { productService } from '../services';
 import { router, procedure } from '../trpc';
 import { z } from 'zod';
 import { productSchema } from '@/trpc/schemas';
@@ -21,7 +16,7 @@ export default router({
    */
   getAll: procedure.query(async () => {
     try {
-      return await getAllProducts();
+      return await productService.getAllProducts();
     } catch (error) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -41,7 +36,7 @@ export default router({
    */
   getById: procedure.input(z.string()).query(async ({ input }) => {
     try {
-      return await findProductById(input);
+      return await productService.findProductById(input);
     } catch (error) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -60,7 +55,7 @@ export default router({
    */
   save: procedure.input(productSchema).mutation(async ({ input }) => {
     try {
-      await saveProduct(input);
+      await productService.saveProduct(input);
       return { message: 'Estoque atualizado com sucesso!' };
     } catch (error) {
       throw new TRPCError({
@@ -80,7 +75,7 @@ export default router({
    */
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
-      await removeProductById(input);
+      await productService.removeProductById(input);
       return { message: 'Produto removido com sucesso!' };
     } catch (error) {
       throw new TRPCError({

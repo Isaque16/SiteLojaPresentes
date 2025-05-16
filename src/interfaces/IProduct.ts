@@ -5,6 +5,6 @@ export default interface IProduct {
   preco: number;
   quantidade: number;
   descricao: string;
-  imagem: string;
-  nomeImagem: string;
+  imagem: string[];
+  nomeImagem: string[];
 }

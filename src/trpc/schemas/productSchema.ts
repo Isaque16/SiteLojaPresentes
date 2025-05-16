@@ -15,6 +15,6 @@ export default z.object({
     .transform((val) => Number(val))
     .or(z.number().min(1, 'Deve haver ao menos 1 produto')),
   descricao: z.string(),
-  imagem: z.string(),
-  nomeImagem: z.string()
+  imagem: z.array(z.string()).min(1, 'Pelo menos uma imagem é necessária'),
+  nomeImagem: z.array(z.string()).min(1, 'Nome de imagem é obrigatório')
 });

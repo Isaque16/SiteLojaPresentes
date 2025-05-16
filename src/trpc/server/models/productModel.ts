@@ -27,8 +27,8 @@ const productSchema = new Schema<IProduct>({
     trim: true,
     required: true
   },
-  imagem: { type: String },
-  nomeImagem: { type: String }
+  imagem: { type: [String], default: [] },
+  nomeImagem: { type: [String], default: [] }
 });
 
 export default models.Produto || model<IProduct>('Produto', productSchema);

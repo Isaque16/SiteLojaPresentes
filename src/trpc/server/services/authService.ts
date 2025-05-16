@@ -2,7 +2,7 @@
 import bcrypt from 'bcrypt';
 import { ICustomer } from '@/interfaces';
 import { getCookie, setCookie, deleteCookie } from 'cookies-next/server';
-import { findCustomerByUserName } from '../services';
+import { customerService } from '../services';
 import { cookies } from 'next/headers';
 
 /**
@@ -21,7 +21,7 @@ export async function authenticateUser(
 ): Promise<{ success: boolean; userId?: string; message: string }> {
   try {
     const customer: ICustomer | null =
-      await findCustomerByUserName(nomeUsuario);
+      await customerService.findCustomerByUserName(nomeUsuario);
 
     if (!customer) {
       return {

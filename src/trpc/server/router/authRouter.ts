@@ -1,11 +1,6 @@
 import { router, procedure } from '@/trpc/server/trpc';
 import { TRPCError } from '@trpc/server';
-import {
-  authenticateUser,
-  createUserSession,
-  logoutUser,
-  getCurrentUser
-} from '../services';
+import { authService } from '../services';
 import { z } from 'zod';
 
 export default router({
@@ -21,13 +16,13 @@ export default router({
     .input(z.object({ nomeUsuario: z.string(), senha: z.string() }))
     .mutation(async ({ input }) => {
       try {
-        const authResult = await authenticateUser(
+        const authResult = await authService.authenticateUser(
           input.nomeUsuario,
           input.senha
         );
 
         if (authResult.success) {
-          await createUserSession(authResult.userId!);
+          await authService.createUserSession(authResult.userId!);
           return {
             success: true,
             message: 'Login realizado com sucesso'
@@ -54,7 +49,7 @@ export default router({
    */
   logout: procedure.mutation(async () => {
     try {
-      await logoutUser();
+      await authService.logoutUser();
       return {
         success: true,
         message: 'Logout realizado com sucesso'
@@ -75,7 +70,7 @@ export default router({
    */
   checkSession: procedure.query(async () => {
     try {
-      const userId = await getCurrentUser();
+      const userId = await authService.getCurrentUser();
       return {
         isLoggedIn: !!userId,
         userId

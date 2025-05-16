@@ -1,11 +1,4 @@
-import {
-  findCustomerById,
-  findCustomerByUserName,
-  getAllCustomers,
-  removeCustomerByUserName,
-  saveCustomer,
-  saveCustomerAdress
-} from '../services';
+import { customerService } from '../services';
 import { procedure, router } from '../trpc';
 import { z } from 'zod';
 import { customerSchema, addressSchema } from '@/trpc/schemas';
@@ -23,7 +16,7 @@ export default router({
    */
   getAll: procedure.query(async () => {
     try {
-      return await getAllCustomers();
+      return await customerService.getAllCustomers();
     } catch (error) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -42,7 +35,7 @@ export default router({
    */
   getByUserName: procedure.input(z.string()).query(async ({ input }) => {
     try {
-      return await findCustomerByUserName(input);
+      return await customerService.findCustomerByUserName(input);
     } catch (error) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -61,7 +54,7 @@ export default router({
    */
   getById: procedure.input(z.string()).query(async ({ input }) => {
     try {
-      return await findCustomerById(input);
+      return await customerService.findCustomerById(input);
     } catch (error) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -80,7 +73,7 @@ export default router({
    */
   save: procedure.input(customerSchema).mutation(async ({ input }) => {
     try {
-      return await saveCustomer(input);
+      return await customerService.saveCustomer(input);
     } catch (error) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
@@ -103,7 +96,7 @@ export default router({
     .input(z.object({ _id: z.string(), endereco: addressSchema }))
     .mutation(async ({ input }) => {
       try {
-        await saveCustomerAdress(input._id, input.endereco);
+        await customerService.saveCustomerAdress(input._id, input.endereco);
         return { message: 'Endereço salvo com sucesso!' };
       } catch (error) {
         throw new TRPCError({
@@ -123,7 +116,7 @@ export default router({
    */
   delete: procedure.input(z.string()).mutation(async ({ input }) => {
     try {
-      await removeCustomerByUserName(input);
+      await customerService.removeCustomerByUserName(input);
       return { message: 'Cliente removido com sucesso!' };
     } catch (error) {
       throw new TRPCError({

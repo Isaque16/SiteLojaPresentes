@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputComponent from '@/components/InputComponent';
@@ -21,12 +21,17 @@ export default function StockManager() {
     formState: { errors, isValid }
   } = useForm<IProduct>({
     resolver: zodResolver(productSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      imagem: [],
+      nomeImagem: []
+    }
   });
 
   const { showToast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
-  const imageUrl = watch('imagem');
+  const [uploadQueue, setUploadQueue] = useState<File[]>([]);
+  const imageUrls = watch('imagem');
 
   const {
     data: products,
@@ -36,11 +41,19 @@ export default function StockManager() {
 
   const { mutateAsync: uploadImage } = trpc.upload.uploadImage.useMutation({
     onSuccess: (data) => {
-      setValue('imagem', data.fileUrl);
-      setValue('nomeImagem', data.fileName);
+      setValue('imagem', [...imageUrls, data.fileUrl]);
+      setValue('nomeImagem', [...watch('nomeImagem'), data.fileName]);
       trigger(['imagem', 'nomeImagem']);
-      setIsUploading(false);
-      showToast('Imagem carregada com sucesso!', 'success');
+
+      // Process next queued file if any
+      if (uploadQueue.length > 0) {
+        const nextFile = uploadQueue[0];
+        setUploadQueue((prev) => prev.slice(1));
+        processFileUpload(nextFile);
+      } else {
+        setIsUploading(false);
+        showToast('Imagens carregadas com sucesso!', 'success');
+      }
     },
     onError: (error) => {
       showToast(error.message, 'error');
@@ -57,25 +70,50 @@ export default function StockManager() {
     });
   };
 
+  const processFileUpload = useCallback(
+    async (file: File) => {
+      try {
+        const base64Data = await convertFileToBase64(file);
+        await uploadImage({
+          base64Data,
+          fileName: file.name
+        });
+      } catch {
+        setIsUploading(false);
+        showToast('Erro ao processar imagem', 'error');
+      }
+    },
+    [showToast, uploadImage]
+  );
+
   const handleFileSelect = async (file: File) => {
-    try {
-      setIsUploading(true);
-      const base64Data = await convertFileToBase64(file);
-      await uploadImage({
-        base64Data,
-        fileName: file.name
-      });
-    } catch {
-      setIsUploading(false);
-      showToast('Erro ao processar imagem', 'error');
+    setIsUploading(true);
+
+    if (uploadQueue.length === 0) {
+      await processFileUpload(file);
+    } else {
+      setUploadQueue((prev) => [...prev, file]);
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setValue(
+      'imagem',
+      imageUrls.filter((_, i) => i !== index)
+    );
+    setValue(
+      'nomeImagem',
+      watch('nomeImagem').filter((_, i) => i !== index)
+    );
+    trigger(['imagem', 'nomeImagem']);
   };
 
   const { mutateAsync: saveProduct } = trpc.products.save.useMutation({
     onSuccess() {
-      reset();
-      setValue('imagem', '');
-      setValue('nomeImagem', '');
+      reset({
+        imagem: [],
+        nomeImagem: []
+      });
       refetch();
       showToast('Estoque atualizado com sucesso!', 'success');
     },
@@ -110,6 +148,15 @@ export default function StockManager() {
     { name: 'descricao', label: 'Descrição', type: 'text' }
   ];
 
+  useEffect(() => {
+    if (uploadQueue.length > 0 && !isUploading) {
+      setIsUploading(true);
+      const nextFile = uploadQueue[0];
+      setUploadQueue((prev) => prev.slice(1));
+      processFileUpload(nextFile);
+    }
+  }, [isUploading, processFileUpload, uploadQueue]);
+
   return (
     <main className="flex flex-col pt-16">
       <div className="flex flex-col items-center justify-center">
@@ -123,12 +170,13 @@ export default function StockManager() {
           <div className="flex flex-col items-start p-5 gap-5">
             <div className="w-full">
               <label className="label">
-                <span className="label-text text-xl">Imagem do Produto</span>
+                <span className="label-text text-xl">Imagens do Produto</span>
               </label>
               <ImageUploader
                 onFileSelect={handleFileSelect}
-                previewUrl={imageUrl}
+                previewUrls={imageUrls}
                 className="mb-4"
+                onRemoveImage={handleRemoveImage}
               />
               {(errors.imagem || errors.nomeImagem) && (
                 <p className="text-error py-2">
@@ -162,7 +210,7 @@ export default function StockManager() {
               className={`text-xl btn ${(!isValid || isUploading) && 'btn-disabled'}`}
               disabled={!isValid || isUploading}
             >
-              {isUploading ? 'Enviando imagem...' : 'Registrar'}
+              {isUploading ? 'Enviando imagens...' : 'Registrar'}
             </button>
           </div>
         </form>
@@ -180,13 +228,18 @@ export default function StockManager() {
                 className="bg-base-300 py-2 rounded-box flex flex-col items-center justify-center gap-2"
               >
                 <ProductCard
-                  imagePath={product.imagem}
-                  imageAlt={product.nomeImagem}
+                  imagePath={product.imagem[0] || ''}
+                  imageAlt={product.nomeImagem[0] || product.nome}
                   productTitle={product.nome}
                   productDescription={product.descricao}
                   productPrice={product.preco.toString()}
                   id={product._id!}
                 />
+                {product.imagem.length > 1 && (
+                  <div className="text-xs text-center mb-2">
+                    Este produto possui {product.imagem.length} imagens
+                  </div>
+                )}
                 <div className="flex flex-row gap-5 mb-10 md:mb-0">
                   <button
                     onClick={() => editProduct(product._id!)}

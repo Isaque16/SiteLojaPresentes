@@ -1,7 +1,7 @@
 import { router, procedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { deleteImage, listImages, saveBase64Image } from '../services';
+import { uploadService } from '../services';
 
 export default router({
   uploadImage: procedure
@@ -12,7 +12,10 @@ export default router({
       })
     )
     .mutation(async ({ input }) => {
-      const result = await saveBase64Image(input.base64Data, input.fileName);
+      const result = await uploadService.saveBase64Image(
+        input.base64Data,
+        input.fileName
+      );
 
       if ('error' in result) {
         throw new TRPCError({
@@ -31,7 +34,7 @@ export default router({
       })
     )
     .mutation(async ({ input }) => {
-      const success = await deleteImage(input.fileName);
+      const success = await uploadService.deleteImage(input.fileName);
 
       if (!success) {
         throw new TRPCError({
@@ -44,6 +47,6 @@ export default router({
     }),
 
   listImages: procedure.query(async () => {
-    return await listImages();
+    return await uploadService.listImages();
   })
 });
