@@ -100,7 +100,6 @@ export async function saveCustomerAdress(customerId: string, adress: IAddress) {
       { endereco: adress },
       { new: true }
     );
-    console.log(foundCustomer);
     return foundCustomer;
   } catch (error) {
     throw new Error(`Erro ao tentar atualizar endereço: ${error}`);

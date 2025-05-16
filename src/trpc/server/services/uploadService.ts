@@ -62,13 +62,14 @@ export async function saveBase64Image(
     }
 
     const fileExtension =
-      path.extname(originalFileName) || mimeType === 'image/jpeg'
+      path.extname(originalFileName) ||
+      (mimeType === 'image/jpeg'
         ? '.jpg'
         : mimeType === 'image/png'
           ? '.png'
           : mimeType === 'image/gif'
             ? '.gif'
-            : '.webp';
+            : '.webp');
 
     // Generate a unique file name
     const uniqueFileName = randomUUID() + fileExtension;
