@@ -13,7 +13,8 @@ jest.mock('@/trpc/server/models', () => ({
     findByIdAndUpdate: jest.fn(),
     create: jest.fn(),
     findByIdAndDelete: jest.fn(),
-    findOneAndDelete: jest.fn()
+    findOneAndDelete: jest.fn(),
+    countDocuments: jest.fn()
   }
 }));
 
@@ -94,6 +95,118 @@ describe('Customer Service', () => {
       await expect(customerService.getAllCustomers()).rejects.toThrow(
         `Erro ao listar os clientes`
       );
+    });
+  });
+
+  describe('getAllCustomersPaged', () => {
+    const mockFindReturn = {
+      sort: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValue(mockCustomers as never)
+    };
+
+    const defaultQuery = { page: 1, size: 10 };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      (Customer.find as jest.Mock).mockReturnValue(mockFindReturn);
+      (Customer.countDocuments as jest.Mock).mockResolvedValue(2 as never);
+    });
+
+    it('should return paginated customers with default parameters', async () => {
+      const result = await customerService.getAllCustomersPaged({
+        ...defaultQuery
+      });
+
+      expect(Customer.countDocuments).toHaveBeenCalledWith({});
+      expect(Customer.find).toHaveBeenCalledWith({});
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ nomeCompleto: 1 });
+      expect(mockFindReturn.skip).toHaveBeenCalledWith(0);
+      expect(mockFindReturn.limit).toHaveBeenCalledWith(10);
+
+      expect(result).toEqual({
+        items: mockCustomers,
+        page: 1,
+        size: 10,
+        totalPages: 1,
+        totalCount: 2
+      });
+    });
+
+    it('should return paginated customers with custom page and size', async () => {
+      const page = 2;
+      const size = 5;
+
+      const result = await customerService.getAllCustomersPaged({ page, size });
+
+      expect(mockFindReturn.skip).toHaveBeenCalledWith((page - 1) * size);
+      expect(mockFindReturn.limit).toHaveBeenCalledWith(size);
+      expect(result.page).toBe(page);
+      expect(result.size).toBe(size);
+    });
+
+    it('should apply search filter correctly', async () => {
+      const search = 'test';
+      const expectedFilter = {
+        $or: [
+          { nomeCompleto: { $regex: search, $options: 'i' } },
+          { nomeUsuario: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { telefone: { $regex: search, $options: 'i' } }
+        ]
+      };
+
+      await customerService.getAllCustomersPaged({ ...defaultQuery, search });
+
+      expect(Customer.find).toHaveBeenCalledWith(expectedFilter);
+      expect(Customer.countDocuments).toHaveBeenCalledWith(expectedFilter);
+    });
+
+    it('should apply ascending sort correctly', async () => {
+      const sort = 'email';
+
+      await customerService.getAllCustomersPaged({ ...defaultQuery, sort });
+
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ email: 1 });
+    });
+
+    it('should apply descending sort correctly', async () => {
+      const sort = '-nomeCompleto';
+
+      await customerService.getAllCustomersPaged({ ...defaultQuery, sort });
+
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ nomeCompleto: -1 });
+    });
+
+    it('should calculate total pages correctly', async () => {
+      (Customer.countDocuments as jest.Mock).mockResolvedValue(21 as never);
+
+      const result = await customerService.getAllCustomersPaged({
+        ...defaultQuery,
+        size: 10
+      });
+
+      expect(result.totalPages).toBe(3);
+    });
+
+    it('should return at least 1 page when no results found', async () => {
+      (Customer.countDocuments as jest.Mock).mockResolvedValue(0 as never);
+
+      const result = await customerService.getAllCustomersPaged({
+        ...defaultQuery
+      });
+
+      expect(result.totalPages).toBe(1);
+    });
+
+    it('should throw an error when failing to retrieve paginated customers', async () => {
+      (Customer.countDocuments as jest.Mock).mockRejectedValue(
+        new Error('Database error') as never
+      );
+
+      await expect(
+        customerService.getAllCustomersPaged({ ...defaultQuery })
+      ).rejects.toThrow('Erro ao listar os clientes paginados');
     });
   });
 

@@ -1,15 +1,18 @@
 import { jest, describe, it, expect } from '@jest/globals';
 import * as orderService from '../orderService';
+import getAllOrdersPaged from '../orderService';
 import {
   orderModel as Order,
   productModel as Product,
   customerModel as Customer
 } from '@/trpc/server/models';
-import IOrder from '@/interfaces/IOrder';
-import EStatus from '@/interfaces/EStatus';
-import IProduct from '@/interfaces/IProduct';
-import ICustomer from '@/interfaces/ICustomer';
-import { EPaymentMethod } from '@/interfaces';
+import {
+  IOrder,
+  IProduct,
+  ICustomer,
+  EStatus,
+  EPaymentMethod
+} from '@/interfaces';
 
 jest.mock('@/trpc/server/models', () => ({
   orderModel: {
@@ -17,7 +20,8 @@ jest.mock('@/trpc/server/models', () => ({
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
     create: jest.fn(),
-    findByIdAndDelete: jest.fn()
+    findByIdAndDelete: jest.fn(),
+    countDocuments: jest.fn()
   },
   productModel: {
     findByIdAndUpdate: jest.fn()
@@ -54,8 +58,8 @@ describe('Order Service', () => {
       quantidade: 5,
       descricao: 'Descrição 1',
       categoria: 'Categoria 1',
-      imagem: 'imagem1.jpg',
-      nomeImagem: 'Nome da Imagem 1'
+      imagem: ['imagem1.jpg'],
+      nomeImagem: ['Nome da Imagem 1']
     },
     {
       _id: 'product2',
@@ -64,8 +68,8 @@ describe('Order Service', () => {
       quantidade: 10,
       descricao: 'Descrição 2',
       categoria: 'Categoria 2',
-      imagem: 'imagem2.jpg',
-      nomeImagem: 'Nome da Imagem 2'
+      imagem: ['imagem2.jpg'],
+      nomeImagem: ['Nome da Imagem 2']
     }
   ];
 
@@ -124,6 +128,117 @@ describe('Order Service', () => {
       });
 
       await expect(orderService.getAllOrders()).rejects.toThrow();
+    });
+  });
+
+  describe('getAllOrdersPaged', () => {
+    const mockFindReturn = {
+      populate: jest.fn().mockReturnThis(),
+      sort: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValue(mockOrders as never)
+    };
+
+    const defaultQuery = { page: 1, size: 10 };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      (Order.find as jest.Mock).mockReturnValue(mockFindReturn);
+      (Order.countDocuments as jest.Mock).mockResolvedValue(2 as never);
+    });
+
+    it('should return paginated orders with default parameters', async () => {
+      const result = await getAllOrdersPaged({ ...defaultQuery });
+
+      expect(Order.countDocuments).toHaveBeenCalledWith({});
+      expect(Order.find).toHaveBeenCalledWith({});
+      expect(mockFindReturn.populate).toHaveBeenNthCalledWith(
+        1,
+        'cliente',
+        'nomeCompleto'
+      );
+      expect(mockFindReturn.populate).toHaveBeenNthCalledWith(2, 'cesta');
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ dataHora: -1 });
+      expect(mockFindReturn.skip).toHaveBeenCalledWith(0);
+      expect(mockFindReturn.limit).toHaveBeenCalledWith(10);
+
+      expect(result).toEqual({
+        items: mockOrders,
+        page: 1,
+        size: 10,
+        totalPages: 1,
+        totalCount: 2
+      });
+    });
+
+    it('should return paginated orders with custom page and size', async () => {
+      const page = 2;
+      const size = 5;
+
+      const result = await getAllOrdersPaged({ page, size });
+
+      expect(mockFindReturn.skip).toHaveBeenCalledWith((page - 1) * size);
+      expect(mockFindReturn.limit).toHaveBeenCalledWith(size);
+      expect(result.page).toBe(page);
+      expect(result.size).toBe(size);
+    });
+
+    it('should apply search filter correctly', async () => {
+      const search = 'test';
+      const expectedFilter = {
+        $or: [
+          { 'cliente.nomeCompleto': { $regex: search, $options: 'i' } },
+          { status: { $regex: search, $options: 'i' } },
+          { observacao: { $regex: search, $options: 'i' } }
+        ]
+      };
+
+      await getAllOrdersPaged({ ...defaultQuery, search });
+
+      expect(Order.find).toHaveBeenCalledWith(expectedFilter);
+      expect(Order.countDocuments).toHaveBeenCalledWith(expectedFilter);
+    });
+
+    it('should apply ascending sort correctly', async () => {
+      const sort = 'status';
+
+      await getAllOrdersPaged({ ...defaultQuery, sort });
+
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ status: 1 });
+    });
+
+    it('should apply descending sort correctly', async () => {
+      const sort = '-valorTotal';
+
+      await getAllOrdersPaged({ ...defaultQuery, sort });
+
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ valorTotal: -1 });
+    });
+
+    it('should calculate total pages correctly', async () => {
+      (Order.countDocuments as jest.Mock).mockResolvedValue(21 as never);
+
+      const result = await getAllOrdersPaged({ page: 1, size: 10 });
+
+      expect(result.totalPages).toBe(3);
+    });
+
+    it('should return at least 1 page when no results found', async () => {
+      (Order.countDocuments as jest.Mock).mockResolvedValue(0 as never);
+
+      const result = await getAllOrdersPaged({ ...defaultQuery });
+
+      expect(result.totalPages).toBe(1);
+    });
+
+    it('should throw an error when failing to retrieve paginated orders', async () => {
+      (Order.countDocuments as jest.Mock).mockRejectedValue(
+        new Error('Database error') as never
+      );
+
+      await expect(getAllOrdersPaged({ ...defaultQuery })).rejects.toThrow(
+        'Erro ao listar os pedidos paginados'
+      );
     });
   });
 

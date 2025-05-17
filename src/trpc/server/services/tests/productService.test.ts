@@ -9,7 +9,8 @@ jest.mock('@/trpc/server/models', () => ({
     findById: jest.fn<() => Promise<IProduct | null>>(),
     findByIdAndUpdate: jest.fn<() => Promise<IProduct | null>>(),
     create: jest.fn<() => Promise<IProduct>>(),
-    findByIdAndDelete: jest.fn<() => Promise<IProduct | null>>()
+    findByIdAndDelete: jest.fn<() => Promise<IProduct | null>>(),
+    countDocuments: jest.fn<() => Promise<number>>()
   }
 }));
 
@@ -22,8 +23,8 @@ describe('Product Service', () => {
       quantidade: 5,
       descricao: 'Descrição 1',
       categoria: 'Categoria 1',
-      imagem: 'imagem1.jpg',
-      nomeImagem: 'nomeImagem1.jpg'
+      imagem: ['imagem1.jpg'],
+      nomeImagem: ['nomeImagem1.jpg']
     },
     {
       _id: '2',
@@ -32,8 +33,8 @@ describe('Product Service', () => {
       quantidade: 0,
       descricao: 'Descrição 2',
       categoria: 'Categoria 2',
-      imagem: 'imagem2.jpg',
-      nomeImagem: 'nomeImagem2.jpg'
+      imagem: ['imagem2.jpg'],
+      nomeImagem: ['nomeImagem2.jpg']
     }
   ];
 
@@ -60,6 +61,112 @@ describe('Product Service', () => {
       await expect(productService.getAllProducts()).rejects.toThrow(
         'Erro ao listar os produtos'
       );
+    });
+  });
+
+  describe('getAllProductsPaged', () => {
+    const mockFindReturn = {
+      sort: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValue(mockProducts as never)
+    };
+    const defaultQuery = { page: 1, size: 10 };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      (Product.find as jest.Mock).mockReturnValue(mockFindReturn);
+      (Product.countDocuments as jest.Mock).mockResolvedValue(2 as never);
+    });
+
+    it('should return paginated products with default parameters', async () => {
+      const result = await productService.getAllProductsPaged(defaultQuery);
+
+      expect(Product.countDocuments).toHaveBeenCalledWith({});
+      expect(Product.find).toHaveBeenCalledWith({});
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ nome: 1 });
+      expect(mockFindReturn.skip).toHaveBeenCalledWith(0);
+      expect(mockFindReturn.limit).toHaveBeenCalledWith(10);
+
+      expect(result).toEqual({
+        items: mockProducts,
+        page: 1,
+        size: 10,
+        totalPages: 1,
+        totalCount: 2
+      });
+    });
+
+    it('should return paginated products with custom page and size', async () => {
+      const page = 2;
+      const size = 5;
+
+      const result = await productService.getAllProductsPaged({ page, size });
+
+      expect(mockFindReturn.skip).toHaveBeenCalledWith((page - 1) * size);
+      expect(mockFindReturn.limit).toHaveBeenCalledWith(size);
+      expect(result.page).toBe(page);
+      expect(result.size).toBe(size);
+    });
+
+    it('should apply search filter correctly', async () => {
+      const search = 'test';
+      const expectedFilter = {
+        $or: [
+          { nome: { $regex: search, $options: 'i' } },
+          { descricao: { $regex: search, $options: 'i' } },
+          { categoria: { $regex: search, $options: 'i' } }
+        ]
+      };
+
+      await productService.getAllProductsPaged({ ...defaultQuery, search });
+
+      expect(Product.find).toHaveBeenCalledWith(expectedFilter);
+      expect(Product.countDocuments).toHaveBeenCalledWith(expectedFilter);
+    });
+
+    it('should apply ascending sort correctly', async () => {
+      const sort = 'preco';
+
+      await productService.getAllProductsPaged({ ...defaultQuery, sort });
+
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ preco: 1 });
+    });
+
+    it('should apply descending sort correctly', async () => {
+      const sort = '-preco';
+
+      await productService.getAllProductsPaged({ ...defaultQuery, sort });
+
+      expect(mockFindReturn.sort).toHaveBeenCalledWith({ preco: -1 });
+    });
+
+    it('should calculate total pages correctly', async () => {
+      (Product.countDocuments as jest.Mock).mockResolvedValue(21 as never);
+
+      const result = await productService.getAllProductsPaged({
+        page: 1,
+        size: 10
+      });
+
+      expect(result.totalPages).toBe(3);
+    });
+
+    it('should return at least 1 page when no results found', async () => {
+      (Product.countDocuments as jest.Mock).mockResolvedValue(0 as never);
+
+      const result = await productService.getAllProductsPaged(defaultQuery);
+
+      expect(result.totalPages).toBe(1);
+    });
+
+    it('should throw an error when failing to retrieve paginated products', async () => {
+      (Product.countDocuments as jest.Mock).mockRejectedValue(
+        new Error('Database error') as never
+      );
+
+      await expect(
+        productService.getAllProductsPaged(defaultQuery)
+      ).rejects.toThrow('Erro ao listar os produtos paginados');
     });
   });
 
@@ -175,8 +282,8 @@ describe('Product Service', () => {
         quantidade: 10,
         descricao: 'Nova Descrição',
         categoria: 'Nova Categoria',
-        imagem: 'nova-imagem.jpg',
-        nomeImagem: 'nova-imagem.jpg'
+        imagem: ['nova-imagem.jpg'],
+        nomeImagem: ['nova-imagem.jpg']
       };
       const savedProduct = { ...newProduct, _id: '3' };
 
@@ -215,8 +322,8 @@ describe('Product Service', () => {
         quantidade: 5,
         descricao: '',
         categoria: '',
-        imagem: '',
-        nomeImagem: ''
+        imagem: [],
+        nomeImagem: []
       };
       (Product.create as jest.Mock).mockRejectedValue(new Error() as never);
 
