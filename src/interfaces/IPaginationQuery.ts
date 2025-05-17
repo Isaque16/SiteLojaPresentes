@@ -1,4 +1,4 @@
-export default interface IPagedQuery {
+export default interface IPaginationQuery {
   page: number;
   size: number;
   sort?: string;

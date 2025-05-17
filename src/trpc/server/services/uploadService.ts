@@ -1,4 +1,3 @@
-'use server';
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';

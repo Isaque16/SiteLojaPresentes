@@ -1,23 +1,29 @@
 'use client';
-import ProductCard from '@/components/ProductCard';
 import LoadingCatalog from './loading';
 import trpc from '@/trpc/client/trpc';
 import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { IPagedQuery } from '@/interfaces';
+import { ProductCard, Pagination } from '@/components';
 
 export default function Catalogo() {
-  const searchParam =
-    useSearchParams().get('search')?.toLocaleLowerCase() || '';
+  const searchParam = useSearchParams().get('search') || '';
+  const [pagination, setPagination] = useState<IPagedQuery>({
+    page: 1,
+    size: 10,
+    search: searchParam
+  });
 
-  const { data: products, isLoading } = trpc.products.getAll.useQuery();
+  useEffect(() => {
+    setPagination(prev => ({
+      ...prev,
+      page: 1,
+      search: searchParam
+    }));
+  }, [searchParam]);
 
-  const foundProducts = !searchParam
-    ? products
-    : products?.filter(
-        (product) =>
-          product.nome.toLowerCase().includes(searchParam) ||
-          product.descricao.toLowerCase().includes(searchParam) ||
-          product.categoria.toLowerCase().includes(searchParam)
-      );
+  const { data: products, isLoading } =
+    trpc.products.getAllPaged.useQuery(pagination);
 
   return isLoading ? (
     <LoadingCatalog />
@@ -28,17 +34,17 @@ export default function Catalogo() {
         <div className="border-2 border-white md:w-1/6 w-1/2 mb-5"></div>
       </div>
       <p className="text-left text-xl py-5">
-        {searchParam
-          ? (foundProducts?.length ?? 0) > 0
-            ? `${foundProducts?.length} Resultados para ${searchParam}`
+        {searchParam && (
+          (products?.items.length ?? 0) > 0
+            ? `${products?.items.length} Resultados para ${searchParam}`
             : 'Nenhum produto encontrado'
-          : ''}
+        )}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {foundProducts?.map((product) => (
+        {products?.items.map((product) => (
           <ProductCard
             key={product._id}
-            imagePath={product.imagem}
+            imagePath={product.imagem[0]}
             imageAlt={product.nome}
             productTitle={product.nome}
             productDescription={product.descricao}
@@ -46,6 +52,15 @@ export default function Catalogo() {
             id={product._id!}
           />
         ))}
+      </div>
+
+      <div className="my-8">
+        <Pagination 
+          currentPage={pagination.page} 
+          totalPages={products?.pagination.totalPages || 0}
+          onPageChange={(page) => setPagination({ ...pagination, page })}
+          className="my-4"
+        />
       </div>
     </main>
   );

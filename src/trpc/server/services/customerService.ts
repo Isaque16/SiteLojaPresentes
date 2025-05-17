@@ -1,8 +1,6 @@
-import IAddress from '@/interfaces/IAddress';
-import ICustomer from '@/interfaces/ICustomer';
 import { customerModel as Customer } from '@/trpc/server/models';
 import bcrypt from 'bcrypt';
-import { IPagedQuery, IPagedResult } from '@/interfaces';
+import { ICustomer, IAddress, IPagedQuery, IPagedResult } from '@/interfaces';
 
 /**
  * Retrieves all customers from the database.
@@ -21,7 +19,7 @@ export async function getAllCustomers(): Promise<ICustomer[]> {
 /**
  * Retrieves all customers from the database with pagination and sorting.
  *
- * @param {IPagedQuery} query - The query parameters for pagination and sorting.
+ * @param {IPaginationQuery} query - The query parameters for pagination and sorting.
  * @param {number} query.page - The page number to retrieve.
  * @param {number} query.size - The number of items per page.
  * @param {string} [query.sort] - The sorting criteria (e.g., 'nomeCompleto' or '-nomeCompleto').
@@ -62,10 +60,12 @@ export async function getAllCustomersPaged({
 
     return {
       items,
-      page,
-      size,
-      totalPages,
-      totalCount
+      pagination: {
+        page,
+        size,
+        totalPages,
+        totalCount
+      }
     };
   } catch (error) {
     throw new Error(`Erro ao listar os clientes paginados: ${error}`);

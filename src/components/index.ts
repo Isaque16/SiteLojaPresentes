@@ -8,3 +8,4 @@ export { default as ProductCardBasket } from './ProductCardBasket';
 export { default as SearchBar } from './SearchBar';
 export { default as UserAvatar } from './UserAvatar';
 export { default as ImageUploader } from './ImageUploader';
+export { default as Pagination } from './Pagination';

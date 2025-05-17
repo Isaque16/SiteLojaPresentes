@@ -18,7 +18,7 @@ export async function getAllProducts(): Promise<IProduct[]> {
 /**
  * Retrieves products with pagination, sorting, and search capabilities.
  *
- * @param {IPagedQuery} query - The pagination query.
+ * @param {IPaginationQuery} query - The pagination query.
  * @param {number} [query.page=1] - The page number to retrieve.
  * @param {number} [query.size=10] - The number of items per page.
  * @param {string} [query.sort] - The field to sort by, prefix with '-' for descending order.
@@ -58,10 +58,12 @@ export async function getAllProductsPaged({
 
     return {
       items,
-      page,
-      size,
-      totalPages,
-      totalCount
+      pagination: {
+        page,
+        size,
+        totalPages,
+        totalCount
+      }
     };
   } catch (error) {
     throw new Error(`Erro ao listar os produtos paginados: ${error}`);
