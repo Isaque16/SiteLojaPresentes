@@ -1,8 +1,8 @@
-'use server';
 import IAddress from '@/interfaces/IAddress';
 import ICustomer from '@/interfaces/ICustomer';
 import { customerModel as Customer } from '@/trpc/server/models';
 import bcrypt from 'bcrypt';
+import { IPagedQuery, IPagedResult } from '@/interfaces';
 
 /**
  * Retrieves all customers from the database.
@@ -15,6 +15,60 @@ export async function getAllCustomers(): Promise<ICustomer[]> {
     return await Customer.find();
   } catch (error) {
     throw new Error(`Erro ao listar os clientes: ${error}`);
+  }
+}
+
+/**
+ * Retrieves all customers from the database with pagination and sorting.
+ *
+ * @param {IPagedQuery} query - The query parameters for pagination and sorting.
+ * @param {number} query.page - The page number to retrieve.
+ * @param {number} query.size - The number of items per page.
+ * @param {string} [query.sort] - The sorting criteria (e.g., 'nomeCompleto' or '-nomeCompleto').
+ * @param {string} [query.search] - The search term to filter customers by name, username, email, or phone.
+ * @returns {Promise<IPagedResult<ICustomer>>} A promise that resolves to a paginated result of customers.
+ * @throws {Error} If there's an error retrieving the customers.
+ */
+export async function getAllCustomersPaged({
+  page = 1,
+  size = 10,
+  sort,
+  search
+}: IPagedQuery): Promise<IPagedResult<ICustomer>> {
+  try {
+    const filter = search
+      ? {
+          $or: [
+            { nomeCompleto: { $regex: search, $options: 'i' } },
+            { nomeUsuario: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
+            { telefone: { $regex: search, $options: 'i' } }
+          ]
+        }
+      : {};
+
+    const sortOption: Record<string, 1 | -1> = sort
+      ? { [sort.replace('-', '')]: sort.startsWith('-') ? -1 : 1 }
+      : { nomeCompleto: 1 };
+
+    const totalCount = await Customer.countDocuments(filter);
+
+    const totalPages = Math.ceil(totalCount / size) || 1;
+
+    const items = await Customer.find(filter)
+      .sort(sortOption)
+      .skip((page - 1) * size)
+      .limit(size);
+
+    return {
+      items,
+      page,
+      size,
+      totalPages,
+      totalCount
+    };
+  } catch (error) {
+    throw new Error(`Erro ao listar os clientes paginados: ${error}`);
   }
 }
 

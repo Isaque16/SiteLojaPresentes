@@ -1,4 +1,3 @@
-'use server';
 import {
   orderModel as Order,
   productModel as Product,
@@ -7,6 +6,7 @@ import {
 import IOrder from '@/interfaces/IOrder';
 import EStatus from '@/interfaces/EStatus';
 import IProduct from '@/interfaces/IProduct';
+import { IPagedQuery, IPagedResult } from '@/interfaces';
 
 /**
  * Retrieves all orders from the database with populated client and cart information.
@@ -22,6 +22,61 @@ export async function getAllOrders(): Promise<IOrder[]> {
   } catch (error) {
     console.error('Erro ao listar pedidos:', error);
     throw error;
+  }
+}
+
+/**
+ * Retrieves orders with pagination, sorting, and search capabilities.
+ *
+ * @param {IPagedQuery} query - The pagination query.
+ * @param {number} [query.page=1] - The page number to retrieve.
+ * @param {number} [query.size=10] - The number of items per page.
+ * @param {string} [query.sort] - The field to sort by, prefix with '-' for descending order.
+ * @param {string} [query.search] - The search query to filter orders.
+ * @returns {Promise<IPagedResult<IOrder>>} A promise that resolves to the paginated result containing orders.
+ * @throws {Error} If there's an error retrieving the paginated orders.
+ */
+export default async function getAllOrdersPaged({
+  page = 1,
+  size = 10,
+  sort,
+  search
+}: IPagedQuery): Promise<IPagedResult<IOrder>> {
+  try {
+    const filter = search
+      ? {
+          $or: [
+            { 'cliente.nomeCompleto': { $regex: search, $options: 'i' } },
+            { status: { $regex: search, $options: 'i' } },
+            { observacao: { $regex: search, $options: 'i' } }
+          ]
+        }
+      : {};
+
+    const sortOption: Record<string, 1 | -1> = sort
+      ? { [sort.replace('-', '')]: sort.startsWith('-') ? -1 : 1 }
+      : { dataHora: -1 };
+
+    const totalCount = await Order.countDocuments(filter);
+
+    const totalPages = Math.ceil(totalCount / size) || 1;
+
+    const items = await Order.find(filter)
+      .populate('cliente', 'nomeCompleto')
+      .populate('cesta')
+      .sort(sortOption)
+      .skip((page - 1) * size)
+      .limit(size);
+
+    return {
+      items,
+      page,
+      size,
+      totalPages,
+      totalCount
+    };
+  } catch (error) {
+    throw new Error(`Erro ao listar os pedidos paginados: ${error}`);
   }
 }
 

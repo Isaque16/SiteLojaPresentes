@@ -1,6 +1,5 @@
-'use server';
-import IProduct from '@/interfaces/IProduct';
 import { productModel as Product } from '@/trpc/server/models';
+import { IProduct, IPagedQuery, IPagedResult } from '@/interfaces';
 
 /**
  * Retrieves all products from the database.
@@ -13,6 +12,59 @@ export async function getAllProducts(): Promise<IProduct[]> {
     return await Product.find();
   } catch (error) {
     throw new Error(`Erro ao listar os produtos: ${error}`);
+  }
+}
+
+/**
+ * Retrieves products with pagination, sorting, and search capabilities.
+ *
+ * @param {IPagedQuery} query - The pagination query.
+ * @param {number} [query.page=1] - The page number to retrieve.
+ * @param {number} [query.size=10] - The number of items per page.
+ * @param {string} [query.sort] - The field to sort by, prefix with '-' for descending order.
+ * @param {string} [query.search] - The search query to filter products.
+ * @returns {Promise<IPagedResult<IProduct>>} A promise that resolves to the paginated result containing products.
+ * @throws {Error} If there's an error retrieving the paginated products.
+ */
+export async function getAllProductsPaged({
+  page = 1,
+  size = 10,
+  sort,
+  search
+}: IPagedQuery): Promise<IPagedResult<IProduct>> {
+  try {
+    const filter = search
+      ? {
+          $or: [
+            { nome: { $regex: search, $options: 'i' } },
+            { descricao: { $regex: search, $options: 'i' } },
+            { categoria: { $regex: search, $options: 'i' } }
+          ]
+        }
+      : {};
+
+    const sortOption: Record<string, 1 | -1> = sort
+      ? { [sort.replace('-', '')]: sort.startsWith('-') ? -1 : 1 }
+      : { nome: 1 };
+
+    const totalCount = await Product.countDocuments(filter);
+
+    const totalPages = Math.ceil(totalCount / size) || 1;
+
+    const items = await Product.find(filter)
+      .sort(sortOption)
+      .skip((page - 1) * size)
+      .limit(size);
+
+    return {
+      items,
+      page,
+      size,
+      totalPages,
+      totalCount
+    };
+  } catch (error) {
+    throw new Error(`Erro ao listar os produtos paginados: ${error}`);
   }
 }
 
