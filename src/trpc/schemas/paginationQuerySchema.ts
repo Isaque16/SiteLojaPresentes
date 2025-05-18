@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { object, number, string, optional } from 'valibot';
 
-export default z.object({
-  page: z.number().default(1),
-  size: z.number().default(10),
-  sort: z.string().optional(),
-  search: z.string().optional()
+export default object({
+  page: number(),
+  size: number(),
+  sort: optional(string()),
+  search: optional(string())
 });

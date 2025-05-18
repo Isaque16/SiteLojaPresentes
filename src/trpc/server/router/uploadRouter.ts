@@ -1,14 +1,14 @@
 import { router, publicProcedure, protectedProcedure } from "../trpc";
-import { z } from 'zod';
+import { object, pipe, string , minLength } from "valibot";
 import { TRPCError } from '@trpc/server';
 import { uploadService } from '../services';
 
 export default router({
   uploadImage: protectedProcedure
     .input(
-      z.object({
-        base64Data: z.string().min(1, 'Dados da imagem são obrigatórios'),
-        fileName: z.string().min(1, 'Nome do arquivo é obrigatório')
+      object({
+        base64Data: pipe(string(), minLength(1, 'Dados da imagem são obrigatórios')),
+        fileName: pipe(string(), minLength(1, 'Nome do arquivo é obrigatório'))
       })
     )
     .mutation(async ({ input }) => {
@@ -29,8 +29,8 @@ export default router({
 
   deleteImage: protectedProcedure
     .input(
-      z.object({
-        fileName: z.string().min(1, 'Nome do arquivo é obrigatório')
+      object({
+        fileName: pipe(string(), minLength(1, 'Nome do arquivo é obrigatório'))
       })
     )
     .mutation(async ({ input }) => {

@@ -2,22 +2,22 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IAddress } from '@/interfaces';
-import { z } from 'zod';
+import { object, string, optional, pipe, minLength } from 'valibot'
 
 interface AddressManagementProps {
   address?: IAddress;
   onSave: (address: IAddress) => Promise<boolean>;
 }
 
-const addressSchema = z.object({
-  CEP: z.string().min(1, 'CEP é obrigatório'),
-  estado: z.string().min(2, 'Estado precisa ter pelo menos 2 caracteres'),
-  cidade: z.string().min(3, 'Cidade precisa ter pelo menos 3 caracteres'),
-  bairro: z.string().min(3, 'Bairro precisa ter pelo menos 3 caracteres'),
-  rua: z.string().min(3, 'Rua precisa ter pelo menos 3 caracteres'),
-  numero: z.string().min(1, 'Número é obrigatório'),
-  complemento: z.string().optional()
-});
+const addressSchema = object({
+  CEP: pipe(string(), minLength(1, 'CEP é obrigatório')),
+  estado: pipe(string(), minLength(2, 'Estado precisa ter pelo menos 2 caracteres')),
+  cidade: pipe(string(), minLength(3, 'Cidade precisa ter pelo menos 3 caracteres')),
+  bairro: pipe(string(), minLength(3, 'Bairro precisa ter pelo menos 3 caracteres')),
+  rua: pipe(string(), minLength(3, 'Rua precisa ter pelo menos 3 caracteres')),
+  numero: pipe(string(), minLength(1, 'Número é obrigatório')),
+  complemento: optional(string()),
+})
 
 export default function AddressManagement({
   address,

@@ -1,16 +1,14 @@
 'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { object, pipe, string, minLength } from 'valibot';
 import { InputComponent } from '@/components';
 import { useAuth } from "@/contexts";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 
-const formDataSchema = z.object({
-  nomeUsuario: z
-    .string()
-    .min(3, 'O nome de usuário precisa ter pelo menos 3 caracteres'),
-  senha: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres')
+const formDataSchema = object({
+  nomeUsuario: pipe(string(), minLength(3, 'O nome de usuário precisa ter pelo menos 3 caracteres')),
+  senha: pipe(string(), minLength(6, 'A senha precisa ter pelo menos 6 caracteres'))
 });
 
 type LoginType = { nomeUsuario: string; senha: string };
@@ -23,7 +21,7 @@ export default function Cadastro() {
     handleSubmit,
     formState: { isValid, isSubmitting }
   } = useForm<LoginType>({
-    resolver: zodResolver(formDataSchema),
+    resolver: valibotResolver(formDataSchema),
     mode: 'onChange'
   });
 

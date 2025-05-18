@@ -1,12 +1,12 @@
-import { z } from 'zod';
+import { object, optional, pipe, string, readonly, email } from "valibot";
 import addressSchema from './addressSchema';
 
-export default z.object({
-  _id: z.string().optional(),
-  nomeCompleto: z.string(),
-  nomeUsuario: z.string(),
-  senha: z.string(),
-  email: z.string().email(),
-  telefone: z.string(),
-  endereco: addressSchema.optional()
+export default object({
+  _id: optional(pipe(string(), readonly())),
+  nomeCompleto: string(),
+  nomeUsuario: string(),
+  senha: string(),
+  email: pipe(string(), email()),
+  telefone: string(),
+  endereco: optional(addressSchema)
 });

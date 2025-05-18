@@ -2,7 +2,7 @@ import { MiddlewareConfig, NextRequest, NextResponse } from 'next/server';
 
 export default function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
-  const isUserToken = req.cookies.has('user_session');
+  const isUserToken = req.cookies.has('authToken');
 
   if (!isUserToken) {
     url.pathname = '/cadastro';

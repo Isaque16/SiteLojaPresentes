@@ -1,7 +1,7 @@
 import { router, publicProcedure } from '@/trpc/server/trpc';
 import { TRPCError } from '@trpc/server';
 import { authService } from '../services';
-import { z } from 'zod';
+import { object, string } from 'valibot';
 
 export default router({
   /**
@@ -13,7 +13,7 @@ export default router({
    * @returns {Promise<{success: boolean, token?: string, message?: string}>} Authentication result
    */
   login: publicProcedure
-    .input(z.object({ nomeUsuario: z.string(), senha: z.string() }))
+    .input(object({ nomeUsuario: string(), senha: string() }))
     .mutation(async ({ input }) => {
       try {
         const authResult = await authService.authenticateUser(
@@ -48,7 +48,7 @@ export default router({
    *
    * @returns {Promise<{isLoggedIn: boolean, userId: string|null}>} Session status
    */
-  checkSession: publicProcedure.input(z.string()).query(async ({ input }) => {
+  checkSession: publicProcedure.input(string()).query(async ({ input }) => {
     try {
       const userId = await authService.getCurrentUser(input);
       return {

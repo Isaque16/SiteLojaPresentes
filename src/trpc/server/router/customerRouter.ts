@@ -1,6 +1,6 @@
 import { customerService } from '../services';
 import { protectedProcedure, publicProcedure, router } from "../trpc";
-import { z } from 'zod';
+import { object, string } from "valibot";
 import {
   customerSchema,
   addressSchema,
@@ -35,7 +35,7 @@ export default router({
       }
     }),
 
-  getByUserName: publicProcedure.input(z.string()).query(async ({ input }) => {
+  getByUserName: publicProcedure.input(string()).query(async ({ input }) => {
     try {
       return await customerService.findCustomerByUserName(input);
     } catch (error) {
@@ -47,7 +47,7 @@ export default router({
     }
   }),
 
-  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
+  getById: publicProcedure.input(string()).query(async ({ input }) => {
     try {
       return await customerService.findCustomerById(input);
     } catch (error) {
@@ -72,7 +72,7 @@ export default router({
   }),
 
   saveEndereco: publicProcedure
-    .input(z.object({ _id: z.string(), endereco: addressSchema }))
+    .input(object({ _id: string(), endereco: addressSchema }))
     .mutation(async ({ input }) => {
       try {
         await customerService.saveCustomerAdress(input._id, input.endereco);
@@ -86,7 +86,7 @@ export default router({
       }
     }),
 
-  delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
+  delete: publicProcedure.input(string()).mutation(async ({ input }) => {
     try {
       await customerService.removeCustomerByUserName(input);
       return { message: 'Cliente removido com sucesso!' };

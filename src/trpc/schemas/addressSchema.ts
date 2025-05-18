@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { object, string, optional } from 'valibot';
 
-export default z.object({
-  CEP: z.string(),
-  estado: z.string(),
-  cidade: z.string(),
-  bairro: z.string(),
-  rua: z.string(),
-  numero: z.string(),
-  complemento: z.string().optional()
+export default object({
+  CEP: string(),
+  estado: string(),
+  cidade: string(),
+  bairro: string(),
+  rua: string(),
+  numero: string(),
+  complemento: optional(string())
 });

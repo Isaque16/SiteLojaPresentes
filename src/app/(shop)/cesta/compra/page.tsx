@@ -10,21 +10,21 @@ import {
 } from '@/interfaces';
 import { useBasketStore, useOrderStore } from '@/store';
 import trpc from '@/trpc/client/trpc';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { getCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { object, pipe, optional, string, minLength } from 'valibot';
+import { valibotResolver } from "@hookform/resolvers/valibot";
 
-const formDataSchema = z.object({
-  CEP: z.string(),
-  estado: z.string().min(3, 'Precisa ter pelo menos 3 caracteres'),
-  cidade: z.string().min(3, 'Precisa ter pelo menos 3 caracteres'),
-  bairro: z.string().min(6, 'Precisa ter pelo menos 6 caracteres'),
-  rua: z.string().min(3, 'Precisa ter pelo menos 3 caracteres'),
-  numero: z.string().min(1, 'Deve ter pelo menos 11 dígitos'),
-  complemento: z.string().optional()
+const formDataSchema = object({
+  CEP: string(),
+  estado: pipe(string(), minLength(3, 'Precisa ter pelo menos 3 caracteres')),
+  cidade: pipe(string(), minLength(3, 'Precisa ter pelo menos 3 caracteres')),
+  bairro: pipe(string(), minLength(6, 'Precisa ter pelo menos 6 caracteres')),
+  rua: pipe(string(), minLength(3, 'Precisa ter pelo menos 3 caracteres')),
+  numero: pipe(string(), minLength(1, 'Deve ter pelo menos 11 dígitos')),
+  complemento: optional(string())
 });
 
 export default function Compra() {
@@ -49,7 +49,7 @@ export default function Compra() {
     getValues,
     formState: { errors }
   } = useForm<IAddress>({
-    resolver: zodResolver(formDataSchema),
+    resolver: valibotResolver(formDataSchema),
     mode: 'onChange'
   });
 

@@ -1,9 +1,4 @@
-import EStatus from '@/interfaces/EStatus';
-import { z } from 'zod';
+import { enum as enumValidator } from 'valibot';
+import { EStatus } from "@/interfaces";
 
-export default z.enum([
-  EStatus.PENDENTE,
-  EStatus.PREPARANDO,
-  EStatus.A_CAMINHO,
-  EStatus.ENTREGUE
-]);
+export default enumValidator(EStatus);

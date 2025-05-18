@@ -1,14 +1,13 @@
 'use client';
-import { getCookie } from 'cookies-next/client';
 import trpc from '@/trpc/client/trpc';
 import { IAddress } from '@/interfaces';
 import { PersonalDataForm, AddressManagement } from './components';
-import { useToast } from '@/contexts';
+import { useAuth, useToast } from "@/contexts";
 
 export default function UserConfiguration() {
-  const userId = getCookie('user_session');
-  const { data, refetch } = trpc.customers.getById.useQuery(userId as string, {
-    enabled: !!userId
+  const { user } = useAuth();
+  const { data, refetch } = trpc.customers.getById.useQuery(user!.id as string, {
+    enabled: !!user!.id
   });
   const { showToast } = useToast();
 

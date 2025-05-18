@@ -1,28 +1,31 @@
-import { z } from 'zod';
 import customerSchema from './customerSchema';
 import productSchema from './productSchema';
 import addressSchema from './addressSchema';
 import formaPagamentoEnum from './paymentMethodEnum';
 import statusEnum from './statusEnum';
+import * as v from 'valibot';
 
-export default z.object({
-  _id: z.string().optional(),
-  cliente: customerSchema.omit({ senha: true }),
-  cesta: z.array(productSchema),
-  quantidades: z.array(z.number()),
-  subTotal: z.number(),
-  valorFrete: z.number().optional(),
-  valorTotal: z.number(),
+export default v.object({
+  _id: v.optional(v.string()),
+  cliente: v.omit(customerSchema, ['senha']),
+  cesta: v.array(productSchema),
+  quantidades: v.array(v.number()),
+  subTotal: v.number(),
+  valorFrete: v.optional(v.number()),
+  valorTotal: v.number(),
   formaPagamento: formaPagamentoEnum,
   status: statusEnum,
-  desconto: z.number().optional(),
-  metodoEnvio: z.string().optional(),
-  enderecoEntrega: addressSchema.optional(),
-  dataPedido: z
-    .union([z.date(), z.string()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
-  dataEntrega: z
-    .union([z.date(), z.string()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
-    .optional()
-});
+  desconto: v.optional(v.number()),
+  metodoEnvio: v.optional(v.string()),
+  enderecoEntrega: v.optional(addressSchema),
+  dataPedido: v.pipe(
+    v.union([v.date(), v.string()]),
+    v.transform((val) => typeof val === 'string' ? new Date(val) : val)
+  ),
+  dataEntrega: v.optional(
+    v.pipe(
+      v.union([v.date(), v.string()]),
+      v.transform((val) => typeof val === 'string' ? new Date(val) : val)
+    )
+  )
+})

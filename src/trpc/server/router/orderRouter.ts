@@ -6,7 +6,7 @@ import {
   paginationQuerySchema
 } from '@/trpc/schemas';
 import { TRPCError } from '@trpc/server';
-import { z } from 'zod';
+import { object, string } from 'valibot';
 
 export default router({
   getAll: publicProcedure.query(async () => {
@@ -35,7 +35,7 @@ export default router({
       }
     }),
 
-  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
+  getById: publicProcedure.input(string()).query(async ({ input }) => {
     try {
       return await orderService.findOrderById(input);
     } catch (error) {
@@ -60,7 +60,7 @@ export default router({
   }),
 
   updateStatus: publicProcedure
-    .input(z.object({ orderId: z.string(), updatedStatus: statusSchema }))
+    .input(object({ orderId: string(), updatedStatus: statusSchema }))
     .mutation(async ({ input }) => {
       try {
         await orderService.updateOrderStatus(
@@ -77,7 +77,7 @@ export default router({
       }
     }),
 
-  delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
+  delete: publicProcedure.input(string()).mutation(async ({ input }) => {
     try {
       await orderService.removeOrderById(input);
       return { message: 'Pedido removido com sucesso!' };

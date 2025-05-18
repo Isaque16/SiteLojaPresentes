@@ -1,10 +1,4 @@
 import EPaymentMethod from '@/interfaces/EPaymentMethod';
-import { z } from 'zod';
+import { enum as enumValidator } from 'valibot';
 
-export default z.enum([
-  EPaymentMethod.pix,
-  EPaymentMethod.dinheiro,
-  EPaymentMethod.credito,
-  EPaymentMethod.debito,
-  EPaymentMethod.boleto
-]);
+export default enumValidator(EPaymentMethod);

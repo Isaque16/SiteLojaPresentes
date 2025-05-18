@@ -1,6 +1,6 @@
 import { productService } from '../services';
 import { router, publicProcedure, protectedProcedure } from "../trpc";
-import { z } from 'zod';
+import { string } from 'valibot';
 import { productSchema, paginationQuerySchema } from '@/trpc/schemas';
 import { TRPCError } from '@trpc/server';
 
@@ -31,7 +31,7 @@ export default router({
       }
     }),
 
-  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
+  getById: publicProcedure.input(string()).query(async ({ input }) => {
     try {
       return await productService.findProductById(input);
     } catch (error) {
@@ -56,7 +56,7 @@ export default router({
     }
   }),
 
-  delete: protectedProcedure.input(z.string()).mutation(async ({ input }) => {
+  delete: protectedProcedure.input(string()).mutation(async ({ input }) => {
     try {
       await productService.removeProductById(input);
       return { message: 'Produto removido com sucesso!' };

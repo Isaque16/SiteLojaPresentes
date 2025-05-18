@@ -2,22 +2,21 @@
 import { InputComponent } from '@/components';
 import { ICustomer } from '@/interfaces';
 import trpc from '@/trpc/client/trpc';
-import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { object, pipe, optional, string, email, minLength } from 'valibot';
 import { useAuth, useToast } from "@/contexts";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 
-const formDataSchema = z.object({
-  _id: z.string().optional(),
-  nomeCompleto: z.string().min(3, 'O nome precisa ter pelo menos 3 caracteres'),
-  nomeUsuario: z
-    .string()
-    .min(3, 'O nome de usuário precisa ter pelo menos 3 caracteres'),
-  senha: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres'),
-  email: z.string().email('Email inválido'),
-  telefone: z.string().min(11, 'O telefone deve ter pelo menos 11 dígitos')
+const formDataSchema = object({
+  _id: optional(string()),
+  nomeCompleto: pipe(string(), minLength(3, 'O nome precisa ter pelo menos 3 caracteres')),
+  nomeUsuario: pipe(string(),
+    minLength(3, 'O nome de usuário precisa ter pelo menos 3 caracteres')),
+  senha: pipe(string(), minLength(6, 'A senha precisa ter pelo menos 6 caracteres')),
+  email: pipe(string(), email('Email inválido')),
+  telefone: pipe(string(), minLength(11, 'O telefone deve ter pelo menos 11 dígitos'))
 });
 
 export default function Cadastro() {
@@ -32,7 +31,7 @@ export default function Cadastro() {
     setError,
     formState: { errors, isValid, isSubmitting }
   } = useForm<ICustomer>({
-    resolver: zodResolver(formDataSchema),
+    resolver: valibotResolver(formDataSchema),
     mode: 'onChange'
   });
 
