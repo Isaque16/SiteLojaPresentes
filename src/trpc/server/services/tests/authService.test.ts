@@ -1,7 +1,6 @@
-import { jest, describe, it, expect } from '@jest/globals';
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import bcrypt from 'bcrypt';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next/server';
-import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
 import * as authService from '../authService';
 import * as customerService from '../customerService';
 import { ICustomer } from '@/interfaces';
@@ -10,14 +9,9 @@ jest.mock('bcrypt', () => ({
   compare: jest.fn()
 }));
 
-jest.mock('cookies-next/server', () => ({
-  getCookie: jest.fn(),
-  setCookie: jest.fn(),
-  deleteCookie: jest.fn()
-}));
-
-jest.mock('next/headers', () => ({
-  cookies: {}
+jest.mock('jsonwebtoken', () => ({
+  sign: jest.fn().mockReturnValue('fake-jwt-token'),
+  verify: jest.fn()
 }));
 
 jest.mock('../customerService', () => ({
@@ -48,7 +42,7 @@ describe('Auth Service', () => {
   });
 
   describe('authenticateUser', () => {
-    it('should authenticate user with valid credentials', async () => {
+    it('should authenticate user with valid credentials and return JWT token', async () => {
       (customerService.findCustomerByUserName as jest.Mock).mockResolvedValue(
         mockCustomer as never
       );
@@ -66,9 +60,14 @@ describe('Auth Service', () => {
         'password123',
         'hashedPassword123'
       );
+      expect(jwt.sign).toHaveBeenCalledWith(
+        { userId: 'customer123' },
+        expect.any(String),
+        { expiresIn: expect.any(String) }
+      );
       expect(result).toEqual({
         success: true,
-        userId: 'customer123',
+        token: 'fake-jwt-token',
         message: 'Login realizado com sucesso!'
       });
     });
@@ -88,6 +87,7 @@ describe('Auth Service', () => {
         message: 'nome de usuário ou senha incorretos'
       });
       expect(bcrypt.compare).not.toHaveBeenCalled();
+      expect(jwt.sign).not.toHaveBeenCalled();
     });
 
     it('should fail authentication when password is incorrect', async () => {
@@ -105,6 +105,7 @@ describe('Auth Service', () => {
         'wrongpassword',
         'hashedPassword123'
       );
+      expect(jwt.sign).not.toHaveBeenCalled();
       expect(result).toEqual({
         success: false,
         message: 'nome de usuário ou senha incorretos'
@@ -123,79 +124,63 @@ describe('Auth Service', () => {
     });
   });
 
-  describe('createUserSession', () => {
-    it('should create user session by setting a cookie', async () => {
-      (setCookie as jest.Mock).mockResolvedValue(undefined as never);
+  describe('verifyToken', () => {
+    it('should verify and return decoded token payload when valid', () => {
+      const mockPayload = { userId: 'customer123' };
+      (jwt.verify as jest.Mock).mockReturnValue(mockPayload);
 
-      await authService.createUserSession('customer123');
+      const result = authService.verifyToken('valid-token');
 
-      expect(setCookie).toHaveBeenCalledWith('user_session', 'customer123', {
-        cookies,
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/'
+      expect(jwt.verify).toHaveBeenCalledWith(
+        'valid-token',
+        expect.any(String)
+      );
+      expect(result).toEqual(mockPayload);
+    });
+
+    it('should return null when token is invalid', () => {
+      (jwt.verify as jest.Mock).mockImplementation(() => {
+        throw new Error('Invalid token');
       });
-    });
 
-    it('should throw an error when setting cookie fails', async () => {
-      const errorMessage = 'Failed to set cookie';
-      (setCookie as jest.Mock).mockRejectedValue(
-        new Error(errorMessage) as never
-      );
+      const result = authService.verifyToken('invalid-token');
 
-      await expect(
-        authService.createUserSession('customer123')
-      ).rejects.toThrow(
-        `Erro ao criar sessão do usuário: Error: ${errorMessage}`
-      );
-    });
-  });
-
-  describe('logoutUser', () => {
-    it('should logout user by removing session cookie', async () => {
-      (deleteCookie as jest.Mock).mockResolvedValue(undefined as never);
-
-      await authService.logoutUser();
-
-      expect(deleteCookie).toHaveBeenCalledWith('user_session', { cookies });
-    });
-
-    it('should throw an error when removing cookie fails', async () => {
-      const errorMessage = 'Failed to delete cookie';
-      (deleteCookie as jest.Mock).mockRejectedValue(
-        new Error(errorMessage) as never
-      );
-
-      await expect(authService.logoutUser()).rejects.toThrow(
-        `Erro ao encerrar sessão do usuário: Error: ${errorMessage}`
-      );
+      expect(result).toBeNull();
     });
   });
 
   describe('getCurrentUser', () => {
-    it('should return user ID when session cookie exists', async () => {
-      (getCookie as jest.Mock).mockResolvedValue('customer123' as never);
+    it('should return user ID when token is valid', async () => {
+      (jwt.verify as jest.Mock).mockReturnValue({ userId: 'customer123' });
 
-      const result = await authService.getCurrentUser();
+      const result = await authService.getCurrentUser('valid-token');
 
-      expect(getCookie).toHaveBeenCalledWith('user_session', { cookies });
+      expect(jwt.verify).toHaveBeenCalledWith(
+        'valid-token',
+        expect.any(String)
+      );
       expect(result).toBe('customer123');
     });
 
-    it('should return null when no session cookie exists', async () => {
-      (getCookie as jest.Mock).mockResolvedValue(null as never);
+    it('should return null when token is invalid', async () => {
+      (jwt.verify as jest.Mock).mockImplementation(() => {
+        throw new Error('Invalid token');
+      });
 
-      const result = await authService.getCurrentUser();
+      const result = await authService.getCurrentUser('invalid-token');
 
       expect(result).toBeNull();
     });
 
-    it('should throw an error when getting cookie fails', async () => {
-      const errorMessage = 'Failed to get cookie';
-      (getCookie as jest.Mock).mockRejectedValue(
-        new Error(errorMessage) as never
-      );
+    it('should throw an error when verification process fails unexpectedly', async () => {
+      const errorMessage = 'Unexpected error';
+      (jwt.verify as jest.Mock).mockImplementation(() => {
+        const error = new Error(errorMessage);
+        error.name = 'UnexpectedError';
+        throw error;
+      });
 
-      await expect(authService.getCurrentUser()).rejects.toThrow(
+      await expect(authService.getCurrentUser('token')).rejects.toThrow(
         `Erro ao verificar sessão atual: Error: ${errorMessage}`
       );
     });

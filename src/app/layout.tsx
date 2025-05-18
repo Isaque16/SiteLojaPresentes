@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import TRPCProvider from '@/trpc/client/TRPCProvider';
 import { NavBar, Footer } from '@/layout';
-import { ToastProvider } from '@/contexts';
+import { ToastProvider, AuthProvider } from '@/contexts';
+import { type ReactNode } from "react";
 
 const geistSans = localFont({
   src: '/fonts/GeistVF.woff',
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="pt-BR">
@@ -34,9 +35,11 @@ export default function RootLayout({
       >
         <TRPCProvider>
           <ToastProvider>
-            <NavBar />
-            {children}
-            <Footer />
+            <AuthProvider>
+              <NavBar />
+              {children}
+              <Footer />
+            </AuthProvider>
           </ToastProvider>
         </TRPCProvider>
       </body>

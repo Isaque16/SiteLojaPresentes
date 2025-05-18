@@ -1,5 +1,5 @@
 import { customerService } from '../services';
-import { procedure, router } from '../trpc';
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { z } from 'zod';
 import {
   customerSchema,
@@ -9,7 +9,7 @@ import {
 import { TRPCError } from '@trpc/server';
 
 export default router({
-  getAll: procedure.query(async () => {
+  getAll: protectedProcedure.query(async () => {
     try {
       return await customerService.getAllCustomers();
     } catch (error) {
@@ -21,7 +21,7 @@ export default router({
     }
   }),
 
-  getAllPaged: procedure
+  getAllPaged: protectedProcedure
     .input(paginationQuerySchema)
     .query(async ({ input }) => {
       try {
@@ -35,7 +35,7 @@ export default router({
       }
     }),
 
-  getByUserName: procedure.input(z.string()).query(async ({ input }) => {
+  getByUserName: publicProcedure.input(z.string()).query(async ({ input }) => {
     try {
       return await customerService.findCustomerByUserName(input);
     } catch (error) {
@@ -47,7 +47,7 @@ export default router({
     }
   }),
 
-  getById: procedure.input(z.string()).query(async ({ input }) => {
+  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
     try {
       return await customerService.findCustomerById(input);
     } catch (error) {
@@ -59,7 +59,7 @@ export default router({
     }
   }),
 
-  save: procedure.input(customerSchema).mutation(async ({ input }) => {
+  save: publicProcedure.input(customerSchema).mutation(async ({ input }) => {
     try {
       return await customerService.saveCustomer(input);
     } catch (error) {
@@ -71,7 +71,7 @@ export default router({
     }
   }),
 
-  saveEndereco: procedure
+  saveEndereco: publicProcedure
     .input(z.object({ _id: z.string(), endereco: addressSchema }))
     .mutation(async ({ input }) => {
       try {
@@ -86,7 +86,7 @@ export default router({
       }
     }),
 
-  delete: procedure.input(z.string()).mutation(async ({ input }) => {
+  delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await customerService.removeCustomerByUserName(input);
       return { message: 'Cliente removido com sucesso!' };

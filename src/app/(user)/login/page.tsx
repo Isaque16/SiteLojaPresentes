@@ -1,12 +1,10 @@
 'use client';
-import trpc from '@/trpc/client/trpc';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { InputComponent } from '@/components';
-import { useToast } from '@/contexts';
+import { useAuth } from "@/contexts";
 
 const formDataSchema = z.object({
   nomeUsuario: z
@@ -18,38 +16,19 @@ const formDataSchema = z.object({
 type LoginType = { nomeUsuario: string; senha: string };
 
 export default function Cadastro() {
-  const router = useRouter();
-  const { showToast } = useToast();
+  const { login } = useAuth();
 
   const {
     register,
     handleSubmit,
-    reset,
-    setError,
     formState: { isValid, isSubmitting }
   } = useForm<LoginType>({
     resolver: zodResolver(formDataSchema),
     mode: 'onChange'
   });
 
-  const { mutateAsync: loginMutation } = trpc.auth.login.useMutation({
-    onSuccess: (data) => {
-      if (data.success) {
-        showToast('Bem vindo de volta!', 'success');
-        router.replace('/catalogo');
-      } else {
-        reset();
-        setError('root', { message: data.message || 'Falha na autenticação' });
-        showToast(data.message || 'Falha na autenticação', 'error');
-      }
-    },
-    onError: () => {
-      showToast('Erro ao logar usuário, tente novamente.', 'error');
-    }
-  });
-
-  async function loginUser(credentials: LoginType) {
-    await loginMutation(credentials);
+  async function loginUser({ nomeUsuario, senha }: LoginType) {
+    await login(nomeUsuario, senha);
   }
 
   const fields = [

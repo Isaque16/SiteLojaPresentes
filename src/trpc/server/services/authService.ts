@@ -1,9 +1,10 @@
-'use server';
 import bcrypt from 'bcrypt';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ICustomer } from '@/interfaces';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next/server';
 import { customerService } from '../services';
-import { cookies } from 'next/headers';
+
+const JWT_SECRET = process.env.JWT_SECRET as string;
+const TOKEN_EXPIRATION = '7d';
 
 /**
  * Authenticates a user by validating the provided email and password.
@@ -18,7 +19,12 @@ import { cookies } from 'next/headers';
 export async function authenticateUser(
   nomeUsuario: string,
   senha: string
-): Promise<{ success: boolean; userId?: string; message: string }> {
+): Promise<{
+  success: boolean;
+  userId?: string;
+  token?: string;
+  message: string;
+}> {
   try {
     const customer: ICustomer | null =
       await customerService.findCustomerByUserName(nomeUsuario);
@@ -26,22 +32,25 @@ export async function authenticateUser(
     if (!customer) {
       return {
         success: false,
-        message: 'nome de usuário ou senha incorretos'
+        message: 'nome de usuário incorreto'
       };
     }
 
-    const isPasswordValid = await bcrypt.compare(senha, customer.senha);
+    const isPasswordValid: boolean = await bcrypt.compare(senha, customer.senha);
 
     if (!isPasswordValid) {
       return {
         success: false,
-        message: 'nome de usuário ou senha incorretos'
+        message: 'Senha incorreta'
       };
     }
 
+    const token: string = generateToken(customer._id!);
+
     return {
       success: true,
-      userId: customer._id!,
+      userId: customer._id,
+      token,
       message: 'Login realizado com sucesso!'
     };
   } catch (error) {
@@ -50,47 +59,57 @@ export async function authenticateUser(
 }
 
 /**
- * Creates a user session by setting a secure browser cookie with the provided user ID.
+ * Verifies and decodes a JWT token.
  *
- * @param {string} userId - The unique identifier of the user to create a session for.
- * @return {Promise<void>} A promise that resolves when the user session is successfully created, or throws an error if the process fails.
+ * @param {string} token - The JWT token to verify.
+ * @return {JwtPayload | string | null} The decoded token payload if valid, null otherwise.
  */
-export async function createUserSession(userId: string): Promise<void> {
+export function verifyToken(token: string): JwtPayload | string | null {
   try {
-    await setCookie('user_session', userId.toString(), {
-      cookies,
-      maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'
-    });
-  } catch (error) {
-    throw new Error(`Erro ao criar sessão do usuário: ${error}`);
+    return jwt.verify(token, JWT_SECRET);
+  } catch {
+    return null;
   }
 }
 
 /**
- * Logs out the currently authenticated user by removing their session cookie.
+ * Retrieves the current user ID from a JWT token.
  *
- * @return {Promise<void>} A promise that resolves when the user is successfully logged out.
- * @throws {Error} If an error occurs while attempting to log out the user.
+ * @param {string} token - The JWT token to extract the user ID from.
+ * @return {Promise<string|null>} A promise that resolves to the current user's ID, or null if the token is invalid.
  */
-export async function logoutUser(): Promise<void> {
+export async function getCurrentUser(token: string): Promise<string | null> {
   try {
-    await deleteCookie('user_session', { cookies });
-  } catch (error) {
-    throw new Error(`Erro ao encerrar sessão do usuário: ${error}`);
-  }
-}
-
-/**
- * Retrieves the current user session identifier if available.
- *
- * @return {Promise<string|null>} A promise that resolves to the current user's session as a string, or null if no session is found.
- */
-export async function getCurrentUser(): Promise<string | null> {
-  try {
-    const sessionCookie = await getCookie('user_session', { cookies });
-    return sessionCookie || null;
+    const decoded = verifyToken(token) as JwtPayload;
+    return decoded?.userId || null;
   } catch (error) {
     throw new Error(`Erro ao verificar sessão atual: ${error}`);
   }
+}
+
+/**
+ * Renews a JWT token by generating a new one for the provided user ID.
+ *
+ * @param {string} token - The JWT token to renew.
+ * @return {Promise<string>} A promise that resolves with the renewed token.
+ */
+export async function renewToken(token: string) {
+  try {
+    const decoded = verifyToken(token) as JwtPayload;
+
+    const userId = decoded.userId;
+    return generateToken(userId);
+  } catch (error) {
+    throw new Error(`Erro ao renovar token: ${error}`);
+  }
+}
+
+/**
+ * Generates a JWT token for the provided user ID.
+ *
+ * @param {string} userId - The unique identifier of the user.
+ * @return {string} The generated JWT token.
+ */
+function generateToken(userId: string): string {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
 }

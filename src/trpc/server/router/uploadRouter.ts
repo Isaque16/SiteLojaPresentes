@@ -1,10 +1,10 @@
-import { router, procedure } from '../trpc';
+import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { uploadService } from '../services';
 
 export default router({
-  uploadImage: procedure
+  uploadImage: protectedProcedure
     .input(
       z.object({
         base64Data: z.string().min(1, 'Dados da imagem são obrigatórios'),
@@ -27,7 +27,7 @@ export default router({
       return result;
     }),
 
-  deleteImage: procedure
+  deleteImage: protectedProcedure
     .input(
       z.object({
         fileName: z.string().min(1, 'Nome do arquivo é obrigatório')
@@ -46,7 +46,7 @@ export default router({
       return { success };
     }),
 
-  listImages: procedure.query(async () => {
+  listImages: publicProcedure.query(async () => {
     return await uploadService.listImages();
   })
 });

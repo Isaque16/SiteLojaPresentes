@@ -3,12 +3,11 @@ import { InputComponent } from '@/components';
 import { ICustomer } from '@/interfaces';
 import trpc from '@/trpc/client/trpc';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { setCookie } from 'cookies-next/client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useToast } from '@/contexts';
+import { useAuth, useToast } from "@/contexts";
 
 const formDataSchema = z.object({
   _id: z.string().optional(),
@@ -24,6 +23,7 @@ const formDataSchema = z.object({
 export default function Cadastro() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { login } = useAuth();
 
   const {
     register,
@@ -42,10 +42,14 @@ export default function Cadastro() {
   );
 
   const { mutateAsync: saveCustomer } = trpc.customers.save.useMutation({
-    onSuccess(data) {
-      setCookie('id', data?._id);
-      showToast('Usuário criado com sucesso!', 'success');
-      router.replace('/catalogo');
+    onSuccess: async () => {
+      try {
+        await login(getValues().nomeUsuario, getValues().senha);
+        showToast('Usuário criado com sucesso!', 'success');
+      } catch {
+        showToast('Usuário criado com sucesso! Por favor, faça login.', 'success');
+        router.replace('/login');
+      }
     },
     onError(error) {
       showToast(error.message, 'error');

@@ -1,24 +1,27 @@
 'use client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { type ReactNode, useState } from "react";
 import { httpBatchLink } from '@trpc/client';
 import trpc from './trpc';
+import { getCookie } from "cookies-next/client";
 
-export default function TRPCProvider({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export default function TRPCProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
+  const [trpcClient] = useState(() => {
+    return trpc.createClient({
       links: [
         httpBatchLink({
-          url: 'http://localhost:3000/api/trpc'
-        })
+          url: '/api/trpc',
+          headers() {
+            const token = getCookie('authToken');
+            return {
+              authorization: token ? `Bearer ${token}` : '',
+            };
+          }
+        }),
       ]
-    })
-  );
+    });
+  });
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>

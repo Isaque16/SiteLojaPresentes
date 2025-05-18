@@ -1,14 +1,11 @@
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
-dotenv.config();
-
-let isConnected = false;
+let isConnected: boolean = false;
 
 /**
  * Connects to the MongoDB database using Mongoose.
  **/
-export default async function connectToDatabase() {
+export default async function connectToDatabase(): Promise<void> {
   if (isConnected) {
     console.log('Database connection already established');
     return;

@@ -1,38 +1,37 @@
 'use client';
 import trpc from '@/trpc/client/trpc';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from "@/contexts";
 
-function useIdCookie() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const pathname = usePathname();
-  const { data, refetch } = trpc.auth.checkSession.useQuery();
-
-  useEffect(() => {
-    setUserId((prev) =>
-      prev !== data?.userId ? (data?.userId ?? null) : prev
-    );
-
-    refetch();
-  }, [data, pathname, refetch]);
-
-  return userId;
-}
+// function useIdCookie() {
+//   const [userId, setUserId] = useState<string | null>(null);
+//   const pathname = usePathname();
+//   const { data, refetch } = trpc.auth.checkSession.useQuery();
+//
+//   useEffect(() => {
+//     setUserId((prev) =>
+//       prev !== data?.userId ? (data?.userId ?? null) : prev
+//     );
+//
+//     refetch();
+//   }, [data, pathname, refetch]);
+//
+//   return userId;
+// }
 
 export default function UserAvatar() {
   const router = useRouter();
-  const userId: string | null = useIdCookie();
+  const { user, logout } = useAuth();
+  const userId: string | undefined = user?.id;
 
   const { data, isLoading } = trpc.customers.getById.useQuery(
     userId as string,
     { enabled: !!userId }
   );
 
-  const { mutateAsync: logoutMutation } = trpc.auth.logout.useMutation();
-
   const logOut = async () => {
-    await logoutMutation();
+    logout();
     router.replace('/login');
   };
 

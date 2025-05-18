@@ -1,4 +1,4 @@
-import { router, procedure } from '@/trpc/server/trpc';
+import { router, publicProcedure } from '@/trpc/server/trpc';
 import { TRPCError } from '@trpc/server';
 import { authService } from '../services';
 import { z } from 'zod';
@@ -10,9 +10,9 @@ export default router({
    * @param {object} input - User credentials
    * @param {string} input.nomeUsuario - The user's username
    * @param {string} input.senha - The user's password
-   * @returns {Promise<{success: boolean, customer: ICustomer, message?: string}>} Authentication result
+   * @returns {Promise<{success: boolean, token?: string, message?: string}>} Authentication result
    */
-  login: procedure
+  login: publicProcedure
     .input(z.object({ nomeUsuario: z.string(), senha: z.string() }))
     .mutation(async ({ input }) => {
       try {
@@ -22,9 +22,9 @@ export default router({
         );
 
         if (authResult.success) {
-          await authService.createUserSession(authResult.userId!);
           return {
             success: true,
+            userId: authResult.userId,
             message: 'Login realizado com sucesso'
           };
         }
@@ -43,34 +43,13 @@ export default router({
     }),
 
   /**
-   * Ends the current user's session
-   *
-   * @returns {Promise<{success: boolean, message: string}>} Logout confirmation
-   */
-  logout: procedure.mutation(async () => {
-    try {
-      await authService.logoutUser();
-      return {
-        success: true,
-        message: 'Logout realizado com sucesso'
-      };
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Erro ao processar logout',
-        cause: error
-      });
-    }
-  }),
-
-  /**
    * Checks if the user is authenticated
    *
    * @returns {Promise<{isLoggedIn: boolean, userId: string|null}>} Session status
    */
-  checkSession: procedure.query(async () => {
+  checkSession: publicProcedure.input(z.string()).query(async ({ input }) => {
     try {
-      const userId = await authService.getCurrentUser();
+      const userId = await authService.getCurrentUser(input);
       return {
         isLoggedIn: !!userId,
         userId

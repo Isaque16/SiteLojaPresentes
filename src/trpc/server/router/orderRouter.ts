@@ -1,5 +1,5 @@
 import { orderService } from '../services';
-import { router, procedure } from '../trpc';
+import { router, publicProcedure } from '../trpc';
 import {
   statusSchema,
   orderSchema,
@@ -9,7 +9,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 export default router({
-  getAll: procedure.query(async () => {
+  getAll: publicProcedure.query(async () => {
     try {
       return await orderService.getAllOrders();
     } catch (error) {
@@ -21,7 +21,7 @@ export default router({
     }
   }),
 
-  getAllPaged: procedure
+  getAllPaged: publicProcedure
     .input(paginationQuerySchema)
     .query(async ({ input }) => {
       try {
@@ -35,7 +35,7 @@ export default router({
       }
     }),
 
-  getById: procedure.input(z.string()).query(async ({ input }) => {
+  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
     try {
       return await orderService.findOrderById(input);
     } catch (error) {
@@ -47,7 +47,7 @@ export default router({
     }
   }),
 
-  save: procedure.input(orderSchema).mutation(async ({ input }) => {
+  save: publicProcedure.input(orderSchema).mutation(async ({ input }) => {
     try {
       return await orderService.createOrder(input);
     } catch (error) {
@@ -59,7 +59,7 @@ export default router({
     }
   }),
 
-  updateStatus: procedure
+  updateStatus: publicProcedure
     .input(z.object({ orderId: z.string(), updatedStatus: statusSchema }))
     .mutation(async ({ input }) => {
       try {
@@ -77,7 +77,7 @@ export default router({
       }
     }),
 
-  delete: procedure.input(z.string()).mutation(async ({ input }) => {
+  delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     try {
       await orderService.removeOrderById(input);
       return { message: 'Pedido removido com sucesso!' };
