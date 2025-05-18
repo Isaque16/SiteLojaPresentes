@@ -20,7 +20,7 @@ export default function ProductCardBasket({
       <div className="flex flex-col md:flex-row items-center gap-5">
         <figure className="image-full">
           <img
-            src={item.imagem}
+            src={item.imagem[0]}
             alt={item.nome}
             className="max-h-32 object-contain"
           />

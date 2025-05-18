@@ -1,4 +1,4 @@
-import { createDbContext } from '@/trpc/server/contexts/dbContext';
+import { createContext } from '@/trpc/server/context';
 import { appRouter } from '@/trpc/server/router/appRouter';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 
@@ -15,7 +15,7 @@ export async function handler(req: Request) {
     endpoint: '/api/trpc',
     req,
     router: appRouter,
-    createContext: createDbContext
+    createContext: ({ req }) => createContext({ req })
   });
 }
 

@@ -4,16 +4,15 @@ import { authService } from './services';
 
 const t = initTRPC.context<Context>().create();
 
-// Middleware para verificar autenticação
+// Middleware to check if the user is authenticated
 const isAuthenticated = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.user) {
+  if (!ctx.user || !ctx.user.id) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'Você precisa estar autenticado',
     });
   }
 
-  // Continua com a execução
   const result = await next({
     ctx: {
       user: ctx.user,

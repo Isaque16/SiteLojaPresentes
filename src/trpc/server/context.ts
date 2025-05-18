@@ -2,26 +2,29 @@ import { IncomingMessage } from 'http';
 import { createDbContext, createAuthContext } from "@/trpc/server/contexts";
 import { authService } from './services';
 
-export interface Context {
-  user: {
-    id: string;
-  } | null;
-  db: void;
+interface User {
+  id: string;
 }
 
 /**
  * Cria o contexto para as requisições tRPC
- * Combina o contexto de banco de dados com as informações do usuário autenticado
+ * Gerencia a conexão com o banco de dados e autenticação do usuário
  */
-export async function createContext({ req }: { req: IncomingMessage }): Promise<Context> {
-  const dbContext: { db: void } = await createDbContext();
+export const createContext = async (opts: {
+  req: Request | IncomingMessage;
+}) => {
+  const req = opts.req instanceof Request
+    ? new IncomingMessage(null as any)
+    : opts.req;
+
+  const dbContext = await createDbContext();
 
   const token = createAuthContext(req);
-  let user = null;
+  let user: User | null = null;
 
   if (token) {
     try {
-      const userId: string | null = await authService.getCurrentUser(token);
+      const userId = await authService.getCurrentUser(token);
       if (userId) {
         user = { id: userId };
       }
@@ -32,6 +35,9 @@ export async function createContext({ req }: { req: IncomingMessage }): Promise<
 
   return {
     db: dbContext.db,
-    user
+    user,
+    token
   };
-}
+};
+
+export type Context = Awaited<ReturnType<typeof createContext>>;

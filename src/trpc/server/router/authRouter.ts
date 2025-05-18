@@ -24,6 +24,7 @@ export default router({
         if (authResult.success) {
           return {
             success: true,
+            token: authResult.token,
             userId: authResult.userId,
             message: 'Login realizado com sucesso'
           };

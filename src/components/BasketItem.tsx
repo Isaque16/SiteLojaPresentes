@@ -18,8 +18,8 @@ export default function BasketItem({ item, index }: BasketItemProps) {
       <div className="flex flex-col md:flex-row items-center gap-5">
         <figure className="image-full">
           <img
-            src={item.imagem}
-            alt={item.nome || item.nomeImagem}
+            src={item.imagem[0]}
+            alt={item.nome || item.nomeImagem[0]}
             className="max-h-32 object-contain"
           />
         </figure>

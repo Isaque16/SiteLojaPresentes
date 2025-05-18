@@ -104,8 +104,8 @@ describe('Product Service', () => {
 
       expect(mockFindReturn.skip).toHaveBeenCalledWith((page - 1) * size);
       expect(mockFindReturn.limit).toHaveBeenCalledWith(size);
-      expect(result.page).toBe(page);
-      expect(result.size).toBe(size);
+      expect(result.pagination.page).toBe(page);
+      expect(result.pagination.size).toBe(size);
     });
 
     it('should apply search filter correctly', async () => {
@@ -148,7 +148,7 @@ describe('Product Service', () => {
         size: 10
       });
 
-      expect(result.totalPages).toBe(3);
+      expect(result.pagination.totalPages).toBe(3);
     });
 
     it('should return at least 1 page when no results found', async () => {
@@ -156,7 +156,7 @@ describe('Product Service', () => {
 
       const result = await productService.getAllProductsPaged(defaultQuery);
 
-      expect(result.totalPages).toBe(1);
+      expect(result.pagination.totalPages).toBe(1);
     });
 
     it('should throw an error when failing to retrieve paginated products', async () => {
